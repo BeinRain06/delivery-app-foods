@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Meal = require("../models/meal");
 const Category = require("../models/category");
+const RatedMeal = require("../models/rated-meal");
 
 // middleware that is specific to this router
 router.use(express.urlencoded({ extended: false }));
@@ -18,8 +19,8 @@ router.use(
       price: +req.body.price,
       miniDesc: req.body.miniDesc,
       longDesc: req.body.longDesc,
+      ratings: +req.body.ratings,
       ingredients: req.body.ingredients,
-      ratings: req.body.ratings,
     });
     try {
       const category = Category.findById(newFood.category);
@@ -156,11 +157,11 @@ router.get("/vegetarians", async (req, res) => {
   }
 });
 
-//PUT
-router.put("/:id", async (req, res) => {
+// FOR PUT
+router.use("/:mealId", async (req, res) => {
   try {
     const mealUpdate = await Meal.findByIdAndUpdate(
-      req.params.id,
+      req.params.mealId,
       {
         $set: {
           name: req.body.name,

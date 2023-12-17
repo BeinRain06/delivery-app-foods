@@ -47,19 +47,18 @@ router.get("/:userId", async (req, res) => {
 
 //POST user( create)
 /*new user posted by Admin*/
-router.post("/user", middlewareUser, async (req, res) => {
+router.use(async (req, res) => {
   try {
-    const passwordHash = bcrypt.hashSync(req.body.password, 10);
+    const password = req.body.password;
 
     let user = new User({
-      username: req.body.name,
-      passwordHash: bcrypt.hashSync(req.body.password, 10), // install bcryptjs
+      name: req.body.name,
+      passwordHash: bcrypt.hashSync(password, 10),
       city: req.body.city,
       street: req.body.street,
       country: req.body.country,
       phone: req.body.phone,
       email: req.body.email,
-      isAdmin: jwt(passwordHash),
       isAdmin: req.body.isAdmin,
     });
 
@@ -67,9 +66,10 @@ router.post("/user", middlewareUser, async (req, res) => {
 
     res.json({ success: true, data: user });
   } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, error: "Error: cannot create  user " });
+    res.status(500).json({
+      success: false,
+      error: "Error: cannot create  user ",
+    });
     console.log(err);
   }
 });
@@ -79,8 +79,9 @@ router.post("/user", middlewareUser, async (req, res) => {
 router.post("/register", async (req, res) => {
   try {
     let user = new User({
-      username: req.body.name,
-      passwordHash: bcrypt.hashSync(req.body.password, 10), // install bcryptjs
+      name: req.body.name,
+      /*  passwordHash: bcrypt.hashSync(req.body.password, 10), // install bcryptjs */
+      passwordHash: req.body.password,
       city: req.body.city,
       street: req.body.street,
       country: req.body.country,

@@ -9,9 +9,9 @@ const ordersRouter = require("./routes/orders-route");
 
 const userRouter = require("./routes/users-route");
 
-const userRatingRouter = require("./routes/ratings-user-route");
+const ratedMealRouter = require("./routes/rated-meal-route");
 
-const ratingRouter = require("./routes/ratings-route");
+const ratingsRouter = require("./routes/ratings-route");
 
 const paymentRouter = require("./routes/payments-route");
 
@@ -45,28 +45,55 @@ const multer = require("multer");
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, __dirname + "/public/images");
+    callback(null, "public/images/meats");
   },
   filename: function (req, file, callback) {
     const filename = `${file.fieldname}_${Date.now()}${path.extname(
       file.originalname
     )}`;
+
     callback(null, filename);
   },
 });
 
+//configure multer to upload in remote_url
 const upload = multer({
   storage: storage,
-  limits: {
-    fileSize: 1048576,
-  },
+
+  limits: { fileSize: 100000 },
 });
-app.post("/upload/meal/image", upload.single("meal"), function (req, res) {
+
+//post single image with multer
+/* upload.single("dessert");
+upload.single("meat");
+upload.single("vegetarian");
+upload.single("seafood"); */
+app.post("/api/delivery/picture", upload.single("meat"), function (req, res) {
+  console.log(req.file);
   res.json({
     success: true,
-    profile_url: `http://localhost:5000/meal/${req.file.filename}`,
+    profile_url: `/api/delivery/picture/${req.file.filename}`, //fetching url img_name path
   });
 });
+
+//BASE_URL to print image in browse
+
+app.use("/api/delivery/images", express.static("public/images/meats"));
+
+/* app.use("/api/delivery/images", express.static("public/images/desserts")); */ //e.g : http://localhost:5000/api/delivery/images/dessert_1702648345030.jpeg
+
+/* app.use(
+  "meals/picture/meat",
+  express.static(__dirname + "/public/images/meat")
+);
+app.use(
+  "meals/picture/vegetarian",
+  express.static(__dirname + "/public/images/vegetarian")
+);
+app.use(
+  "meals/picture/seafood",
+  express.static(__dirname + "/public/images/seafood")
+); */
 
 // Alias New Routes middleware
 app.use(`${api}/meals`, mealsRouter);
@@ -75,8 +102,8 @@ app.use(`${api}/favourites/users`, favouritesRouter);
 app.use(`${api}/orders`, ordersRouter);
 app.use(`${api}/orders/payments`, paymentRouter);
 app.use(`${api}/users`, userRouter);
-app.use(`${api}/users/ratings/rating`, userRatingRouter);
-app.use(`${api}/users/ratings`, ratingRouter);
+app.use(`${api}/ratings`, ratingsRouter);
+app.use(`${api}/users/ratings/rating`, ratedMealRouter);
 // middleware
 app.use(cors());
 app.use(express.json());

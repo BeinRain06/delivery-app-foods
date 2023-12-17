@@ -9,11 +9,7 @@ const MealSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  miniDesc: {
-    type: String,
-    required: true,
-  },
-  longDesc: {
+  origin: {
     type: String,
     required: true,
   },
@@ -22,18 +18,21 @@ const MealSchema = mongoose.Schema({
     ref: "Category",
     required: true,
   },
-  ratings: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Rating",
-    required: false,
-  },
   price: {
     type: Number,
     default: 0,
   },
-  origin: {
+  miniDesc: {
     type: String,
     required: true,
+  },
+  longDesc: {
+    type: String,
+    required: true,
+  },
+  ratings: {
+    type: Number,
+    required: false,
   },
   ingredients: {
     type: String,

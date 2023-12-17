@@ -33,11 +33,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  favourite: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Favourite",
-    default: { favourite: "no favourite" },
-  },
+  favourites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Favourite",
+      default: "",
+    },
+  ],
   isAdmin: {
     type: Boolean,
     /* required: true, */

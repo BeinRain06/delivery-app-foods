@@ -69,6 +69,7 @@ router.post("/", async (req, res) => {
         );
         return null;
       }
+
       timeInMilliSeconds = timeInMilliSeconds - 1000;
       hours = Math.floor(timeInMilliSeconds / 3600000);
 

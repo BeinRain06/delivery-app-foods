@@ -359,18 +359,6 @@ const meals = [
     vegetarians: [
       {
         id: Math.ceil(Math.random() * 1000000),
-        foodName: "dal fry",
-        /*  foodPicture: { DALFRY }, */
-        ratings: "3.7",
-        miniDesc: "Lorem ipsum dolor sit.",
-        longDesc:
-          "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque commodi, sequi laudantium nulla et laborum harum delectus earum autem quas!",
-        origin: "Italian",
-        category: "vegetarians",
-        ingredients: ["Ginger", "Chopped tomatoes", "Green Chili"],
-      },
-      {
-        id: Math.ceil(Math.random() * 1000000),
         foodName: "egg drop soup",
         /* foodPicture: { EGGSOUP }, */
         ratings: "4.2",

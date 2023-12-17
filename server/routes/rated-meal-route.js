@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const RatingUser = require("../models/rating-user");
+const RatedMeal = require("../models/rated-meal");
 
 const User = require("../models/user");
 
@@ -11,24 +11,26 @@ router.use(express.urlencoded({ extended: false }));
 // FOR POST
 router.use(async (req, res) => {
   try {
-    console.log("Time: ", Date.now());
+    console.log("Time POST: ", Date.now());
     // note: send userEmail(context api data) in the body post  rating-user frontend
     /* const userId = await User.findOne(req.body.userEmail)
       .then((user) => user.id)
       .catch((err) => console.log(err)); */
 
-    let newRatingUser = new RatingUser({
+    let newRatedMeal = new RatedMeal({
       ratingScore: req.body.ratingScore,
       feedback: req.body.feedback,
       user: req.body.user, // userId (context API)
       dateSubmitted: req.body.dateSubmitted,
     });
 
-    newRatingUser = await newRatingUser.save(); //mongoDB save
+    newRatedMeal = await newRatedMeal
+      .save()
+      .populate({ path: "meal", populate: ["_id", "name"] }); //mongoDB save
 
     /*  newRatingUser.populate("user", "id", "email", "city"); */
 
-    res.json({ success: true, data: newRatingUser });
+    res.json({ success: true, data: newRatedMeal });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -55,23 +57,25 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.put("/:ratingUserId", async (req, res) => {
+// FOR UPDATE
+router.use("/:ratedMealId", async (req, res) => {
   try {
-    const ratingUserId = req.params.ratingUserId;
+    const ratedMealId = req.params.ratedMealId;
 
-    const ratingUser = await RatingUser.findByIdAndUpdate(
-      ratingUserId,
+    const ratedMeal = await RatedMeal.findByIdAndUpdate(
+      ratedMealId,
       {
-        ratingScore: req.body.ratingScore,
+        meal: req.body.meal,
+        note: req.body.note,
         feedback: req.body.feedback,
-        user: req.body.user, // userId (context API)
-        dateSubmitted: req.body.dateSubmitted,
+        dateMention: req.body.dateMention,
       },
       { new: true }
     ).populate({
-      path: "ratingUsers",
-      populate: { path: "user", populate: ["id", "email", "city"] },
+      path: "meal",
+      populate: ["_id", "name"],
     });
+
     res.json({ success: true, data: ratingUser });
   } catch (err) {
     res.status(500).json({

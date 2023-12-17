@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-ratingSchema = new mongoose.Schema({
+/* const ratingSchema = new mongoose.Schema({
   ratingUsers: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -12,6 +12,21 @@ ratingSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+}); */
+
+const ratingSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  ratedMeals: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RatedMeal",
+      required: true,
+    },
+  ],
 });
 
 module.exports = mongoose.model("Rating", ratingSchema);
