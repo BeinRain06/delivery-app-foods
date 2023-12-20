@@ -103,7 +103,7 @@ app.use(`${api}/orders`, ordersRouter);
 app.use(`${api}/orders/payments`, paymentRouter);
 app.use(`${api}/users`, userRouter);
 app.use(`${api}/ratings`, ratingsRouter);
-app.use(`${api}/users/ratings/rating`, ratedMealRouter);
+app.use(`${api}/ratedmeals`, ratedMealRouter);
 // middleware
 app.use(cors());
 app.use(express.json());

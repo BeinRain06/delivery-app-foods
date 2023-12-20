@@ -7,12 +7,31 @@ const User = require("../models/user");
 const Rating = require("../models/rating");
 
 const RatedMeal = require("../models/rated-meal");
-const ratedMeal = require("../models/rated-meal");
 
 const Meal = require("../models/meal");
 
 // middleware that is specific to this router
 router.use(express.urlencoded({ extended: false }));
+
+//FOR GET
+router.use(async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const ratings = await Rating.findOne({ user: userId }).populate({
+      path: "ratedMeals",
+      populate: ["meal", "note", "feedback"],
+    });
+
+    res.json({ success: true, data: ratings });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: "Error: something went wrong can't GeT ratings document",
+    });
+    console.log(err);
+  }
+});
 
 // FOR POST (CREATE)
 router.use(async (req, res) => {
@@ -76,46 +95,24 @@ router.use(async (req, res) => {
   try {
     console.log("rating updated!");
 
-    const ratingId = req.params.ratinId;
+    const userId = req.params.userId;
 
     const mealId = req.body.meal;
 
-    const toUpdate = await Rating.find(ratingId);
-    let ratedMeals = toUpdate.ratedMeals;
-
-    const isMealRated = ratedMeals.map((ratedMeal, index) => {
-      if (ratedMeal.meal === mealId) {
-        ratedMeals = {
-          ...ratedMeals,
-          [meal]: req.body.meal,
-          [note]: req.body.note,
-          [feedback]: req.body.feedback,
-        };
-        return index;
-      }
-    });
-
-    if (!isMealRated) {
-      let newRatedMeal = {
-        meal: req.body.meal,
-        note: req.body.note,
-        feedback: req.body.feedback,
-        dateMention: new Date(),
-      };
-
-      ratedMeals = { newRatedMeal, ...ratedMeals };
-    }
+    let ratingId = await Rating.findOne({ user: userId }).then(
+      (res) => res._id
+    );
 
     const updateRating = await Rating.findByIdAndUpdate(
       ratingId,
       {
-        user: req.body.user, // userId
-        ratedMeals: ratedMeals,
+        user: userId, // userId
+        ratedMeals: req.body.ratedMeals,
       },
       { new: true }
     );
 
-    //update Meal rating
+    //update key properties *ratings*  within Meal Collection
 
     const rating = await Rating.find().populate({
       path: "ratedMeals",
@@ -138,8 +135,9 @@ router.use(async (req, res) => {
       );
     };
 
-    const occurenceEachNote = (notesMeal) => {
+    const occurenceEachNote = () => {
       let tmpArr = [];
+      let notesMeal = notesMeal();
 
       for (let i = 0; i < notesMeal.length; i++) {
         let count = 0,

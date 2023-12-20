@@ -9,32 +9,23 @@ const User = require("../models/user");
 router.use(express.urlencoded({ extended: false }));
 
 // FOR POST
-router.use(async (req, res) => {
+router.post(async (req, res) => {
   try {
     console.log("Time POST: ", Date.now());
-    // note: send userEmail(context api data) in the body post  rating-user frontend
-    /* const userId = await User.findOne(req.body.userEmail)
-      .then((user) => user.id)
-      .catch((err) => console.log(err)); */
 
     let newRatedMeal = new RatedMeal({
-      ratingScore: req.body.ratingScore,
+      meal: req.body.meal,
+      note: req.body.note,
       feedback: req.body.feedback,
-      user: req.body.user, // userId (context API)
-      dateSubmitted: req.body.dateSubmitted,
     });
 
-    newRatedMeal = await newRatedMeal
-      .save()
-      .populate({ path: "meal", populate: ["_id", "name"] }); //mongoDB save
-
-    /*  newRatingUser.populate("user", "id", "email", "city"); */
+    newRatedMeal = await newRatedMeal.save(); //mongoDB save
 
     res.json({ success: true, data: newRatedMeal });
   } catch (err) {
     res.status(500).json({
       success: false,
-      error: "Error: something went wrong can't create meal",
+      error: "Error: something went wrong can't create rated-meal",
     });
 
     console.log(err);
@@ -42,7 +33,8 @@ router.use(async (req, res) => {
 });
 
 // send ratingUserId in context API frontend
-router.get("/", async (req, res) => {
+//FOR GET
+router.get(async (req, res) => {
   try {
     const ratingUserId = await req.body._id;
 
@@ -50,25 +42,26 @@ router.get("/", async (req, res) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      error: "Error: something went wrong can't create meal",
+      error: "Error: something went wrong can't get ratedMeals",
     });
 
     console.log(err);
   }
 });
 
-// FOR UPDATE
-router.use("/:ratedMealId", async (req, res) => {
+// FOR UPDATE (READY)
+router.put("/ratedmeal/:ratedMealId", async (req, res) => {
   try {
     const ratedMealId = req.params.ratedMealId;
+    console.log("Time PUT: ", Date.now());
 
-    const ratedMeal = await RatedMeal.findByIdAndUpdate(
+    let ratedMeal = await RatedMeal.findByIdAndUpdate(
       ratedMealId,
       {
         meal: req.body.meal,
         note: req.body.note,
         feedback: req.body.feedback,
-        dateMention: req.body.dateMention,
+        dateMention: new Date(),
       },
       { new: true }
     ).populate({
@@ -76,13 +69,12 @@ router.use("/:ratedMealId", async (req, res) => {
       populate: ["_id", "name"],
     });
 
-    res.json({ success: true, data: ratingUser });
+    res.json({ success: true, data: ratedMeal });
   } catch (err) {
     res.status(500).json({
       success: false,
-      error: "Error: something went wrong can't create meal",
+      error: "Error: something went wrong can't update once again this meal",
     });
-
     console.log(err);
   }
 });
