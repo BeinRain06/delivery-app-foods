@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+/* import styled, { keyframes } from "styled-components"; */
 import "./Layout.css";
 
 /* this Layout component is mainly created to apply general css style  for to each link : day, favourites, order, events ... , it represents the div box of each NavLInk located in  Navigation.jsx*/

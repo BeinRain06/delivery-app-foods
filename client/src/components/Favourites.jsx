@@ -113,7 +113,7 @@ function Favourites() {
               </p>
               <p className="additional_rule">
                 You may command as well three differents meals and try to gain
-                extra take-in ingredients for you meal
+                \extra take-in ingredients for you meal
               </p>
             </div>
           </article>

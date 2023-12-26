@@ -1,8 +1,14 @@
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
 import "./FoodsDay.css";
-import React from "react";
+import React, { useReducer, useContext } from "react";
+import { MealContext, ACTIONS_TYPES } from "../context/MealsContext";
 
 function FoodsDay() {
+  const {
+    state: { meals },
+    handleUpstreamOrder,
+  } = useContext(MealContext);
+
   return (
     <main className="welcome_day">
       <div className="day_page_wrapper">
@@ -122,8 +128,18 @@ function FoodsDay() {
                             tomatoes, onions, celeries
                           </p>
                         </div>
-                        <div className="ordering">
-                          <button className="btn btn_order">Order</button>
+                        <div
+                          className="ordering"
+                          data-mealID="807422223401239"
+                          data-mealName="egyptian_fattah"
+                          data-price="7.45"
+                        >
+                          <button
+                            className="btn btn_order"
+                            onClicK={handleUpstreamOrder}
+                          >
+                            Order
+                          </button>
                         </div>
                       </div>
                     </div>

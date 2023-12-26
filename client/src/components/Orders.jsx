@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
+import { MealContext } from "../context/MealsContext";
 import "./Orders.css";
 
 {
@@ -9,6 +10,111 @@ import "./Orders.css";
 }
 
 function Orders() {
+  const {
+    state: { meals, timeToWait },
+    handleClear,
+    handleDecrease,
+    handleIncrease,
+    delayTimeDelivery,
+    waitingTimeDelivery,
+  } = useContext(MealContext);
+
+  const [testOne, setTestOne] = useState("1500");
+
+  /* const [hrs, setHrs] = useState("00");
+  const [min, setMin] = useState("00");
+  const [sec, setSec] = useState("00"); */
+
+  const [timer, setTimer] = useState("00:00:00");
+  const interval = useRef(null);
+  const applyOrderRef = useRef(null);
+  const totalRef = useRef(null);
+
+  const handleControlRadio = (e) => {
+    console.log(e.target);
+
+    if (e.target.id === "reg_price_2") {
+      setTestOne(() => {
+        let eltTest = "1500";
+        let eltTestArr = Array.from(eltTest);
+        let output = "";
+        eltTestArr.map((elt) => {
+          output += elt + " ";
+        });
+        console.log(output);
+        return output;
+      });
+
+      applyOrderRef.current.classList.add("addShowBtn");
+      totalRef.current.classList.add("anim_height");
+    } else if (e.target.id === "reg_price_1") {
+      setTestOne(() => "_" + " " + "_" + " " + "_" + " " + "_");
+      applyOrderRef.current.classList.remove("addShowBtn");
+      totalRef.current.classList.add("anim_height");
+    }
+  };
+
+  const handleSubmitOrder = (e) => {
+    e.preventDefault();
+    console.log(e.target);
+  };
+
+  const getRemainingTime = (cb) => {
+    const diff = Date.parse(cb) - Date.parse(new Date());
+
+    //get Hrs --> Integer Division of diff by [1hr] in ms
+    const hrs = Math.floor(diff / (1 * 60 * 60 * 1000));
+
+    //get Mins --> Integer Division of the [remainder]-hour Division  by [1min] in ms
+    const min = Math.floor((diff % (1 * 60 * 60 * 1000)) / (1 * 60 * 1000));
+
+    //get Secs --> Integer Division of the [remainder]-minute Division  by [1sec] in ms
+    const sec = Math.floor((diff % (1 * 60 * 1000)) / (1 * 1000));
+
+    return { diff, hrs, min, sec };
+  };
+
+  const startTimer = (cb) => {
+    let { diff, hrs, min, sec } = getRemainingTime(cb);
+
+    if (diff >= 0) {
+      setTimer(
+        (hrs > 9 ? hrs : "0" + hrs) +
+          ": " +
+          (min > 9 ? min : "0" + min) +
+          ":" +
+          (sec > 9 ? sec : "0" + sec)
+      );
+    }
+  };
+
+  const clearTimer = (cb) => {
+    setTimer("02:00:00");
+    //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
+    if (interval.current) clearInterval(interval.current);
+
+    const id = setInterval(() => {
+      startTimer(cb);
+    }, 1000);
+
+    interval.current = id;
+  };
+
+  const getDeadTime = () => {
+    let deadline = new Date();
+    deadline.setSeconds(deadline.getSeconds() + 7200);
+    return deadline;
+  };
+
+  const callTimer = () => {
+    clearTimer(getDeadTime());
+  };
+
+  // if you want it to be triggered while rendering - have  a try !
+  /* useEffect(() => {
+    clearTimer(getDeadTime());
+  }, []); */
+
   return (
     <main className="welcome_orders">
       <div className="gen_orders">
@@ -32,6 +138,7 @@ function Orders() {
                       type="button"
                       id="btn_clear"
                       className=" btn_sub btn_clear "
+                      onClick={handleClear}
                     >
                       clear
                     </button>
@@ -41,6 +148,7 @@ function Orders() {
                       type="button"
                       id="remove_meal"
                       className="btn_sub remove_meal"
+                      onClick={handleDecrease}
                     >
                       <i className="fa-solid fa-minus"></i>
                     </button>
@@ -48,6 +156,7 @@ function Orders() {
                       type="button"
                       id="add_meal"
                       className="btn_sub add_meal"
+                      onClick={handleIncrease}
                     >
                       <i className="fa-solid fa-plus"></i>
                     </button>
@@ -88,6 +197,7 @@ function Orders() {
                       type="button"
                       id="btn_clear"
                       className=" btn_sub btn_clear "
+                      onClick={handleClear}
                     >
                       clear
                     </button>
@@ -97,6 +207,7 @@ function Orders() {
                       type="button"
                       id="remove_meal"
                       className="btn_sub remove_meal"
+                      onClick={handleDecrease}
                     >
                       <i className="fa-solid fa-minus"></i>
                     </button>
@@ -104,6 +215,7 @@ function Orders() {
                       type="button"
                       id="add_meal"
                       className="btn_sub add_meal"
+                      onClick={handleIncrease}
                     >
                       <i className="fa-solid fa-plus"></i>
                     </button>
@@ -144,6 +256,7 @@ function Orders() {
                       type="button"
                       id="btn_clear"
                       className=" btn_sub btn_clear "
+                      onClick={handleClear}
                     >
                       clear
                     </button>
@@ -153,6 +266,7 @@ function Orders() {
                       type="button"
                       id="remove_meal"
                       className="btn_sub remove_meal"
+                      onClick={handleDecrease}
                     >
                       <i className="fa-solid fa-minus"></i>
                     </button>
@@ -160,6 +274,7 @@ function Orders() {
                       type="button"
                       id="add_meal"
                       className="btn_sub add_meal"
+                      onClick={handleIncrease}
                     >
                       <i className="fa-solid fa-plus"></i>
                     </button>
@@ -251,6 +366,50 @@ function Orders() {
               </tr>
             </table>
           </div>
+
+          <div className="totalPrice_in">
+            <form
+              className="control_radio"
+              onSubmit={(e) => handleSubmitOrder(e)}
+            >
+              <ul
+                className="input_radio_price"
+                onChange={(e) => handleControlRadio(e)}
+              >
+                <li>
+                  <input
+                    type="radio"
+                    name="radio_price"
+                    id="reg_price_1"
+                    className="reg_price_1 reg_price"
+                  />
+                  <label htmlFor="none">keep ordering</label>
+                </li>
+                <li>
+                  <input
+                    type="radio"
+                    name="radio_price"
+                    id="reg_price_2"
+                    className="reg_price_2 reg_price"
+                  />
+                  <label htmlFor="totalPrice">total Price</label>
+                </li>
+              </ul>
+              <span className="total_bill" ref={totalRef}>
+                $ {testOne}
+              </span>
+              <div className="submit_container" ref={applyOrderRef}>
+                <button
+                  type="button"
+                  className="btn_apply_order"
+                  onClick={callTimer}
+                >
+                  Apply
+                </button>
+              </div>
+            </form>
+          </div>
+
           <br></br>
 
           {/* start and display when you hit button validate */}
@@ -262,7 +421,8 @@ function Orders() {
             <div className="remaining_track_time">
               <ul className="post_track_time">
                 <li>Time Remaining</li>
-                <li className="time_left">01:45:36 s</li>
+
+                <li className="time_left">{timer}</li>
               </ul>
             </div>
           </div>

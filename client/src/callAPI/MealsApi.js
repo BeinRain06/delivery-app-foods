@@ -5,7 +5,7 @@ import axios from "axios";
 export async function getMeals() {
   const { state, dispatch } = useContext(MealContext);
 
-  const api_url = "http://localhost:3000/api/meals";
+  const api_url = "http://localhost:5000/api/delivery/meals";
   let meals = [];
   try {
     const res = await axios.get(api_url);

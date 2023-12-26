@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   AdamIMG,
   AhmadIMG,
@@ -6,9 +6,15 @@ import {
   AnastasiyaIMG,
   NordwoodIMG,
 } from "../assets/images/index.js";
+import { MealContext } from "../context/MealsContext.jsx";
 import "./Home.css";
 
 function Home() {
+  const {
+    state: { meals },
+    handleUpstreamOrder,
+  } = useContext(MealContext);
+
   return (
     <main className="home_container flex-column">
       <div className="welcome"></div>
@@ -61,7 +67,7 @@ function Home() {
                       <li>
                         <p className="dish_price">$10</p>
                       </li>
-                      <li>
+                      <li onClick={handleUpstreamOrder}>
                         <button type="button" className=" btn btn_order">
                           Order
                         </button>
@@ -111,7 +117,7 @@ function Home() {
                       <li>
                         <p className="dish_price">$10</p>
                       </li>
-                      <li>
+                      <li onClick={handleUpstreamOrder}>
                         <button type="button" className=" btn btn_order">
                           Order
                         </button>
@@ -161,7 +167,7 @@ function Home() {
                       <li>
                         <p className="dish_price">$10</p>
                       </li>
-                      <li>
+                      <li onClick={handleUpstreamOrder}>
                         <button type="button" className=" btn btn_order">
                           Order
                         </button>
