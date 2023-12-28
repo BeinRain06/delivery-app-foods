@@ -104,7 +104,7 @@ ul {
     scrollbar-width: thin;
   }
 
-  .keeping_table {
+  /* .keeping_table {
     width: calc(90vw);
     margin: 0 auto;
     padding: 0.15rem;
@@ -228,7 +228,7 @@ ul {
     height: 40px;
     object-fit: cover;
     border-radius: 5px;
-  }
+  } */
 
   /* available ticket*/
 
@@ -785,7 +785,7 @@ ul {
     gap: 0.25rem;
   }
 
-  .weeks_day li {
+  /* .weeks_day li {
     cursor: pointer;
     font-size: 0.75rem;
     height: auto;
@@ -799,7 +799,7 @@ ul {
     width: 50%;
     height: 100%;
     background-color: #fff;
-  }
+  } */
 
   .days_week_order {
     position: relative;
@@ -824,7 +824,7 @@ ul {
     gap: 1rem;
   }
 
-  .days_week_order .day_dish_recall {
+  /*  .days_week_order .day_dish_recall {
     width: 100%;
     height: 210px;
     margin: 0 auto;
@@ -893,7 +893,7 @@ ul {
   .days_week_order .recap_feedback .send_feedback {
     transform: skewX(-12deg);
     justify-content: flex-end;
-  }
+  } */
 
   /* new orders on the shelf */
 
@@ -941,7 +941,7 @@ ul {
     font-size: 0.975rem;
   }
 
-  .dish_table {
+  /* .dish_table {
     width: 100%;
     font-size: 0.975rem;
   }
@@ -966,7 +966,7 @@ ul {
   .ready_ordered .brief_overview_meal .dish_order_img {
     width: 90px;
     height: 60px;
-  }
+  } */
 
   /*available ticket*/
 
@@ -1034,7 +1034,7 @@ ul {
   }
 
   /*ordered in week*/
-  .days_week_order .dish_order_img {
+  /*  .days_week_order .dish_order_img {
     width: 3.5rem;
     height: 40px;
     object-fit: cover;
@@ -1043,7 +1043,7 @@ ul {
   .days_week_order .dish_order_desc {
     width: 50%;
     padding: 0 0.5rem;
-  }
+  } */
 }
 
 @media (min-width: 460px) {
@@ -1053,9 +1053,9 @@ ul {
     grid-auto-columns: 50%;
   }
 
-  .keeping_table {
+  /* .keeping_table {
     width: 100%;
-  }
+  } */
 
   /*available ticket*/
 
@@ -1154,11 +1154,11 @@ ul {
   } */
 
   /*ordered in week*/
-  .days_week_order .dish_order_img {
+  /* .days_week_order .dish_order_img {
     width: 4.5rem;
     height: 46px;
     object-fit: cover;
-  }
+  } */
 
   /*new pending ordered dishes*/
 
@@ -1309,7 +1309,7 @@ ul {
     padding-bottom: 0.25rem;
   }
 
-  .weeks_day li {
+  /* .weeks_day li {
     font-size: 0.85rem;
   }
 
@@ -1319,7 +1319,7 @@ ul {
 
   .weeks_day li .day_count {
     font-size: 0.875rem;
-  }
+  } */
 
   .days_week_order {
     position: relative;
@@ -1328,7 +1328,7 @@ ul {
     width: 70%;
   }
 
-  .days_week_order .day_dish_recall {
+  /* .days_week_order .day_dish_recall {
     height: 264px;
   }
 
@@ -1350,7 +1350,7 @@ ul {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+  } */
 
   /*new pending ordered dishes*/
 

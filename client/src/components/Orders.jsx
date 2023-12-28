@@ -1,6 +1,10 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
+import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
 import { MealContext } from "../context/MealsContext";
+import CardOrder from "../cards/card-order";
+import CardWeek from "../cards/card-week";
+import CardWeekOrders from "../cards/card-week-orders";
 import "./Orders.css";
 
 {
@@ -11,19 +15,19 @@ import "./Orders.css";
 
 function Orders() {
   const {
-    state: { meals, timeToWait },
+    state: { meals, orderSpecs, orders, indexDayFormat },
     handleClear,
     handleDecrease,
     handleIncrease,
-    delayTimeDelivery,
-    waitingTimeDelivery,
+    handleOrders,
+    handleDayShift,
+    handleRatingsFeedback,
   } = useContext(MealContext);
 
   const [testOne, setTestOne] = useState("1500");
+  const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
-  /* const [hrs, setHrs] = useState("00");
-  const [min, setMin] = useState("00");
-  const [sec, setSec] = useState("00"); */
+  const [firstTimeOrder, setFirstTimeOrder] = useState(false);
 
   const [timer, setTimer] = useState("00:00:00");
   const interval = useRef(null);
@@ -34,6 +38,8 @@ function Orders() {
     console.log(e.target);
 
     if (e.target.id === "reg_price_2") {
+      if (firstTimeOrder === false) {
+      }
       setTestOne(() => {
         let eltTest = "1500";
         let eltTestArr = Array.from(eltTest);
@@ -111,9 +117,12 @@ function Orders() {
   };
 
   // if you want it to be triggered while rendering - have  a try !
+
   /* useEffect(() => {
     clearTimer(getDeadTime());
   }, []); */
+
+  useEffect(() => {}, [orderSpecs, indexDayFormat]);
 
   return (
     <main className="welcome_orders">
@@ -122,7 +131,24 @@ function Orders() {
         <hr className="breakpoint_orders"></hr>
         <div className="recap_wrapper">
           <ul className="ready_ordered">
-            <li className="keeping_table">
+            {orderSpecs.length !== 0 ? (
+              meals.map((mealItem, index) => {
+                const orderSpec = orderSpecs[index];
+                if (mealItem._id === orderSpec.meal) {
+                  <CardOrder
+                    key={mealItem._id}
+                    name={mealItem.name}
+                    quantity={mealItem.quantity}
+                    origin={mealItem.origin}
+                    ratings={mealItem.ratings}
+                    price={mealItem.price}
+                  />;
+                }
+              })
+            ) : (
+              <span className="no_orders"> No Items</span>
+            )}
+            {/* <li className="keeping_table">
               <div className="dish_table">
                 <div className="dish_topic">
                   <p>Jutsu Chicken</p>
@@ -298,7 +324,7 @@ function Orders() {
                   <p className="dish_order_desc">Description: Italian</p>
                 </div>
               </div>
-            </li>
+            </li> */}
           </ul>
         </div>
       </div>
@@ -572,39 +598,28 @@ function Orders() {
           <p className="title_week_orders">Week Orders</p>
           <div className="calendar_orders ">
             <ul className="weeks_day">
-              <li>
+              {tmpIndexWeek.map((day, i) => {
+                return (
+                  <CardWeek key={i} id={i} onClick={(e) => handleDayShift(e)} />
+                );
+              })}
+
+              {/*  <li>
                 <span className="day_week">MON</span>
                 <span className="day_count">16</span>
-              </li>
-              <li>
-                <span className="day_week">TUE</span>
-                <span className="day_count">17</span>
-              </li>
-              <li>
-                <span className="day_week">WED</span>
-                <span className="day_count">18</span>
-              </li>
-              <li>
-                <span className="day_week">THU</span>
-                <span className="day_count">19</span>
-              </li>
-              <li>
-                <span className="day_week">FRI</span>
-                <span className="day_count">20</span>
-              </li>
-              <li>
-                <span className="day_week">SAT</span>
-                <span className="day_count">21</span>
-              </li>
-              <li>
-                <span className="day_week">SUN</span>
-                <span className="day_count">22</span>
-              </li>
+              </li> */}
             </ul>
 
             <div className="days_week_order">
               <ul className="days_dish_recap">
-                <li className="day_dish_recall">
+                {orders.map((item, i) => {
+                  let dateOrderedFormat = item.dateOrdered.format("MMM D");
+
+                  if (dateOrderedFormat === indexDayFormat) {
+                    <CardWeekOrders ordersSpecs={item.ordersSpecs} />;
+                  }
+                })}
+                {/* <li className="day_dish_recall">
                   <div className="dish_table">
                     <div className="dish_sub_operation">
                       <div>
@@ -634,38 +649,7 @@ function Orders() {
                       <p className="send_feedback">Feedback</p>
                     </div>
                   </div>
-                </li>
-                <li className="day_dish_recall">
-                  <div className="dish_table">
-                    <div className="dish_sub_operation">
-                      <div>
-                        <p>
-                          Notes : <span>4.6</span>
-                        </p>
-                      </div>
-                      <div className="brief_overview_meal">
-                        <img
-                          src={AhmadIMG}
-                          className="dish_order_img"
-                          alt="oops overview"
-                        />
-
-                        <p className="dish_order_desc">Description: Italian</p>
-                      </div>
-                    </div>
-                    <div className="dish_topic">
-                      <p>Jutsu Chicken</p>
-                      <p>
-                        <span className="number_order">3</span>
-                        <span>: Ordered</span>
-                      </p>
-                    </div>
-                    <div className="recap_feedback">
-                      <p className="send_ratings">Ratings</p>
-                      <p className="send_feedback">Feedback</p>
-                    </div>
-                  </div>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

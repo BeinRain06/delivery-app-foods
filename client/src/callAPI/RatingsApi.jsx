@@ -4,21 +4,25 @@ import axios from "axios";
 
 //ratings : {} , ratedMeals : []  (GET METHOD)
 export async function getThisUserRatings() {
-  const { state, dispatch } = useContext(MealContext);
+  const {
+    state: { meals, user },
+    handleRatings,
+    handleRatedMeals,
+  } = useContext(MealContext);
 
-  const userId = state.user.id;
+  const userId = user.id;
 
   let api_url = "http://localhost:5000/api/delivery/ratings";
 
   try {
     let ratings = {};
-    const res = await axios.get(api_url);
+    const res = await axios.get(`${api_url}/${userId}`);
     ratings = res.data.data; //res.data(axios res) - .data (structured data response in backend)
     let ratedMeals = ratings.ratedMeals;
 
-    dispatch({ type: ACTIONS_TYPES.RATINGS, payload: ratings });
+    handleRatings(ratings);
 
-    dispatch({ type: ACTIONS_TYPES.RATINGS, payload: ratedMeals });
+    handleRatedMeals(ratedMeals);
   } catch (err) {
     console.log(err);
   }
@@ -62,7 +66,7 @@ export async function postOrUpdateRatings() {
         headers: {
           "Content-type": "application/x-www-form-urlencoded",
         },
-        body: {
+        data: {
           meal: potentialNewRating.meal,
           note: potentialNewRating.note,
           feedback: potentialNewRating.feedback,

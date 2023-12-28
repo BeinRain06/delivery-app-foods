@@ -1,0 +1,168 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 180px) {
+  .keeping_table {
+    width: calc(90vw);
+    margin: 0 auto;
+    padding: 0.15rem;
+    background-color: brown;
+    background-color: #1c7e4d;
+  }
+
+  .dish_table {
+    width: 100%;
+    height: auto;
+    font-size: 12px;
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dish_topic {
+    height: 32px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .dish_topic p {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.25rem;
+  }
+
+  .dish_topic .number_order {
+    width: 15px;
+    height: 15px;
+    color: #fff;
+    background-color: brown;
+    text-align: center;
+    vertical-align: super;
+    border: 1px solid #fff;
+  }
+
+  .dish_country {
+    width: 100%;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .dish_sub_operation {
+    width: 100%;
+    padding: 0.75rem 0 0.5rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .clearing {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .adjust_order {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .add_meal,
+  .remove_meal {
+    position: relative;
+    width: 30px;
+    padding: 0.25rem 0;
+    color: #fff;
+    background-color: #1c7e4d;
+  }
+
+  .remove_meal {
+    background-color: brown;
+  }
+
+  .dish_consumed {
+    width: 100%;
+    padding: 0.75rem 0.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dish_consumed * {
+    width: 50%;
+  }
+
+  .dish_consumed .dish_price {
+    padding: 0.15rem;
+    color: #fff;
+    background-color: #333;
+    text-align: center;
+  }
+
+  .brief_overview_meal {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brief_overview_meal * {
+    width: 50%;
+    text-align: center;
+  }
+
+  .brief_overview_meal .dish_order_img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+}
+
+@media (min-width: 320px) {
+  .dish_table {
+    width: 100%;
+    font-size: 0.975rem;
+  }
+
+  .dish_topic .number_order {
+    width: 20px;
+    height: 20px;
+    vertical-align: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dish_consumed {
+    padding: 0.75rem;
+  }
+
+  .brief_overview_meal {
+    padding: 0 0.5rem;
+  }
+
+  .brief_overview_meal .dish_order_img {
+    width: 90px;
+    height: 60px;
+  }
+}
+
+@media (min-width: 460px) {
+  .keeping_table {
+    width: 100%;
+  }
+}

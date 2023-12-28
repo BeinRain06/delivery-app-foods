@@ -1,0 +1,37 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 180px) {
+  .weeks_day_li {
+    cursor: pointer;
+    font-size: 0.75rem;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+  }
+
+  .weeks_day_li * {
+    width: 50%;
+    height: 100%;
+    background-color: #fff;
+  }
+}
+
+@media (min-width: 960px) {
+  .weeks_day_li {
+    font-size: 0.85rem;
+  }
+
+  .weeks_day_li .day_week {
+    padding-left: 0.25rem;
+  }
+
+  .weeks_day_li .day_count {
+    font-size: 0.875rem;
+  }
+}

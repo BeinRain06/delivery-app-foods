@@ -26,92 +26,8 @@
   align-items: center;
 }
 
-@media (min-width: 180px) {
-  .btn {
-    font-size: 15px;
-    color: #fff;
-    background: black;
-    opacity: 1;
-    outline: none;
-    border-radius: 3px;
-    border: none;
-    transition: all 1s ease-in-out;
-  }
-
-  .btn:active {
-    opacity: 0.9;
-    color: #757474;
-    font-size: 14px;
-  }
-  /*here*/
-  .home_container {
-    width: 100vw;
-    height: auto;
-    background-color: #c5c5c5;
-  }
-
-  .welcome {
-    width: 100vw;
-    height: 150px;
-    display: grid;
-    background-image: url("../assets/images/maria-teneva-unsplash.jpg");
-    background-position: top 0px right 50%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    grid-auto-flow: column;
-    grid-auto-columns: 100%;
-  }
-
-  .book_show {
-    position: relative;
-    width: 100vw;
-    height: auto;
-    padding: 0.5rem 0.5rem 0;
-    gap: 0.5rem;
-    border: none;
-  }
-
-  .fa-book-open {
-    color: #757474;
-  }
-
-  .meals_borderplate {
-    position: relative;
-    width: 100vw;
-    height: auto;
-    color: #213547;
-  }
-
-  .gen_title_right,
-  .gen_title_left,
-  .gen_title_center {
-    width: 100vw;
-    padding: 0.5rem 1rem 1rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-
-  .gen_title_left {
-    justify-content: flex-start;
-  }
-
-  .gen_title_center {
-    justify-content: center;
-  }
-
-  /*dish card*/
-
-  .meal_content {
-    position: relative;
-    width: 100vw;
-    padding: 0.25rem 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(164px, 1fr));
-    grid-gap: 0.5em;
-  }
-
-  /* .dish {
+@media (min-with: 180px) {
+  .dish {
     width: 100%;
     height: 100%;
     background-color: #24a163;
@@ -264,10 +180,10 @@
     );
     border-radius: 5px;
     border: 2px solid #213547;
-  } */
+  }
 }
 
-/* @media (min-width: 316px) {
+@media (min-width: 316px) {
   .btn {
     font-size: 17px;
   }
@@ -321,8 +237,8 @@
     padding: 0.3rem;
   }
 }
- */
-/* @media (min-width: 430px) {
+
+@media (min-width: 430px) {
   .meal_content {
     padding: 0.5rem 1rem;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -341,9 +257,9 @@
     padding: 0.5rem;
     margin: 0.25rem 0 0.5rem;
   }
-} */
+}
 
-/* @media (min-width: 1054px) {
+@media (min-width: 1054px) {
   .btn {
     font-size: 14px;
   }
@@ -382,4 +298,4 @@
   .btn_order {
     width: 5rem;
   }
-} */
+}
