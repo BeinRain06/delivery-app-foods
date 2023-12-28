@@ -9,7 +9,7 @@ const User = require("../models/user");
 router.use(express.urlencoded({ extended: false }));
 
 // FOR POST
-router.post(async (req, res) => {
+router.post("/newratedmeal", async (req, res) => {
   try {
     console.log("Time POST: ", Date.now());
 
@@ -34,7 +34,7 @@ router.post(async (req, res) => {
 
 // send ratingUserId in context API frontend
 //FOR GET
-router.get(async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const ratingUserId = await req.body._id;
 

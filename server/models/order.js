@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const dateFns = require("date-fns");
+var moment = require("moment");
+/* import { format } from "date-fns"; */
 
 orderSchema = new mongoose.Schema({
   ordersSpecs: [
@@ -9,50 +12,38 @@ orderSchema = new mongoose.Schema({
     },
   ],
 
-  location: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+  city: {
+    type: String,
     default: "",
   },
+
+  street: {
+    type: String,
+    default: "",
+  },
+
+  country: {
+    type: String,
+    default: "Betiva",
+  },
+
   totalPrice: {
     type: Number,
-    required: true,
+    default: 0,
   },
+
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
   phone: {
     type: String,
-    required: true,
+    default: "",
   },
-  deliveryTimes: {
-    hours: {
-      type: Number,
-      required: true,
-    },
-    minutes: {
-      type: Number,
-      required: true,
-    },
-    secondes: {
-      type: Number,
-      required: true,
-    },
-  },
-  /*  hoursDelivery: {
-    type: Date,
-  },
-  minutesDelivery: {
-    type: Date,
-  },
-  secondesDelivery: {
-    type: Date,
-  }, */
+
   dateOrdered: {
     type: Date,
-    default: Date.now,
+    default: moment().format("Do MMMM, YYYY"),
   },
   status: {
     type: String,
@@ -61,7 +52,7 @@ orderSchema = new mongoose.Schema({
   },
   codePayment: {
     type: String,
-    required: true,
+    default: "",
   },
 });
 

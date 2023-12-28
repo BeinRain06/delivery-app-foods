@@ -47,7 +47,7 @@ router.get("/:userId", async (req, res) => {
 
 //POST user( create)
 /*new user posted by Admin*/
-router.use(async (req, res) => {
+/* router.post("/", async (req, res) => {
   try {
     const password = req.body.password;
 
@@ -72,16 +72,16 @@ router.use(async (req, res) => {
     });
     console.log(err);
   }
-});
+}); */
 
 //POST user( create)
 /*new user*/
 router.post("/register", async (req, res) => {
   try {
+    const password = req.body.password;
     let user = new User({
       name: req.body.name,
-      /*  passwordHash: bcrypt.hashSync(req.body.password, 10), // install bcryptjs */
-      passwordHash: req.body.password,
+      passwordHash: bcrypt.hashSync(password, 10),
       city: req.body.city,
       street: req.body.street,
       country: req.body.country,
@@ -105,7 +105,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     //find user by email
-    const user = await User.finOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email }).populate();
 
     const secret = process.env.secret;
 
@@ -124,7 +124,10 @@ router.post("/login", async (req, res) => {
         secret,
         { expiresIn: "1w" }
       );
-      const data = { user: user.email, token: token };
+      const data = {
+        user: user,
+        token: token,
+      };
 
       return res.status(200).json({
         success: true,

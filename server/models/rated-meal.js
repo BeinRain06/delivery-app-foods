@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const moment = require("moment");
 ratedMealSchema = new mongoose.Schema({
   meal: {
     type: mongoose.Schema.Types.ObjectId,
@@ -16,7 +16,7 @@ ratedMealSchema = new mongoose.Schema({
   },
   dateMention: {
     type: Date,
-    default: new Date(),
+    default: moment().format("Do MMMM, YYYY"),
   },
 });
 

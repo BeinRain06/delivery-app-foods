@@ -14,7 +14,7 @@ const Meal = require("../models/meal");
 router.use(express.urlencoded({ extended: false }));
 
 //FOR GET
-router.use(async (req, res) => {
+router.get("/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
 
@@ -34,7 +34,7 @@ router.use(async (req, res) => {
 });
 
 // FOR POST (CREATE)
-router.use(async (req, res) => {
+router.post("/rating", async (req, res) => {
   try {
     const userId = req.body.user;
 
@@ -90,10 +90,34 @@ router.use(async (req, res) => {
   }
 });
 
-// FOR PUT (UPDATE)
-router.use(async (req, res) => {
+//GET SINGlE RATING
+router.get("/:userId", async (req, res) => {
   try {
-    console.log("rating updated!");
+    console.log(`try to get the rating ${req.params.userId}`);
+
+    let ratingId = await Rating.findOne({ user: userId }).then(
+      (res) => res._id
+    );
+
+    const userId = req.params.userId;
+    res.json({
+      success: true,
+      ratingId: ratingId,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: "Error: something went wrong can't get this single rating",
+    });
+
+    console.log(err);
+  }
+});
+
+// FOR PUT (UPDATE)
+router.put("/rating/:userId", async (req, res) => {
+  try {
+    console.log("rating on updation process");
 
     const userId = req.params.userId;
 

@@ -12,17 +12,17 @@ const userSchema = new mongoose.Schema({
   },
   city: {
     type: String,
-    /* required: true, */
+    required: true,
     default: "",
   },
   street: {
     type: String,
-    /* required: true, */
+    required: true,
     default: "",
   },
   country: {
     type: String,
-    /* required: true, */
+    required: true,
     default: "",
   },
   phone: {
