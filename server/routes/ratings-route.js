@@ -14,7 +14,7 @@ const Meal = require("../models/meal");
 router.use(express.urlencoded({ extended: false }));
 
 //FOR GET
-router.get("/:userId", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const userId = req.params.userId;
 
@@ -91,7 +91,7 @@ router.post("/rating", async (req, res) => {
 });
 
 //GET SINGlE RATING
-router.get("/:userId", async (req, res) => {
+/* router.get("/:userId", async (req, res) => {
   try {
     console.log(`try to get the rating ${req.params.userId}`);
 
@@ -112,7 +112,7 @@ router.get("/:userId", async (req, res) => {
 
     console.log(err);
   }
-});
+}); */
 
 // FOR PUT (UPDATE)
 router.put("/rating/:userId", async (req, res) => {

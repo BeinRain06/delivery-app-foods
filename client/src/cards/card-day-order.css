@@ -1,0 +1,318 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 180px) {
+  .day_dish_recall {
+    width: 100%;
+    height: 210px;
+    margin: 0 auto;
+  }
+
+  .title_template_orders {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .dish_table {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #b6bda6;
+    padding: 0;
+  }
+
+  .dish_sub_operation {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .brief_overview_meal {
+    width: 100%;
+    padding: 0 0.25rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    text-align: none;
+  }
+
+  .dish_order_img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+  }
+
+  .recap_feedback {
+    position: relative;
+    left: -0.5rem;
+    width: 100%;
+    height: 50px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .recap_feedback .send_ratings,
+  .recap_feedback .send_feedback {
+    width: 45%;
+    height: 40%;
+    padding: 0.25rem;
+    color: #333;
+    opacity: 0.95;
+    font-size: 0.75rem;
+    text-decoration: underline;
+    transform: skewX(10deg);
+    letter-spacing: 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    z-index: 5;
+  }
+
+  .recap_feedback .send_feedback {
+    transform: skewX(-12deg);
+    justify-content: flex-end;
+  }
+
+  /*wrapping ratings box*/
+  .wrapping_ratings_form {
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    width: 50%;
+    height: 50%;
+    transform: translate(-45%, -50%);
+  }
+
+  .ratings_control_form {
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    background-color: #333;
+  }
+
+  .ratings_control_form .rate_feed {
+    list-style: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .rate_feed li {
+    width: 100%;
+    height: 28px;
+    border: 2px solid transparent;
+  }
+
+  .rate_feed input {
+    width: 100%;
+    height: 100%;
+    padding: 0.25rem;
+    color: #fff;
+    background-color: rgba(51, 26, 26, 0.37);
+    text-align: left;
+    border: 2px solid rgb(240, 217, 217);
+  }
+
+  .ratings_control_form .wrap_score_ratings {
+    list-style: none;
+    width: 100%;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .abort_submit,
+  .send_new_feed {
+    width: 50px;
+    height: 100%;
+    color: #333;
+    background-color: #b6bda6;
+    border: 2px solid rgb(73, 40, 40);
+  }
+
+  .send_new_feed {
+    background-color: #333;
+    color: #b6bda6;
+    border: 2px solid rgb(31, 68, 26);
+  }
+}
+
+@media (min-width: 320px) {
+  .title_template_orders {
+    padding: 0 0 0.25rem 1rem;
+  }
+
+  .dish_order_img {
+    width: 3.5rem;
+    height: 40px;
+    object-fit: cover;
+  }
+
+  .dish_order_desc {
+    width: 50%;
+    padding: 0 0.5rem;
+  }
+
+  .day_dish_recap {
+    position: relative;
+    width: 100%;
+    height: 290px;
+    padding: 0.5rem 0;
+    overflow: hidden;
+    margin: 0 auto;
+    align-items: stretch;
+    border: 2px solid #213547;
+  }
+
+  .day_dish_recap::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    transform: scale(0.98);
+    border-radius: 5px;
+    border: 2px solid #213547;
+  }
+
+  .dish_table {
+    height: auto;
+  }
+
+  .dish_topic {
+    width: 100%;
+    height: auto;
+  }
+
+  .dish_country {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .dish_sub_operation {
+    position: relative;
+    top: -1rem;
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .brief_overview_meal {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .brief_overview_meal .dish_order_img {
+    width: 98%;
+    height: 120px;
+    object-fit: cover;
+    z-index: 2;
+  }
+
+  .brief_overview_meal .recap_feedback {
+    position: absolute;
+    bottom: 0.5rem;
+    right: -0.5rem;
+    width: 100%;
+    height: auto;
+    padding: 0rem 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .recap_feedback .send_ratings {
+    width: 50%;
+    padding: 0.25rem 0.5rem;
+    color: #eee;
+    opacity: 0.9;
+    font-size: 0.75rem;
+    text-decoration: underline;
+    transform: skewX(-15deg);
+    letter-spacing: 1px;
+    z-index: 5;
+  }
+}
+
+@media (min-width: 460px) {
+  .dish_order_img {
+    width: 4.5rem;
+    height: 46px;
+    object-fit: cover;
+  }
+
+  .dish_table {
+    font-size: 0.7rem;
+  }
+
+  .dish_topic {
+    height: 25px;
+  }
+
+  .dish_country {
+    padding: 0 0.5rem 0.25rem;
+  }
+
+  .dish_sub_operation {
+    padding: 0;
+  }
+  .dish_order_desc {
+    position: relative;
+    top: -0.35rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .day_dish_recall {
+    height: 264px;
+  }
+
+  .recap_feedback .send_ratings,
+  .recap_feedback .send_feedback {
+    font-size: 0.875rem;
+  }
+
+  .dish_order_img {
+    width: 11rem;
+    height: 100px;
+    border-radius: 5px;
+    object-fit: cover;
+  }
+
+  .dish_order_desc {
+    width: 50%;
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /*wrapping ratings box*/
+  .wrapping_ratings_form {
+    position: absolute;
+    bottom: 20%;
+    left: 20%;
+    width: 50%;
+    height: 50%;
+    transform: translate(-10%, -10%);
+  }
+}

@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useState } from "react";
 import { MealContext } from "../context/MealsContext";
 import { userLogging, userRegistering } from "../callAPI/UsersApi";
+import { initiateOrder } from "../callAPI/OrdersApi";
 import "./register-login-form.css";
 
 function LogOrRegisterForm() {
@@ -8,10 +9,18 @@ function LogOrRegisterForm() {
     state: { user },
     handleRegisterForm,
     handleLoginForm,
+    handleFirstTimeOrder,
+    handleTicketNumber,
+    handleHoursPrint,
+    handleTotalPrice,
   } = useContext(MealContext);
   const loginRef = useRef();
   const [errMsgLogin, setErrMsgLogin] = useState(false);
   const [errMsgRegister, setErrMsgRegister] = useState(false);
+
+  const [totalPrice, setTotalPrice] = useState("_ _ _ _");
+  const [ticketNumber, setTicketNumber] = useState("_ _ _ _ _ _");
+  const [hoursPrinted, setHoursPrinted] = useState("time");
 
   const handleRegistering = (e) => {
     e.preventDefault();
@@ -48,6 +57,24 @@ function LogOrRegisterForm() {
     registeringData = { name, password, city, street, country, phone, email };
 
     userRegistering(registeringData);
+
+    const myOrder = initiateOrder();
+    handleTotalPrice(() => {
+      let total = myOrder.totalPrice;
+      let totalArr = Array.from(total);
+      let output = "";
+      totalArr.map((elt) => {
+        output += elt + " ";
+      });
+      console.log(output);
+      return output;
+    });
+
+    handleTicketNumber((totalPrice - 3).toString(16));
+
+    handleHoursPrint(moment().format("hh:mm a"));
+
+    handleFirstTimeOrder(false);
   };
 
   const handleLogin = (e) => {
@@ -67,6 +94,24 @@ function LogOrRegisterForm() {
     }
     loginData = { email, password };
     userLogging(loginData);
+
+    const myOrder = initiateOrder();
+    handleTotalPrice(() => {
+      let total = myOrder.totalPrice;
+      let totalArr = Array.from(total);
+      let output = "";
+      totalArr.map((elt) => {
+        output += elt + " ";
+      });
+      console.log(output);
+      return output;
+    });
+
+    handleTicketNumber((totalPrice - 3).toString(16));
+
+    handleHoursPrint(moment().format("hh:mm a"));
+
+    handleFirstTimeOrder(false);
   };
 
   return (

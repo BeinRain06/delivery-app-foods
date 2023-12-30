@@ -11,6 +11,10 @@ const paymentSchema = new mongoose.Schema({
     required: true,
     default: "",
   },
+  codePayment: {
+    type: String,
+    default: "",
+  },
   status: {
     type: String,
     required: true,

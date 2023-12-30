@@ -100,7 +100,7 @@ app.use(`${api}/meals`, mealsRouter);
 app.use(`${api}/categories`, categoriesRouter);
 app.use(`${api}/favourites/users`, favouritesRouter);
 app.use(`${api}/orders`, ordersRouter);
-app.use(`${api}/orders/payments`, paymentRouter);
+app.use(`${api}/payments`, paymentRouter);
 app.use(`${api}/users`, userRouter);
 app.use(`${api}/ratings`, ratingsRouter);
 app.use(`${api}/ratedmeals`, ratedMealRouter);

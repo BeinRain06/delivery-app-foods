@@ -38,6 +38,28 @@ ul {
   font-weight: bold;
 }
 
+.wrapper_no_items {
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper_no_items .content_no {
+  width: 100%;
+  padding: 0 0.5rem;
+  font-size: 20px;
+  font-weight: bolder;
+  text-align: center;
+}
+
+.appealing_registration {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 @media (min-width: 180px) {
   /*button*/
   .btn_validate_order,
@@ -641,10 +663,10 @@ ul {
     background-color: #b6be9f;
   }
 
-  .title_template_orders {
+  /* .title_template_orders {
     font-size: 0.75rem;
     padding: 0.5rem 1rem;
-  }
+  } */
 
   .template_day {
     width: 100%;
@@ -667,7 +689,7 @@ ul {
     scroll-snap-align: start;
   }
 
-  .template_day .day_dish_recap {
+  /* .template_day .day_dish_recap {
     position: relative;
     width: 100%;
     height: 290px;
@@ -739,6 +761,115 @@ ul {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+  } */
+
+  /*wrapping New Location button(apply)*/
+  .wrapping_new_location {
+    position: absolute;
+    top: 35%;
+    left: 40%;
+    transform: translate(-40%, -40%);
+    width: 60%;
+    padding: 1rem;
+    background-color: #3b407e;
+  }
+
+  .figure_area {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+  }
+
+  .figure_area li {
+    width: 100%;
+    height: 25px;
+    background-color: rgba(59, 63, 126, 0.384);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .figure_area li input {
+    width: 100%;
+    height: 100%;
+    padding: 0.25rem;
+    text-align: left;
+    /*   background-color: rgba(59, 63, 126, 0.384); */
+  }
+
+  .name_area {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgb(97, 57, 64);
+  }
+
+  .control_in_new_direction {
+    width: 100%;
+    height: auto;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .list_appearance {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+    visibility: hidden;
+  }
+
+  .control_in_new_direction li {
+    width: 100%;
+    height: 25px;
+    background-color: rgba(59, 63, 126, 0.384);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .control_in_new_direction li input {
+    width: 100%;
+    height: 100%;
+    padding: 0.25rem;
+    text-align: left;
+  }
+
+  .spread_new_button {
+    width: 100%;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .spread_new_button li {
+    width: 60px;
+    height: 26px;
+    text-align: center;
+  }
+
+  .btn_on_new {
+    width: 100%;
+    height: 100%;
+    color: #333;
+    background-color: #ddd;
+    border-radius: 50%;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn_on_new.btn_loc_two {
+    width: 100%;
+    height: 100%;
+    color: #fff;
+    background-color: #1c7e4d;
   }
 
   .recap_feedback .send_ratings {
@@ -1029,9 +1160,9 @@ ul {
   }
 
   /*orders days*/
-  .title_template_orders {
+  /*  .title_template_orders {
     padding: 0 0 0.25rem 1rem;
-  }
+  } */
 
   /*ordered in week*/
   /*  .days_week_order .dish_order_img {

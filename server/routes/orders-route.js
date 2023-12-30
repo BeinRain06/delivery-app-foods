@@ -7,8 +7,11 @@ const OrderSpecs = require("../models/order-spec");
 
 const User = require("../models/user");
 
+// middleware that is specific to this router
+router.use(express.urlencoded({ extended: false }));
+
 //Emit Order
-router.post("/", async (req, res) => {
+router.post("/order", async (req, res) => {
   try {
     const orderSpecIds = Promise.all(
       req.body.ordersSpecs.map(async (orderSpec) => {
@@ -44,7 +47,7 @@ router.post("/", async (req, res) => {
       orderSpecIdsResolved.map(async (orderSpecId) => {
         const orderSpec = await OrderSpecs.findById(orderSpecId).populate(
           "meal",
-          "price"
+          ["_id", "name", "price", "origin", "ratings"]
         );
         return orderSpec;
       })
@@ -113,6 +116,30 @@ router.post("/", async (req, res) => {
     // ...be continued, add user in order and phone user in order but first finish categories-routes code implementation
   } catch (error) {
     console.log(error);
+  }
+});
+
+// FOR UPDATE
+router.put("/order:orderId", async (req, res) => {
+  try {
+    const updateOrder = await Order.findByIdAndUpdate(
+      req.params.orderId,
+      {
+        phone: req.body.phone,
+        city: req.body.city,
+        street: req.body.street,
+      },
+      { new: true }
+    );
+    console.log(" Order successfully updated", updateOrder);
+
+    res.json({ success: true, data: updateOrder });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: "Error: something went wrong can't create rated-meal",
+    });
+    console.log(err);
   }
 });
 

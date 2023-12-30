@@ -15,14 +15,20 @@ export const INITIAL_STATE = {
   spottedForRating: {}, // id(meal), name
   newStandRating: {}, //meal(id), note, feedback
   openWeek: false,
-  orderSpecs: [],
-  orders: [],
-  timeToWait: 7200, //(2 hrs in sec)
+  orderSpecsCurrent: [], // of the current order in the day
+  orders: [], // all user's orders
+  thisOrder: {},
+  ticketNumber: "_ _ _ _ _ _",
+  hoursPrinted: "time",
+  totalPrice: "_ _ _ _",
+  payment: {},
   firstTimeOrder: false,
   indexDayFormat: "",
   openTagRatings: false,
   registerForm: {},
   loginForm: {},
+  countDownDownTimerArr: [], //arr of string
+  dataTemplatesOrdersDay: [], // arr of obj
 };
 
 export const ACTIONS_TYPES = {
@@ -41,12 +47,18 @@ export const ACTIONS_TYPES = {
   ORDER_ITEM: "ORDER_ITEM",
   ORDERS: "ORDERS",
   DELIVERY_HOURS: "DELIVERY_HOME",
-  WAITING_TIME: "WAITING_TIME",
   FIRST_TIME_ORDER: "FIRST_TIME_ORDER",
+  THIS_ORDER: "THIS_ORDER",
+  TICKET_NUMBER: "TICKET_NUMBER",
+  HOURS_PRINT: "HOURS_PRINT",
+  TOTAL_PRICE: "TOTAL_PRICE",
+  PAYMENT: "PAYMENT",
   INDEX_DAY: "INDEX_DAY",
   OPEN_TAG_RATING: "OPEN_TAG_RATING",
   REGISTER_FORM: "REGISTER_FORM",
   LOGIN_FORM: "LOGIN_FORM",
+  COUNT_DOWN_TIMER: "COUNT_DOWN_TIMER",
+  TEMPLATE_ORDERS_DAY: "TEMPLATE_ORDERS_DAY",
 };
 
 export const reducer = (state, action) => {
@@ -80,13 +92,28 @@ export const reducer = (state, action) => {
       return { ...state, newStandRating: action.payload };
 
     case ACTIONS_TYPES.ORDER_ITEM:
-      return { ...state, orderSpecs: action.payload };
+      return { ...state, orderSpecsCurrent: action.payload };
 
     case ACTIONS_TYPES.FIRST_TIME_ORDER:
-      return { ...state, firstTimeOrder: !state.firstTimeOrder };
+      return { ...state, firstTimeOrder: action.payload };
 
     case ACTIONS_TYPES.ORDERS:
       return { ...state, orders: action.payload };
+
+    case ACTIONS_TYPES.THIS_ORDER:
+      return { ...state, thisOrder: action.payload };
+
+    case ACTIONS_TYPES.TICKET_NUMBER:
+      return { ...state, ticketNumber: action.payload };
+
+    case ACTIONS_TYPES.HOURS_PRINT:
+      return { ...state, hoursPrinted: action.payload };
+
+    case ACTIONS_TYPES.TOTAL_PRICE:
+      return { ...state, totalPrice: action.payload };
+
+    case ACTIONS_TYPES.PAYMENT:
+      return { ...state, payment: action.payload };
 
     case ACTIONS_TYPES.INDEX_DAY:
       return { ...state, indexDayFormat: action.payload };
@@ -97,8 +124,11 @@ export const reducer = (state, action) => {
     case ACTIONS_TYPES.LOGIN_FORM:
       return { ...state, loginForm: action.payload };
 
-    case ACTIONS_TYPES.WAITING_TIME:
-      return { ...state, timeToWait: action.payload };
+    case ACTIONS_TYPES.COUNT_DOWN_TIMER:
+      return { ...state, countDownDownTimerArr: action.payload };
+
+    case ACTIONS_TYPES.TEMPLATE_ORDERS_DAY:
+      return { ...state, dataTemplatesOrdersDay: action.payload };
 
     default:
       throw new Error("Something wrong in case type");
@@ -117,9 +147,9 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     let indexItem;
     let qty;
 
-    let orderSpecs = state.orderSpecs;
+    let orderSpecsCurrent = state.orderSpecsCurrent;
 
-    if (orderSpecs.length === 0) {
+    if (orderSpecsCurrent.length === 0) {
       qty += 1;
       orderItems.push({
         meal: mealID,
@@ -128,10 +158,10 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
         price: mealPrice,
       });
     } else {
-      indexItem = orderSpecs.findIndex((item) => item.meal === mealId);
+      indexItem = orderSpecsCurrent.findIndex((item) => item.meal === mealId);
       if (indexItem) {
         orderItems = {
-          ...orderSpecs,
+          ...orderSpecsCurrent,
           [indexItem]: { quantity: quantity + 1, ...rest },
         };
       } else {
@@ -149,7 +179,7 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
   };
 
   const handleIncrease = (mealId) => {
-    const newOrderSpecs = state.orderSpecs.map((item) => {
+    const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
       if (item.meal === mealId) {
         item.quantity += 1;
       }
@@ -159,7 +189,7 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
   };
 
   const handleDecrease = (mealId) => {
-    const newOrderSpecs = state.orderSpecs.map((item) => {
+    const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
       if (item.meal === mealId) {
         item.quantity -= 1;
       }
@@ -210,6 +240,53 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     handleOpenTagsRatings();
   };
 
+  const handleThisOrder = (newOrder) => {
+    dispatch({ type: ACTIONS_TYPES.THIS_ORDER, payload: newOrder });
+  };
+
+  const handleTicketNumber = (newOrder) => {
+    dispatch({ type: ACTIONS_TYPES.TICKET_NUMBER, payload: newOrder });
+  };
+
+  const handleHoursPrint = (newHours) => {
+    dispatch({ type: ACTIONS_TYPES.HOURS_PRINT, payload: newHours });
+  };
+
+  const handleTotalPrice = (totalPrice) => {
+    dispatch({ type: ACTIONS_TYPES.TOTAL_PRICE, payload: totalPrice });
+  };
+
+  const handlePayment = (newPayment) => {
+    dispatch({ type: ACTIONS_TYPES.TOTAL_PRICE, payload: newPayment });
+  };
+
+  const handleClearOrderSpecs = (emptySpecs) => {
+    dispatch({ type: ACTIONS_TYPES.ORDER_ITEM, payload: emptySpecs });
+  };
+
+  const wholeCountDownTimersDay = (newTimer) => {
+    const oldArrTimers = state.countDownDownTimerArr;
+    const nextIndex = oldArrTimers.length + 1;
+    let newArrTimers;
+    newArrTimers = { ...oldArrTimers, [nextIndex]: newTimer };
+
+    dispatch({
+      type: ACTIONS_TYPES.COUNT_DOWN_TIMER,
+      payload: newArrTimers,
+    });
+  };
+
+  const handleTemplateOrdersDay = (newTemplate) => {
+    const oldArrTemplate = state.dataTemplatesOrdersDay;
+    const nextIndex = oldArrTemplate.length++;
+    let newArrTemplateOrders;
+    newArrTemplateOrders = { ...oldArrTimers, [nextIndex]: newTemplate };
+    dispatch({
+      type: ACTIONS_TYPES.TEMPLATE_ORDERS_DAY,
+      payload: newArrTemplateOrders,
+    });
+  };
+
   const delayTimeDelivery = (hrs, min, sec) => {
     let hoursDelivery = {
       hrs: hrs,
@@ -223,15 +300,15 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     });
   };
 
-  const waitingTimeDelivery = (timeInput) => {
+  const handleFirstTimeOrder = (nextState) => {
     dispatch({
-      type: ACTIONS_TYPES.WAITING_TIME,
-      payload: timeInput,
+      type: ACTIONS_TYPES.FIRST_TIME_ORDER,
+      payload: nextState,
     });
   };
 
   const handleClear = (mealId) => {
-    const newOrderSpecs = state.orderSpecs.map((item) => {
+    const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
       if (item.meal === mealId) {
         item.quantity = 0;
       }
@@ -243,15 +320,23 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
   return {
     state,
     handleUpstreamOrder,
+    handleClearOrderSpecs,
     delayTimeDelivery,
-    waitingTimeDelivery,
     handleIncrease,
     handleDecrease,
     handleOrders,
+    handleThisOrder,
+    handleFirstTimeOrder,
+    handleTicketNumber,
+    handleHoursPrint,
+    handleTotalPrice,
+    handlePayment,
     handleUser,
     handleDayShift,
     handleOpenTagsRatings,
     handleRatings,
+    wholeCountDownTimersDay,
+    handleTemplateOrdersDay,
     /*  handleRatedMeals, */
     handleRegisterForm,
     handleLoginForm,

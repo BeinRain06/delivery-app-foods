@@ -3,7 +3,10 @@ import { ACTIONS_TYPES, MealContext } from "../context/MealsContext";
 import axios from "axios";
 
 export async function getMeals() {
-  const { state, dispatch } = useContext(MealContext);
+  /* const {
+    state: { meals, meats, seaFoods, vegetarians, desserts },
+    handleUpstreamOrder,
+  } = useContext(MealContext); */
 
   const api_url = "http://localhost:5000/api/delivery/meals";
   let meals = [];

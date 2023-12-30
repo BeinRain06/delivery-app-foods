@@ -69,7 +69,6 @@ const MiniCardWeeksOrders = ({ props }) => {
   return (
     <li className="day_dish_recall">
       {recordUser && <LogOrRegisterForm />}
-      <LogOrRegisterForm />
       <div className="dish_table">
         <div className="dish_sub_operation">
           <div>
@@ -109,55 +108,53 @@ const MiniCardWeeksOrders = ({ props }) => {
         {openTagRatings && (
           <>
             <div className="wrapping_ratings_form">
-              <div className="wrapping_form_content">
-                <form
-                  className="ratings_control_form"
-                  onSubmit={handleNewRatings}
-                >
-                  <ul className="rate_feed">
-                    <li>
-                      <label htmlFor="Ratings">Ratings</label>
-                      <input
-                        type="number"
-                        name="ratings"
-                        id="ratings"
-                        className="ratings_size"
-                        min="1"
-                        max="5"
-                        placeholder="3.0"
-                      />
-                    </li>
-                    <li>
-                      <label htmlFor="Feedback">FeedBack</label>
-                      <textarea
-                        name="feedback"
-                        id="feedback"
-                        className="feedback_size"
-                        cols="30"
-                        rows="10"
-                      >
-                        Feedback
-                      </textarea>
-                    </li>
-                  </ul>
-                  <ul className="wrap_score_ratings">
-                    <li>
-                      <button
-                        type="button"
-                        className="abort_submit"
-                        onClick={handleOpenTagsRatings}
-                      >
-                        Clear
-                      </button>
-                    </li>
-                    <li>
-                      <button type="submit" className="send_new_feed">
-                        Send
-                      </button>
-                    </li>
-                  </ul>
-                </form>
-              </div>
+              <form
+                className="ratings_control_form"
+                onSubmit={handleNewRatings}
+              >
+                <ul className="rate_feed">
+                  <li>
+                    <label htmlFor="Ratings">Ratings</label>
+                    <input
+                      type="number"
+                      name="ratings"
+                      id="ratings"
+                      className="ratings_size"
+                      min="1"
+                      max="5"
+                      placeholder="3.0"
+                    />
+                  </li>
+                  <li>
+                    <label htmlFor="Feedback">FeedBack</label>
+                    <textarea
+                      name="feedback"
+                      id="feedback"
+                      className="feedback_size"
+                      cols="30"
+                      rows="10"
+                    >
+                      Feedback
+                    </textarea>
+                  </li>
+                </ul>
+                <ul className="wrap_score_ratings">
+                  <li>
+                    <button
+                      type="button"
+                      className="abort_submit"
+                      onClick={handleOpenTagsRatings}
+                    >
+                      Clear
+                    </button>
+                  </li>
+                  <li>
+                    <button type="submit" className="send_new_feed">
+                      Send
+                    </button>
+                  </li>
+                </ul>
+              </form>
             </div>
           </>
         )}

@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 });
 
 // create payment
-router.post("/", async (req, res) => {
+router.post("/order", async (req, res) => {
   try {
     let payment = new Payment({
       order: req.body.order,

@@ -2,9 +2,14 @@ import React, { useState, useRef, useContext, useEffect } from "react";
 import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
 import { MealContext } from "../context/MealsContext";
+import { initiateOrder, updateThisOrder } from "../callAPI/OrdersApi";
+import { postPayment } from "../callAPI/PaymentApi";
+import { userLogging } from "../callAPI/UsersApi";
 import CardOrder from "../cards/card-order";
 import CardWeek from "../cards/card-week";
 import CardWeekOrders from "../cards/card-week-orders";
+import LogOrRegisterForm from "../cards/register-login-form";
+import CardDayOrders from "../cards/card-day-orders";
 import "./Orders.css";
 
 {
@@ -15,46 +20,221 @@ import "./Orders.css";
 
 function Orders() {
   const {
-    state: { meals, orderSpecs, orders, indexDayFormat },
-    handleClear,
-    handleDecrease,
-    handleIncrease,
+    state: {
+      meals,
+      orderSpecsCurrent,
+      orders,
+      thisOrder,
+      indexDayFormat,
+      user,
+      hoursPrinted,
+      totalPrice,
+      ticketNumber,
+      payment,
+    },
     handleOrders,
     handleDayShift,
+    handleFirstTimeOrder,
+    handleTicketNumber,
+    handleHoursPrint,
+    handleTotalPrice,
+    handleThisOrder,
+    handlePayment,
+    handleClearOrderSpecs,
+    handleTemplateOrdersDay,
+    wholeCountDownTimersDay,
     handleRatingsFeedback,
   } = useContext(MealContext);
 
-  const [testOne, setTestOne] = useState("1500");
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
-  const [firstTimeOrder, setFirstTimeOrder] = useState(false);
+  const [isNewLocation, setNewLocation] = useState(false);
+  const [dataNewLocation, setDataNewLocation] = useState({});
+  const newLocationRef = useRef(null);
+  const newCityRef = useRef(null);
+  const newStreetRef = useRef(null);
+  const oneMoreStepRef = useRef(null);
+  const minimizeOrApplyRef = useRef(null);
+
+  const newRadioRefOne = useRef(null);
+  const newRadioRefTwo = useRef(null);
 
   const [timer, setTimer] = useState("00:00:00");
   const interval = useRef(null);
   const applyOrderRef = useRef(null);
   const totalRef = useRef(null);
+  const validateRef = useRef(null);
+
+  const orderOftheDay = orders.filter(
+    (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
+  );
+
+  const openToNewLocation = () => {
+    if (minimizeOrApplyRef.current.textContent === "Apply") {
+      setNewLocation(true);
+    } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
+    }
+  };
+
+  const closeFromNewLocation = () => {
+    setNewLocation(false);
+  };
+
+  const handleStepBackLoc = () => {
+    oneMoreStepRef.current.style.visibility = "hidden";
+    setNewLocation(true);
+    validateRef.current.style.border = "2px solid black"; // better think of a class
+  };
+
+  const handleMoveToValidation = () => {
+    oneMoreStepRef.current.style.visibility = "hidden";
+    validateRef.current.style.border = "2px solid yellow"; // rather add a class (enhance border, border-radius=50% ---> after click go back to default way is was displaying)
+
+    handleTicketNumber((totalPrice - 3).toString(16));
+    handleHoursPrint(moment().format("hh:mm a"));
+    setTimer("02:00:00");
+  };
+
+  const handleFirstStepLoc = (e) => {
+    e.preventDefault();
+    if (newRadioRefOne.current.checked) {
+      let phone = e.target.elements.newNum.value;
+      if (phone === "") {
+        alert("Please Enter a phone number");
+        setNewLocation(false);
+        return;
+      }
+
+      let city = "";
+      let street = "";
+
+      let storeNew;
+
+      storeNew = { phone, city, street };
+
+      setDataNewLocation(storeNew);
+
+      //close new location
+      setNewLocation(false);
+      newPhone = "";
+
+      //move to one more step
+      oneMoreStepRef.current.style.visibility = "visible";
+
+      //--> here you are (OPen *ONE MORE STEP* BOX/ and DESIGN JSX)
+    } else if (newRadioRefTwo.current.checked) {
+      let phone = e.target.elements.newNum.value;
+      let city = e.target.elements.newCity.value;
+      let street = e.target.elements.newStreet.value;
+
+      if (phone === "" || city === "" || street === "") {
+        alert("Please Enter All the field");
+        setNewLocation(false);
+        return;
+      }
+
+      let storeNew;
+
+      storeNew = { phone, city, street };
+
+      setDataNewLocation(storeNew);
+
+      //close new location box
+      setNewLocation(false);
+
+      newPhone === "";
+      newCity === "";
+      newStreet === "";
+
+      //move to one more step
+      oneMoreStepRef.current.style.visibility = "visible";
+
+      //--> here you are (OPen *ONE MORE STEP* BOX/ and DESIGN JSX)
+    }
+  };
+
+  const validateThisOrder = () => {
+    minimizeOrApplyRef.current.textContent = "Minimize";
+
+    validateRef.current.style.border = "2px solid yellow"; // rather add a class (enhance border, border-radius=50% ---> after click go back to default way is was displaying)
+
+    //not yet ( this update)
+    updateThisOrder(dataNewLocation);
+    let timerOn = callTimer();
+    setTimer(timerOn);
+
+    wholeCountDownTimersDay(callTimer());
+
+    //post to collection payment
+    postPayment(thisOrder._id, "mtn-money", thisOrder.codePayment);
+
+    let templateOrderVar = {
+      timer: timerOn,
+      ordersSpecs: orderSpecsCurrent,
+      order: thisOrder,
+      ticketNumber: ticketNumber,
+      hours: hoursPrinted,
+      totalPrice: totalPrice,
+      payment: payment,
+    };
+
+    // store element templateOrder in the specified Template in Context API
+    handleTemplateOrdersDay(templateOrderVar);
+
+    //reset variable involved in template_order
+    resetDataHoldingTemplate();
+  };
+
+  const resetDataHoldingTemplate = () => {
+    handleTicketNumber("_ _ _ _ _ _");
+    handleHoursPrint("time");
+    handleTotalPrice("_ _ _ _");
+    handleThisOrder({});
+    handlePayment({});
+    handleClearOrderSpecs([]);
+    setTimer("00:00:00");
+  };
+
+  const handleNewRadioInput = (e) => {
+    if (e.target.id === "name_area_one") {
+      newLocationRef.current.style.visibility = "visible";
+      newCityRef.current.style.display = "none";
+      newStreetRef.current.style.display = "none";
+    } else if (e.target.id === "name_area_two") {
+      newLocationRef.current.style.visibility = "visible";
+      newCityRef.current.style.display = "block";
+      newStreetRef.current.style.display = "block";
+    }
+  };
 
   const handleControlRadio = (e) => {
     console.log(e.target);
 
     if (e.target.id === "reg_price_2") {
-      if (firstTimeOrder === false) {
-      }
-      setTestOne(() => {
-        let eltTest = "1500";
-        let eltTestArr = Array.from(eltTest);
-        let output = "";
-        eltTestArr.map((elt) => {
-          output += elt + " ";
+      if (user.id === undefined) {
+        handleFirstTimeOrder(true);
+        return;
+      } else {
+        handleFirstTimeOrder(false);
+
+        const myOrder = initiateOrder();
+
+        handleTotalPrice(() => {
+          let total = myOrder.totalPrice;
+          let totalArr = Array.from(total);
+          let output = "";
+          totalArr.map((elt) => {
+            output += elt + " ";
+          });
+          console.log(output);
+          return output;
         });
-        console.log(output);
-        return output;
-      });
+      }
 
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
     } else if (e.target.id === "reg_price_1") {
-      setTestOne(() => "_" + " " + "_" + " " + "_" + " " + "_");
+      setTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_");
       applyOrderRef.current.classList.remove("addShowBtn");
       totalRef.current.classList.add("anim_height");
     }
@@ -342,7 +522,7 @@ function Orders() {
               </div>
             </div>
             <div className="current_day_time">
-              <h4>12:30 A.M</h4>
+              <h4>{hoursPrinted}</h4> {/* change with ok button last step */}
             </div>
             <div className="statement_to_client">
               <p>AS you order, your time is valued by our Team</p>
@@ -350,7 +530,8 @@ function Orders() {
           </div>
           <div className="type_sample">
             <p style={{ fontWeight: "bold" }}>Delivery Foods</p>
-            <p>Ticket N³%:2815463004</p>
+            <p>Ticket N³%: {ticketNumber} </p>
+            {/* change with ok button last step */}
           </div>
           <div className="spec_details_orders">
             <table>
@@ -360,24 +541,21 @@ function Orders() {
                 <th>price</th>
                 <th>ToTal</th>
               </tr>
-              <tr>
-                <td>Jutsu Chicken</td>
-                <td>3</td>
-                <td>$5.25</td>
-                <td>$15.75</td>
-              </tr>
-              <tr>
-                <td>Jutsu Chicken</td>
-                <td>3</td>
-                <td>$5.25</td>
-                <td>$15.75</td>
-              </tr>
-              <tr>
-                <td>Jutsu Chicken</td>
-                <td>3</td>
-                <td>$5.25</td>
-                <td>$15.75</td>
-              </tr>
+              {}
+              {orderSpecsCurrent.map((order, i) => {
+                const meal = order.meal;
+                const qty = order.quantity;
+                const minTotal = (meal.price * qty).toFixed(2);
+                return (
+                  <tr>
+                    <td>{meal.name}</td>
+                    <td>{qty}</td>
+                    <td>${meal.price}</td>
+                    <td>${minTotal}</td>
+                  </tr>
+                );
+              })}
+
               <tr>
                 <td>
                   <i className="fa-solid fa-minus"></i>
@@ -388,7 +566,7 @@ function Orders() {
                 <td>
                   <i className="fa-solid fa-minus"></i>
                 </td>
-                <td>$47.25</td>
+                <td>${thisOrder.totalPrice}</td>
               </tr>
             </table>
           </div>
@@ -422,19 +600,157 @@ function Orders() {
                 </li>
               </ul>
               <span className="total_bill" ref={totalRef}>
-                $ {testOne}
+                $ {totalPrice}
               </span>
               <div className="submit_container" ref={applyOrderRef}>
-                <button
+                {/*   <button
                   type="button"
                   className="btn_apply_order"
                   onClick={callTimer}
+                >
+                  Apply
+                </button> */}
+                {isNewLocation && (
+                  <div className="wrapping_new_location">
+                    <span className="title_hold">Location</span>
+                    <ul className="figure_area" onChange={handleNewRadioInput}>
+                      <li>
+                        <input
+                          type="radio"
+                          name="location"
+                          id="name_area_one"
+                          className="name_area area_expected_one"
+                          ref={newRadioRefOne}
+                        />
+                        <label htmlFor="home">home</label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          name="location"
+                          id="name_area_two"
+                          className="name_area area_expected_two"
+                          ref={newRadioRefTwo}
+                        />
+                        <label htmlFor="home">new Location</label>
+                      </li>
+                    </ul>
+                    <div className="add_more_info">
+                      <form
+                        className="control_in_new_direction"
+                        onSubmit={handleFirstStepLoc}
+                      >
+                        <ul className="list_appearance" ref={newLocationRef}>
+                          <li className="adding_phone">
+                            <label htmlFor="phone"> add a number</label>
+                            <input
+                              type="number"
+                              name="newNum"
+                              id="number_add"
+                              className="number_add"
+                            />
+                          </li>
+                          <li className="adding_city" ref={newCityRef}>
+                            <label htmlFor="city">city</label>
+                            <input
+                              type="text"
+                              name="newCity"
+                              id="city_add"
+                              className="city_add"
+                            />
+                          </li>
+                          <li className="adding_street" ref={newStreetRef}>
+                            <label htmlFor="street">street</label>
+                            <input
+                              type="text"
+                              name="newStreet"
+                              id="street_add"
+                              className="street_add"
+                            />
+                          </li>
+                        </ul>
+
+                        <ul className="spread_new_button">
+                          <li>
+                            <button
+                              type="button"
+                              className="btn_on_new btn_loc_one"
+                              onClick={closeFromNewLocation}
+                            >
+                              Reject
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              type="submit"
+                              className="btn_on_new btn_loc_two"
+                              onClick={handleFirstStepLoc}
+                            >
+                              OK
+                            </button>
+                          </li>
+                        </ul>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
+                <div className="one_more_step">
+                  <div className="one_more_content" ref={oneMoreStepRef}>
+                    <div className="first_my_word">
+                      <span className="remind_next">One more step:</span>
+                      <p className="small_task">
+                        click on the Button
+                        <span className="remind_validation">validate</span>
+                        Please, to terminate the process of sending your
+                        <strong>order</strong>
+                      </p>
+                    </div>
+                    <ul className="process_decision">
+                      <li className="back_my_need">
+                        <span className="drop_">
+                          <i className="fa-solid fa-chevron-left"></i>
+                          <i className="fa-solid fa-chevron-left"></i>
+                        </span>
+                        <button
+                          type="button"
+                          className="no_mind"
+                          onClick={handleStepBackLoc}
+                        >
+                          Back
+                        </button>
+                      </li>
+                      <li className="agree_your_proposal">
+                        <button
+                          type="button"
+                          className="yes_sure"
+                          onClick={handleMoveToValidation}
+                        >
+                          OK
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn_apply_order"
+                  onClick={openToNewLocation}
+                  ref={minimizeOrApplyRef}
                 >
                   Apply
                 </button>
               </div>
             </form>
           </div>
+
+          {firstTimeOrder && (
+            <div className="appealing_registration">
+              {/* //write css */}
+              <LogOrRegisterForm />
+            </div>
+          )}
 
           <br></br>
 
@@ -464,6 +780,8 @@ function Orders() {
                 type="button"
                 id="btn_validate_order"
                 className="btn_validate_order"
+                ref={validateRef}
+                onClick={validateThisOrder}
               >
                 validate
               </button>
@@ -536,60 +854,24 @@ function Orders() {
             </p>
           </div>
         </div>
+        {/*   <div className="wrapper_no_items">
+          <div className="content_no">
+            <span className="no_items">No Items</span>
+          </div>
+        </div> */}
 
         <div className="orders_day">
           <div className="template_day_orders">
             <ul className="template_day snaps_inline">
-              <li className="day_dish_recap">
-                <p className="title_template_orders">Day Orders</p>
-                <div className="dish_table">
-                  <div className="dish_country">Jutsu Chicken</div>
-                  <div className="dish_sub_operation">
-                    <div className="dish_topic">
-                      <p>
-                        <span className="number_order">3</span>
-                        <span>: Orders</span>
-                      </p>
-                    </div>
-                    <div className="brief_overview_meal">
-                      <img
-                        src={AhmadIMG}
-                        className="dish_order_img"
-                        alt="oops overview"
-                      />
-                      <div className="recap_feedback">
-                        <p className="send_ratings">Ratings</p>
-                      </div>
-                    </div>
-                    <p className="dish_order_desc">Description: Italian</p>
+              {orderOftheDay.length !== 0 ? (
+                <CardDayOrders ordersSpecs={ordersSpecs} />
+              ) : (
+                <div className="wrapper_no_items">
+                  <div className="content_no">
+                    <span className="no_items">No Items</span>
                   </div>
                 </div>
-              </li>
-              <li className="day_dish_recap">
-                <p className="title_template_orders">Day Orders</p>
-                <div className="dish_table">
-                  <div className="dish_country">Jutsu Chicken</div>
-                  <div className="dish_sub_operation">
-                    <div className="dish_topic">
-                      <p>
-                        <span className="number_order">3</span>
-                        <span>: Orders</span>
-                      </p>
-                    </div>
-                    <div className="brief_overview_meal">
-                      <img
-                        src={AhmadIMG}
-                        className="dish_order_img"
-                        alt="oops overview"
-                      />
-                      <div className="recap_feedback">
-                        <p className="send_ratings">Ratings</p>
-                      </div>
-                    </div>
-                    <p className="dish_order_desc">Description: Italian</p>
-                  </div>
-                </div>
-              </li>
+              )}
             </ul>
           </div>
         </div>
@@ -616,7 +898,15 @@ function Orders() {
                   let dateOrderedFormat = item.dateOrdered.format("MMM D");
 
                   if (dateOrderedFormat === indexDayFormat) {
-                    <CardWeekOrders ordersSpecs={item.ordersSpecs} />;
+                    return <CardWeekOrders ordersSpecs={item.ordersSpecs} />;
+                  } else {
+                    return (
+                      <div className="wrapper_no_items">
+                        <div className="content_no">
+                          <span className="no_items">No Items</span>
+                        </div>
+                      </div>
+                    );
                   }
                 })}
                 {/* <li className="day_dish_recall">
@@ -657,7 +947,8 @@ function Orders() {
         {/* newest order coming */}
         <div className="new_command">
           <button type="button" className="btn_sub btn_newest_order">
-            newest order <span className="new_command_number">3</span>
+            newest order{" "}
+            <span className="new_command_number">{orders.length}</span>
           </button>
         </div>
       </div>
