@@ -11,26 +11,11 @@ export const INITIAL_STATE = {
   vegetarians: [],
   desserts: [],
   ratings: {},
-  /* ratedMeals: [], */
-  spottedForRating: {}, // id(meal), name
-  newStandRating: {}, //meal(id), note, feedback
   openWeek: false,
-  isNewLocation: false,
-  orderSpecsCurrent: [], // of the current order in the day
-  orders: [], // all user's orders
-  thisOrder: {},
-  ticketNumber: "_ _ _ _ _ _",
-  hoursPrinted: "time",
-  totalPrice: "_ _ _ _",
-  timer: "00:00:00",
-  payment: {},
-  firstTimeOrder: false,
   indexDayFormat: "",
   openTagRatings: false,
   registerForm: {},
   loginForm: {},
-  countDownDownTimerArr: [], //arr of string
-  dataTemplatesOrdersDay: [], // arr of obj
 };
 
 export const ACTIONS_TYPES = {
@@ -43,13 +28,10 @@ export const ACTIONS_TYPES = {
   USERS: "USERS",
   USER: "USER",
   RATINGS: "USER_RATING",
-  /* RATEDMEALS: "USER_RATED_MEALS", */
-  SPOTTED_FOR_RATING: "SPOTTED_FOR_RATINGS",
   NEW_RATING: "NEW_RATING",
   ORDERS: "ORDERS",
   INDEX_DAY: "INDEX_DAY",
   OPEN_TAG_RATING: "OPEN_TAG_RATING",
-  OPEN_NEW_LOCATION: "OPEN_NEW_LOCATION",
   REGISTER_FORM: "REGISTER_FORM",
   LOGIN_FORM: "LOGIN_FORM",
 };
@@ -74,15 +56,6 @@ export const reducer = (state, action) => {
     case ACTIONS_TYPES.RATINGS:
       return { ...state, ratings: action.payload };
 
-    case ACTIONS_TYPES.OPEN_TAG_RATING:
-      return { ...state, openTagRatings: !state.openTagRatings };
-
-    case ACTIONS_TYPES.OPEN_NEW_LOCATION:
-      return { ...state, isNewLocation: action.payload };
-
-    case ACTIONS_TYPES.SPOTTED_FOR_RATING:
-      return { ...state, spottedForRating: action.payload };
-
     case ACTIONS_TYPES.NEW_RATING:
       return { ...state, newStandRating: action.payload };
 
@@ -105,6 +78,26 @@ export const reducer = (state, action) => {
 
 const functionsDeliveryContext = (INITIAL_STATE) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
+  const handleMeals = (meals) => {
+    dispatch({ type: ACTIONS_TYPES.MEALS, payload: meals });
+  };
+
+  const handleVegetarians = (vegetarians) => {
+    dispatch({ type: ACTIONS_TYPES.VEGETARIANS, payload: vegetarians });
+  };
+
+  const handleDesserts = (desserts) => {
+    dispatch({ type: ACTIONS_TYPES.DESSERTS, payload: desserts });
+  };
+
+  const handleMeats = (meats) => {
+    dispatch({ type: ACTIONS_TYPES.MEATS, payload: meats });
+  };
+
+  const handleSeaFoods = (seafoods) => {
+    dispatch({ type: ACTIONS_TYPES.SEAFOODS, payload: seafoods });
+  };
 
   const handleOrders = (orders) => {
     const updateOrders = orders;
@@ -146,12 +139,16 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
 
   return {
     state,
+    handleMeals,
+    handleMeats,
+    handleSeaFoods,
+    handleVegetarians,
+    handleDesserts,
     handleOrders,
     handleUser,
     handleDayShift,
     handleOpenTagsRatings,
     handleRatings,
-    /*  handleRatedMeals, */
     handleRegisterForm,
     handleLoginForm,
   };

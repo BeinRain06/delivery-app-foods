@@ -16,17 +16,19 @@ export async function getThisUserRatings() {
 
   try {
     let ratings = {};
-    const res = await axios.get(`${api_url}/${userId}`);
+    const res = await axios.get(api_url);
     ratings = res.data.data; //res.data(axios res) - .data (structured data response in backend)
     let ratedMeals = ratings.ratedMeals;
 
-    handleRatings(ratings);
+    handleRatings();
 
-    handleRatedMeals(ratedMeals);
+    handleRatedMeals();
   } catch (err) {
     console.log(err);
   }
 }
+
+/* export async function getMealOnCurrentRatings(userId) {} */
 
 //ratings : {} , ratedMeals : []  (POST/PUT METHOD)
 export async function postOrUpdateRatings() {
@@ -85,7 +87,7 @@ export async function postOrUpdateRatings() {
         headers: {
           "Content-type": "application/x-www-form-urlencoded",
         },
-        body: {
+        data: {
           user: ratedMeal.userId,
           ratedMeals: ratedMeals,
         },

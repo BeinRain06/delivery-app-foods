@@ -1,12 +1,8 @@
-import React, { useContext } from "react";
-import {
-  AdamIMG,
-  AhmadIMG,
-  MariaIMG,
-  AnastasiyaIMG,
-  NordwoodIMG,
-} from "../assets/images/index.js";
+import React, { useCallback, useContext, useEffect } from "react";
+
 import { MealContext } from "../context/MealsContext.jsx";
+import { TemplateContext } from "../context/TemplateContext.jsx";
+import { getAllTypesFoods } from "../callAPI/MealsApi.jsx";
 import CardHome from "../cards/card-home.jsx";
 import "./Home.css";
 
@@ -15,6 +11,21 @@ function Home() {
     state: { meals, meats, seaFoods, vegetarians, desserts },
     handleUpstreamOrder,
   } = useContext(MealContext);
+
+  const {
+    state: { isNewLocation },
+    useAsyncGenerator,
+  } = useContext(TemplateContext);
+
+  /* useEffect(() => {
+    const getAllMeals = useCallback(async () => {
+      let tmpResArray = [0, 1, 2, 3, 4];
+      await tmpResArray.map((item) => {
+        useAsyncGenerator(getAllTypesFoods);
+      });
+    }, []);
+    console.log(getAllMeals());
+  }, []); */
 
   return (
     <main className="home_container flex-column">
@@ -47,7 +58,7 @@ function Home() {
           <span className="gen_title_left">SeaFoods</span>
 
           <ul className="meal_content">
-            {seafoods.map((seafood, i) => {
+            {seaFoods.map((seafood, i) => {
               <CardHome
                 key={i}
                 id={seafood._id}

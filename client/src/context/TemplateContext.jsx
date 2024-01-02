@@ -268,6 +268,7 @@ const functionsTemplateContext = (INITIAL_STATE) => {
   };
 
   return {
+    state,
     handleDecrease,
     handleIncrease,
     handleClear,
