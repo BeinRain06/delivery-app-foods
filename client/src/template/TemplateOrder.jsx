@@ -13,17 +13,16 @@ function TemplateOrder({
 }) {
   const {
     state: { dataTemplatesOrdersDay },
-    useAsyncGenerator,
     handleTemplateOrdersDay,
+    useAsyncGenerator,
   } = useContext(MealContext);
   const nextBtnRef = useRef(null);
   const ticketTempRef = userRef(null);
-
   const ticketManualRef = useRef(null);
 
   const templateState = useAsyncGenerator(createTemplateIterator);
 
-  /* let templateVar = {
+  let templateVar = {
     orderSpecsCurrent: template.orderSpecsCurrent,
     thisOrder: template.thisOrder,
     ticketNumber: template.ticketNumber,
@@ -31,7 +30,7 @@ function TemplateOrder({
     totalPrice: template.totalPrice,
     timer: template.timer,
     payment: template.payment,
-  }; */
+  };
 
   function* createTemplateIterator() {
     let index = 0;

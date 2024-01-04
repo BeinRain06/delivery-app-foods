@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 /* import styled, { keyframes } from "styled-components"; */
 import "./Layout.css";
@@ -6,6 +6,11 @@ import "./Layout.css";
 /* this Layout component is mainly created to apply general css style  for to each link : day, favourites, order, events ... , it represents the div box of each NavLInk located in  Navigation.jsx*/
 
 function Layout() {
+  const [welcome, setWelcome] = useState(true);
+
+  const handleSeeHome = () => {
+    setWelcome(false);
+  };
   const styleNavLink = ({ isActive }) => {
     const styleOne = {
       padding: "0.15rem 0.5rem",
@@ -40,65 +45,77 @@ function Layout() {
     }
   };
 
+  useEffect(() => {
+    console.log("1-2-3-4");
+  }, [welcome]);
+
   return (
     <>
-      <nav className="nav_menu">
-        <ul className="space_brand">
-          <li className="icon_menu_open">
-            {/* <i className="fa-solid fa-bars"></i> */}
-            <div className="logo_brand">
-              <span>T</span>
-              <span>D</span>
-              <span>S</span>
+      {welcome ? (
+        <main className="main_content">
+          <Outlet />
+        </main>
+      ) : (
+        <>
+          <nav className="nav_menu">
+            <ul className="space_brand">
+              <li className="icon_menu_open">
+                {/* <i className="fa-solid fa-bars"></i> */}
+                <div className="logo_brand">
+                  <span>T</span>
+                  <span>D</span>
+                  <span>S</span>
+                </div>
+              </li>
+              <li className="name_brand">
+                <span>Top</span>
+                <span style={{ color: "#1c7e4d" }}>Dis</span>
+                <span>hes</span>
+              </li>
+            </ul>
+            <ul className="space_search">
+              <li className="field_input">
+                <input
+                  type="text"
+                  name="meal"
+                  id="meal_input"
+                  className="meal_input"
+                  placeholder="search Meal"
+                />
+              </li>
+              <li className="search_btn">
+                <i
+                  className="fa-solid fa-magnifying-glass"
+                  style={{ color: "#e1ebe6" }}
+                ></i>
+              </li>
+            </ul>
+            <div className="link_content">
+              <ul className="tags_menu">
+                <NavLink to="/day" style={styleNavLink}>
+                  daily
+                </NavLink>
+                <NavLink to="/favourites" style={styleNavLink}>
+                  favourites
+                </NavLink>
+                <NavLink to="/home" style={styleNavLink}>
+                  home
+                </NavLink>
+                <NavLink to="/orders" style={styleNavLink}>
+                  orders
+                </NavLink>
+                <NavLink to="/events" style={styleNavLink}>
+                  events
+                </NavLink>
+              </ul>
             </div>
-          </li>
-          <li className="name_brand">
-            <span>Top</span>
-            <span style={{ color: "#1c7e4d" }}>Dis</span>
-            <span>hes</span>
-          </li>
-        </ul>
-        <ul className="space_search">
-          <li className="field_input">
-            <input
-              type="text"
-              name="meal"
-              id="meal_input"
-              className="meal_input"
-              placeholder="search Meal"
-            />
-          </li>
-          <li className="search_btn">
-            <i
-              className="fa-solid fa-magnifying-glass"
-              style={{ color: "#e1ebe6" }}
-            ></i>
-          </li>
-        </ul>
-        <div className="link_content">
-          <ul className="tags_menu">
-            <NavLink to="/day" style={styleNavLink}>
-              daily
-            </NavLink>
-            <NavLink to="/favourites" style={styleNavLink}>
-              favourites
-            </NavLink>
-            <NavLink to="/" style={styleNavLink}>
-              home
-            </NavLink>
-            <NavLink to="/orders" style={styleNavLink}>
-              orders
-            </NavLink>
-            <NavLink to="/events" style={styleNavLink}>
-              events
-            </NavLink>
-          </ul>
-        </div>
-      </nav>
+          </nav>
 
-      <main className="main_content">
-        <Outlet />
-      </main>
+          <main className="main_content">
+            <Outlet />
+          </main>
+        </>
+      )}
     </>
   );
 }

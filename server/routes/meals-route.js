@@ -8,7 +8,8 @@ const RatedMeal = require("../models/rated-meal");
 router.use(express.urlencoded({ extended: false }));
 
 // FOR POST
-router.use(
+router.post(
+  "/meal",
   async (req, res, next) => {
     console.log("Time: ", Date.now());
     let newFood = new Meal({
@@ -99,12 +100,12 @@ router.get("/", async (req, res) => {
 });
 
 //GET DESSERTS
-router.get("/desserts", async (req, res) => {
+router.get("/desserts:dessertsId", async (req, res) => {
   // res.json({ success: "true", data: meals[0].desserts });
   try {
-    const desserts = await Meal.find({ category: idDessert }).populate(
-      "category"
-    );
+    const desserts = await Meal.find({
+      category: req.params.dessertsId,
+    }).populate("category");
     res.json({ success: true, data: desserts });
   } catch (err) {
     res
@@ -114,12 +115,12 @@ router.get("/desserts", async (req, res) => {
   }
 });
 
-router.get("/seafoods", async (req, res) => {
+router.get("/seafoods/:seafoodsId", async (req, res) => {
   // res.json({ success: "true", data: meals[0].seaFoods });
   try {
-    const seafoods = await Meal.find({ category: idSeafoods }).populate(
-      "category"
-    );
+    const seafoods = await Meal.find({
+      category: req.params.seafoodsId,
+    }).populate("category");
     res.json({ success: true, data: seafoods });
   } catch (err) {
     res
@@ -129,10 +130,12 @@ router.get("/seafoods", async (req, res) => {
   }
 });
 
-router.get("/meats", async (req, res) => {
+router.get("/meats/:meatsId", async (req, res) => {
   // res.json({ success: "true", data: meals[0].meats });
   try {
-    const meats = await Meal.find({ category: idMeats }).populate("category");
+    const meats = await Meal.find({ category: req.params.meatsId }).populate(
+      "category"
+    );
     res.json({ success: true, data: meats });
   } catch (err) {
     res
@@ -142,12 +145,12 @@ router.get("/meats", async (req, res) => {
   }
 });
 
-router.get("/vegetarians", async (req, res) => {
+router.get("/vegetarians/:vegetariansId", async (req, res) => {
   // res.json({ success: "true", data: meals[0].vegetarians });
   try {
-    const vegetarians = await Meal.find({ category: idVegetarians }).populate(
-      "category"
-    );
+    const vegetarians = await Meal.find({
+      category: req.params.vegetariansId,
+    }).populate("category");
     res.json({ success: true, data: vegetarians });
   } catch (err) {
     res

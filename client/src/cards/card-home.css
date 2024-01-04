@@ -28,8 +28,8 @@
 
 @media (min-with: 180px) {
   .dish {
-    width: 100%;
-    height: 100%;
+    width: 260px;
+    height: 240px;
     background-color: #24a163;
   }
 
@@ -262,12 +262,6 @@
 @media (min-width: 1054px) {
   .btn {
     font-size: 14px;
-  }
-
-  .meal_content {
-    padding: 0.5rem 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-gap: 1rem;
   }
 
   .my_dish_img {

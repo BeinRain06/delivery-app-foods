@@ -1,4 +1,10 @@
-import React, { useReducer, useContext, createContext, useState } from "react";
+import React, {
+  useReducer,
+  useContext,
+  createContext,
+  useState,
+  useCallback,
+} from "react";
 import moment from "moment";
 
 /*reducer*/
@@ -79,37 +85,37 @@ export const reducer = (state, action) => {
 const functionsDeliveryContext = (INITIAL_STATE) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
-  const handleMeals = (meals) => {
+  const handleMeals = useCallback((meals) => {
     dispatch({ type: ACTIONS_TYPES.MEALS, payload: meals });
-  };
+  }, []);
 
-  const handleVegetarians = (vegetarians) => {
+  const handleVegetarians = useCallback((vegetarians) => {
     dispatch({ type: ACTIONS_TYPES.VEGETARIANS, payload: vegetarians });
-  };
+  }, []);
 
-  const handleDesserts = (desserts) => {
+  const handleDesserts = useCallback((desserts) => {
     dispatch({ type: ACTIONS_TYPES.DESSERTS, payload: desserts });
-  };
+  }, []);
 
-  const handleMeats = (meats) => {
+  const handleMeats = useCallback((meats) => {
     dispatch({ type: ACTIONS_TYPES.MEATS, payload: meats });
-  };
+  }, []);
 
-  const handleSeaFoods = (seafoods) => {
+  const handleSeaFoods = useCallback((seafoods) => {
     dispatch({ type: ACTIONS_TYPES.SEAFOODS, payload: seafoods });
-  };
+  }, []);
 
-  const handleOrders = (orders) => {
+  const handleOrders = useCallback((orders) => {
     const updateOrders = orders;
 
     dispatch({ type: ACTIONS_TYPES.ORDERS, payload: updateOrders });
-  };
+  }, []);
 
-  const handleUser = (user) => {
+  const handleUser = useCallback((user) => {
     dispatch({ type: ACTIONS_TYPES.ORDERS, payload: user });
-  };
+  }, []);
 
-  const handleDayShift = (e) => {
+  const handleDayShift = useCallback((e) => {
     const i = e.target.id;
 
     let current = moment().startof("week").add(i, "days");
@@ -118,24 +124,25 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
       type: ACTIONS_TYPES.INDEX_DAY,
       payload: current.format("MMM D"),
     });
-  };
-  const handleOpenTagsRatings = () => {
+  }, []);
+
+  const handleOpenTagsRatings = useCallback(() => {
     dispatch({ type: ACTIONS_TYPES.OPEN_TAG_RATING });
-  };
+  }, []);
 
-  const handleRatings = (ratings) => {
+  const handleRatings = useCallback((ratings) => {
     dispatch({ type: ACTIONS_TYPES.RATINGS, payload: ratings });
-  };
+  }, []);
 
-  const handleRegisterForm = (registerData) => {
+  const handleRegisterForm = useCallback((registerData) => {
     dispatch({ type: ACTIONS_TYPES.REGISTER_FORM, payload: registerData });
     handleOpenTagsRatings();
-  };
+  }, []);
 
-  const handleLoginForm = (loginData) => {
+  const handleLoginForm = useCallback((loginData) => {
     dispatch({ type: ACTIONS_TYPES.LOGIN_FORM, payload: loginData });
     handleOpenTagsRatings();
-  };
+  }, []);
 
   return {
     state,
@@ -154,7 +161,23 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
   };
 };
 
-export const MealContext = createContext({});
+const initStateContext = {
+  state: INITIAL_STATE,
+  handleMeals: () => {},
+  handleMeats: () => {},
+  handleSeaFoods: () => {},
+  handleVegetarians: () => {},
+  handleDesserts: () => {},
+  handleOrders: () => {},
+  handleUser: () => {},
+  handleDayShift: () => {},
+  handleOpenTagsRatings: () => {},
+  handleRatings: () => {},
+  handleRegisterForm: () => {},
+  handleLoginForm: () => {},
+};
+
+export const MealContext = createContext(initStateContext);
 
 function MealContextProvider({ children, ...INITIAL_STATE }) {
   return (

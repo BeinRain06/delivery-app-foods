@@ -15,10 +15,10 @@ function CardHome({ props }) {
         <img src={props.image} className="my_dish_img" alt="dish missing" />
 
         <div className="spec_meal">
-          <p className="name_meal">{props.name}</p>
+          <p className="name_meal">{props.name}bonjour </p>
           <div>
             <ul className="rate_content">
-              <li>ratings: {props.ratings} </li>
+              <li>ratings: 3455{props.ratings} </li>
               <li className="ratings">
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>

@@ -1,8 +1,8 @@
-import React, { useReducer, createContext, useState } from "react";
+import React, { useReducer, createContext, useState, useCallback } from "react";
 
 import { MealContext } from "./MealsContext";
 
-export const INITIAL_STATE = {
+export const INITIAL_STATE_ONE = {
   isNewLocation: false,
   dataNewLocation: {},
   firstTimeOrder: false,
@@ -75,10 +75,10 @@ export const reducer = (state, action) => {
   }
 };
 
-const functionsTemplateContext = (INITIAL_STATE) => {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+const functionsTemplateContext = (INITIAL_STATE_ONE) => {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE_ONE);
 
-  const handleIncrease = (mealId) => {
+  const handleIncrease = useCallback((mealId) => {
     const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
       if (item.meal === mealId) {
         item.quantity += 1;
@@ -86,9 +86,9 @@ const functionsTemplateContext = (INITIAL_STATE) => {
     });
 
     dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: newOrderSpecs });
-  };
+  }, []);
 
-  const handleDecrease = (mealId) => {
+  const handleDecrease = useCallback((mealId) => {
     const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
       if (item.meal === mealId) {
         item.quantity -= 1;
@@ -96,9 +96,9 @@ const functionsTemplateContext = (INITIAL_STATE) => {
     });
 
     dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: newOrderSpecs });
-  };
+  }, []);
 
-  const handleClear = (mealId) => {
+  const handleClear = useCallback((mealId) => {
     const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
       if (item.meal === mealId) {
         item.quantity = 0;
@@ -106,47 +106,47 @@ const functionsTemplateContext = (INITIAL_STATE) => {
     });
 
     dispatch({ type: ACTIONS_TYPES.ORDER_ITEM, payload: newOrderSpecs });
-  };
+  }, []);
 
-  const handleNewLocation = (isOpen) => {
+  const handleNewLocation = useCallback((isOpen) => {
     dispatch({
       type: ACTIONS_TYPES.OPEN_NEW_LOCATION,
       payload: isOpen,
     });
-  };
+  }, []);
 
-  const handleFirstTimeOrder = (nextState) => {
+  const handleFirstTimeOrder = useCallback((nextState) => {
     dispatch({
       type: ACTIONS_TYPES.FIRST_TIME_ORDER,
       payload: nextState,
     });
-  };
+  }, []);
 
-  const handleThisOrder = (newOrder) => {
+  const handleThisOrder = useCallback((newOrder) => {
     dispatch({ type: ACTIONS_TYPES.THIS_ORDER, payload: newOrder });
-  };
+  }, []);
 
-  const handleTicketNumber = (newOrder) => {
+  const handleTicketNumber = useCallback((newOrder) => {
     dispatch({ type: ACTIONS_TYPES.TICKET_NUMBER, payload: newOrder });
-  };
+  }, []);
 
-  const handleHoursPrint = (newHours) => {
+  const handleHoursPrint = useCallback((newHours) => {
     dispatch({ type: ACTIONS_TYPES.HOURS_PRINT, payload: newHours });
-  };
+  }, []);
 
-  const handleTotalPrice = (totalPrice) => {
+  const handleTotalPrice = useCallback((totalPrice) => {
     dispatch({ type: ACTIONS_TYPES.TOTAL_PRICE, payload: totalPrice });
-  };
+  }, []);
 
-  const handlePayment = (newPayment) => {
+  const handlePayment = useCallback((newPayment) => {
     dispatch({ type: ACTIONS_TYPES.TOTAL_PRICE, payload: newPayment });
-  };
+  }, []);
 
-  const handleTimer = (newTimer) => {
+  const handleTimer = useCallback((newTimer) => {
     dispatch({ type: ACTIONS_TYPES.TIMER, payload: newTimer });
-  };
+  }, []);
 
-  const handleTemplateOrdersDay = (newTemplate) => {
+  const handleTemplateOrdersDay = useCallback((newTemplate) => {
     const oldArrTemplate = state.dataTemplatesOrdersDay;
     const nextIndex = oldArrTemplate.length++;
     let newArrTemplateOrders;
@@ -155,9 +155,9 @@ const functionsTemplateContext = (INITIAL_STATE) => {
       type: ACTIONS_TYPES.TEMPLATE_ORDERS_DAY,
       payload: newArrTemplateOrders,
     });
-  };
+  }, []);
 
-  const wholeCountDownTimersDay = (newTimer) => {
+  const wholeCountDownTimersDay = useCallback((newTimer) => {
     const oldArrTimers = state.countDownDownTimerArr;
     const nextIndex = oldArrTimers.length + 1;
     let newArrTimers;
@@ -167,9 +167,9 @@ const functionsTemplateContext = (INITIAL_STATE) => {
       type: ACTIONS_TYPES.COUNT_DOWN_TIMER,
       payload: newArrTimers,
     });
-  };
+  }, []);
 
-  const handleUpstreamOrder = (e) => {
+  const handleUpstreamOrder = useCallback((e) => {
     const mealID = e.target.parentElement.getAttribute("mealID");
     const mealName = e.target.parentElement.getAttribute("mealName");
     const mealPrice = e.target.parentElement.getAttribute("mealPrice");
@@ -207,7 +207,7 @@ const functionsTemplateContext = (INITIAL_STATE) => {
     }
 
     dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: orderItems });
-  };
+  }, []);
 
   const handleClearOrderSpecs = (emptySpecs) => {
     dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: emptySpecs });
@@ -288,11 +288,33 @@ const functionsTemplateContext = (INITIAL_STATE) => {
   };
 };
 
-export const TemplateContext = createContext({});
+const initStateContext = {
+  state: INITIAL_STATE_ONE,
+  handleDecrease: () => {},
+  handleIncrease: () => {},
+  handleClear: () => {},
+  handleNewLocation: () => {},
+  handleFirstTimeOrder: () => {},
+  handleThisOrder: () => {},
+  handleTicketNumber: () => {},
+  handleHoursPrint: () => {},
+  handleTotalPrice: () => {},
+  handlePayment: () => {},
+  handleTimer: () => {},
+  handleTemplateOrdersDay: () => {},
+  handleUpstreamOrder: () => {},
+  handleClearOrderSpecs: () => {},
+  wholeCountDownTimersDay: () => {},
+  useAsyncGenerator: () => {},
+};
 
-function TemplateContextProvider({ children, ...INITIAL_STATE }) {
+export const TemplateContext = createContext(initStateContext);
+
+function TemplateContextProvider({ children, ...INITIAL_STATE_ONE }) {
   return (
-    <TemplateContext.Provider value={functionsTemplateContext(INITIAL_STATE)}>
+    <TemplateContext.Provider
+      value={functionsTemplateContext(INITIAL_STATE_ONE)}
+    >
       {children}
     </TemplateContext.Provider>
   );
