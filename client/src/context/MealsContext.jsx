@@ -22,6 +22,7 @@ export const INITIAL_STATE = {
   openTagRatings: false,
   registerForm: {},
   loginForm: {},
+  welcome: true,
 };
 
 export const ACTIONS_TYPES = {
@@ -40,6 +41,7 @@ export const ACTIONS_TYPES = {
   OPEN_TAG_RATING: "OPEN_TAG_RATING",
   REGISTER_FORM: "REGISTER_FORM",
   LOGIN_FORM: "LOGIN_FORM",
+  WELCOME: "WELCOME",
 };
 
 export const reducer = (state, action) => {
@@ -76,6 +78,9 @@ export const reducer = (state, action) => {
 
     case ACTIONS_TYPES.LOGIN_FORM:
       return { ...state, loginForm: action.payload };
+
+    case ACTIONS_TYPES.WELCOME:
+      return { ...state, welcome: action.payload };
 
     default:
       throw new Error("Something wrong in case type");
@@ -144,6 +149,10 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     handleOpenTagsRatings();
   }, []);
 
+  const handleWelcome = useCallback((isWelcome) => {
+    dispatch({ type: ACTIONS_TYPES.WELCOME, payload: isWelcome });
+  }, []);
+
   return {
     state,
     handleMeals,
@@ -158,6 +167,7 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     handleRatings,
     handleRegisterForm,
     handleLoginForm,
+    handleWelcome,
   };
 };
 

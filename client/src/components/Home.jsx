@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { MealContext } from "../context/MealsContext.jsx";
 import { TemplateContext } from "../context/TemplateContext.jsx";
@@ -16,12 +10,6 @@ import "./Home.css";
 function Home() {
   const {
     state: { meals, meats, seaFoods, vegetarians, desserts },
-    handleUpstreamOrder,
-    handleMeals,
-    handleMeats,
-    handleSeaFoods,
-    handleVegetarians,
-    handleDesserts,
   } = useContext(MealContext);
 
   const {
@@ -89,12 +77,15 @@ function Home() {
             console.log("Loading ...");
 
             await setLoading(false);
-          }, 5000);
+          }, 6000);
         }
       };
 
       console.log("meals:", meals);
       console.log("seaFoods:", seaFoods);
+      console.log("vegetarians", vegetarians);
+      console.log("meats:", meats);
+      console.log("desserts:", desserts);
       removeLoading();
     } catch (err) {
       console.log(err);
@@ -113,20 +104,21 @@ function Home() {
           <div className="meals_borderplate">
             <div className="meats_meals meals_area">
               <span className="gen_title_right">Meats</span>
-
               <ul className="meal_content">
                 {meats &&
                   meats.map((meat, i) => {
-                    <CardHome
-                      key={i}
-                      id={meat._id}
-                      image={meat.image}
-                      name={meat.name}
-                      ratings={meat.ratings}
-                      origin={meat.origin}
-                      ingredients={meat.ingredients}
-                      price={meat.price}
-                    />;
+                    return (
+                      <CardHome
+                        key={i}
+                        id={meat._id}
+                        image={meat.image}
+                        name={meat.name}
+                        ratings={meat.ratings}
+                        origin={meat.origin}
+                        ingredients={meat.ingredients}
+                        price={meat.price}
+                      />
+                    );
                   })}
               </ul>
             </div>
@@ -136,16 +128,18 @@ function Home() {
 
               <ul className="meal_content">
                 {seaFoods.map((seafood, i) => {
-                  <CardHome
-                    key={i}
-                    id={seafood._id}
-                    image={seafood.image}
-                    name={seafood.name}
-                    ratings={seafood.ratings}
-                    origin={seafood.origin}
-                    ingredients={seafood.ingredients}
-                    price={seafood.price}
-                  />;
+                  return (
+                    <CardHome
+                      key={i}
+                      id={seafood._id}
+                      image={seafood.image}
+                      name={seafood.name}
+                      ratings={seafood.ratings}
+                      origin={seafood.origin}
+                      ingredients={seafood.ingredients}
+                      price={seafood.price}
+                    />
+                  );
                 })}
               </ul>
             </div>
@@ -155,16 +149,18 @@ function Home() {
 
               <ul className="meal_content" data-meats={meats}>
                 {vegetarians.map((vegetarian, i) => {
-                  <CardHome
-                    key={i}
-                    id={vegetarian._id}
-                    image={vegetarian.image}
-                    name={vegetarian.name}
-                    ratings={vegetarian.ratings}
-                    origin={vegetarian.origin}
-                    ingredients={vegetarian.ingredients}
-                    price={vegetarian.price}
-                  />;
+                  return (
+                    <CardHome
+                      key={i}
+                      id={vegetarian._id}
+                      image={vegetarian.image}
+                      name={vegetarian.name}
+                      ratings={vegetarian.ratings}
+                      origin={vegetarian.origin}
+                      ingredients={vegetarian.ingredients}
+                      price={vegetarian.price}
+                    />
+                  );
                 })}
               </ul>
             </div>
@@ -174,16 +170,18 @@ function Home() {
 
               <ul className="meal_content">
                 {desserts.map((dessert, i) => {
-                  <CardHome
-                    key={i}
-                    id={dessert._id}
-                    image={dessert.image}
-                    name={dessert.name}
-                    ratings={dessert.ratings}
-                    origin={dessert.origin}
-                    ingredients={dessert.ingredients}
-                    price={dessert.price}
-                  />;
+                  return (
+                    <CardHome
+                      key={i}
+                      id={dessert._id}
+                      image={dessert.image}
+                      name={dessert.name}
+                      ratings={dessert.ratings}
+                      origin={dessert.origin}
+                      ingredients={dessert.ingredients}
+                      price={dessert.price}
+                    />
+                  );
                 })}
               </ul>
             </div>

@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Outlet, NavLink } from "react-router-dom";
-/* import styled, { keyframes } from "styled-components"; */
+import { MealContext } from "../context/MealsContext";
 import "./Layout.css";
 
 /* this Layout component is mainly created to apply general css style  for to each link : day, favourites, order, events ... , it represents the div box of each NavLInk located in  Navigation.jsx*/
 
 function Layout() {
-  const [welcome, setWelcome] = useState(true);
+  const {
+    state: { welcome },
+  } = useContext(MealContext);
 
-  const handleSeeHome = () => {
-    setWelcome(false);
-  };
   const styleNavLink = ({ isActive }) => {
     const styleOne = {
       padding: "0.15rem 0.5rem",

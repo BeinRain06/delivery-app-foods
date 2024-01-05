@@ -57,7 +57,7 @@ form {
     font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   }
 
-  ul {
+  .register_content ul {
     width: 100%;
     list-style: none;
     display: flex;
@@ -65,7 +65,7 @@ form {
     gap: 0.5rem;
   }
 
-  li {
+  .login_panel_control li {
     width: 100%;
     height: 28px;
 

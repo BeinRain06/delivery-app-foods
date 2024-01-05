@@ -3,22 +3,23 @@ import React, { useContext } from "react";
 import { MealContext } from "../context/MealsContext";
 import "./card-home.css";
 
-function CardHome({ props }) {
+function CardHome({ ...props }) {
   const {
     state: { meals, meats, seaFoods, vegetarians, desserts },
     handleUpstreamOrder,
   } = useContext(MealContext);
 
   return (
-    <li className="dish" onClick={() => console.log(e.target)}>
+    <li className="dishGiven" onClick={() => console.log(e.target)}>
       <div className="dish_content flex-row">
         <img src={props.image} className="my_dish_img" alt="dish missing" />
+        {/* <div className="my_dish_img"></div> */}
 
         <div className="spec_meal">
-          <p className="name_meal">{props.name}bonjour </p>
+          <p className="name_meal">{props.name} </p>
           <div>
             <ul className="rate_content">
-              <li>ratings: 3455{props.ratings} </li>
+              <li>ratings:{props.ratings} </li>
               <li className="ratings">
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>
