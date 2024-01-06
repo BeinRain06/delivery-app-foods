@@ -107,14 +107,18 @@
     width: 100vw;
     padding: 0.25rem 0;
     display: grid;
+    grid-auto-flow: dense;
     grid-template-columns: repeat(auto-fill, minmax(164px, 1fr));
+    grid-auto-rows: 160px auto auto;
     grid-gap: 0.5em;
   }
 
   .dish {
     width: 100%;
     height: 100%;
-    background-color: #24a163;
+    display: grid;
+    grid-row: span 3; /* grid auto rows:160px auto auto (3 elements)*/
+    grid-template-columns: subgrid;
   }
 
   .dish_content {
@@ -349,19 +353,23 @@
   }
 
   .meal_content {
-    padding: 0.5rem 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-gap: 1rem;
   }
 
   .my_dish_img {
     height: 160px;
     padding: 0.5rem 0.5rem 0;
+    display: grid;
+    grid-row: span 1;
   }
 
   .spec_country p {
     padding: 0.25rem 0 0.5rem;
     font-size: 0.9em;
+  }
+
+  .spec_meal .rate_content .ratings_score {
+    padding-right: 0.58rem;
   }
 
   .spec_ingredients {
@@ -375,7 +383,7 @@
   }
 
   .ingredients_used {
-    width: 4rem;
+    width: 4.4rem;
     font-size: 0.85rem;
   }
 

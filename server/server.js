@@ -83,7 +83,9 @@ app.post("/api/delivery/picture", upload.single("meat"), function (req, res) {
   console.log(req.file);
   res.json({
     success: true,
-    profile_url: `/api/delivery/picture/${req.file.filename}`, //fetching url img_name path
+    /*   profile_url: `/api/delivery/picture/${req.file.filename}`, //fetching url img_name path */
+
+    profile_url: `/api/delivery/images/${req.file.filename}`, //fetching url img_name path
   });
 });
 
@@ -91,20 +93,19 @@ app.post("/api/delivery/picture", upload.single("meat"), function (req, res) {
 
 app.use("/api/delivery/images", express.static("public/images/meats"));
 
-/* app.use("/api/delivery/images", express.static("public/images/desserts")); */ //e.g : http://localhost:5000/api/delivery/images/dessert_1702648345030.jpeg
+app.use("/api/delivery/images", express.static("public/images/vegetarians"));
 
-/* app.use(
-  "meals/picture/meat",
-  express.static(__dirname + "/public/images/meat")
-);
 app.use(
-  "meals/picture/vegetarian",
-  express.static(__dirname + "/public/images/vegetarian")
+  "/api/delivery/images",
+  express.static(__dirname + "/public/images/desserts")
 );
+
 app.use(
-  "meals/picture/seafood",
-  express.static(__dirname + "/public/images/seafood")
-); */
+  "/api/delivery/images",
+  express.static(__dirname + "/public/images/seafoods")
+);
+
+/* app.use("/api/delivery/images", express.static("public/images/desserts")); */ //e.g : http://localhost:5000/api/delivery/images/dessert_1702648345030.jpeg
 
 // Alias New Routes middleware
 app.use(`${api}/meals`, mealsRouter);
