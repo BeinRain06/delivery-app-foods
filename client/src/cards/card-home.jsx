@@ -10,7 +10,7 @@ function CardHome({ ...props }) {
   } = useContext(MealContext);
 
   return (
-    <li className="dish" onClick={() => console.log(e.target)}>
+    <li key={props.id} className="dish" onClick={() => console.log(e.target)}>
       <div className="dish_content flex-row">
         <img src={props.image} className="my_dish_img" alt="dish missing" />
 

@@ -60,6 +60,17 @@ div {
   display: none;
 }
 
+.showcase_center_wrap {
+  position: relative;
+  left: -0.5rem;
+  width: 88%;
+  height: auto;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
 .showcase_content_desktop {
   width: 100%;
   height: auto;
@@ -68,14 +79,6 @@ div {
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-}
-
-.showcase_center_wrap {
-  position: relative;
-  left: -0.5rem;
-  width: 80%;
-  height: auto;
-  margin: 0 auto;
 }
 
 .showcase_content_desktop .each_day_dish {
@@ -96,6 +99,28 @@ div {
     padding: 0.5rem;
     font-size: 0.875rem;
     font-weight: bold;
+  }
+
+  .this_day {
+    position: relative;
+    top: calc(-44vh - 5px);
+    left: 0;
+    width: calc(28%);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .this_day .actual_date {
+    width: 100%;
+    height: 100%;
+    padding: 1rem 0.5rem;
+    font-size: clamp(1rem, 1.15rem, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: left;
   }
 
   /*title style*/
@@ -150,8 +175,18 @@ div {
   }
 
   .square_indicator li {
+    cursor: pointer;
     width: 50px;
     height: 20px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: all 500ms ease-in-out;
+  }
+
+  .square_indicator li:hover {
+    cursor: pointer;
+    background-color: #acadad;
+    border: 2px solid #fff;
   }
 
   .square_indicator .square_box {
@@ -182,62 +217,66 @@ div {
   .snaps_inline > * {
     scroll-snap-align: start;
   }
-
-  .menu_scarf {
-    position: relative;
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 3;
-  }
   /*javascript coming*/
 
-  .menu_scarf .scarf_flag {
-    content: "";
+  .on_top_mini {
+    position: relative;
+    width: calc(100vw - 1rem);
+    height: auto;
+    margin: 0 auto;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 35%;
+    grid-template-rows: min-content;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .min_showcase {
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    height: 70px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .mini_meal_img {
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mini_meal_img .box_mini_img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    visibility: hidden;
-    display: flex;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.3);
-    transition: all 450ms ease-in;
-  }
-
-  .menu_scarf:hover .scarf_flag {
-    visibility: visible;
-  }
-
-  .menu_scarf.active_text .scarf_flag {
-    visibility: visible;
-  }
-
-  .menu_scarf .scarf_text {
     color: #fff;
-    font-size: 0.75rem;
-    text-decoration: underline;
-  }
-
-  .dish_table {
-    width: 100%;
-    height: 70px;
+    font-weight: bold;
+    background-color: transparent;
+    border: 5px solid rgb(170, 180, 178);
     display: flex;
-    padding: 0.5rem;
-    flex-direction: column;
     justify-content: center;
-    gap: 0.5rem;
+    align-items: center;
+    transition: all 1s ease-in-out;
   }
 
-  .dish_table .color_dish {
-    cursor: pointer;
+  .mini_meal_img:hover .box_mini_img {
+    background-color: rgba(0, 0, 0, 0.32);
+    border: 5px solid rgb(172, 90, 90);
+  }
+
+  .img_day_top {
     width: 100%;
     height: 100%;
+    padding: 5px;
     object-fit: cover;
-    z-index: 1;
   }
 
   /*showcase*/
@@ -250,7 +289,7 @@ div {
   .show_ray_wrapper {
     position: relative;
     width: 96%;
-    margin: 0 auto;
+    margin: 1rem auto;
     height: 320px;
     font-size: 0.875rem;
     border: 2px solid #817f7f;
@@ -333,12 +372,16 @@ div {
   .show_ray_wrapper > div > div .show_content_dish {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     gap: 0.5rem;
   }
 
   .show_content_dish p {
     font-size: minmax(0.72rem, 0.8rem);
+  }
+
+  .dish_frame {
+    flex-grow: 1;
   }
 
   .dish_frame .dish_img {
@@ -355,6 +398,20 @@ div {
     text-align: center;
   }
 
+  .centralize_info_dish {
+    position: relative;
+    /*   top: calc(clamp(-1.5rem, -0.65rem, 1rem)); */
+    width: 100%;
+    /* height: calc(100% - 100px); */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1rem;
+    background-color: red;
+  }
+
   .show_content_dish .dish_desc {
     width: 100%;
     display: flex;
@@ -366,6 +423,10 @@ div {
     position: relative;
     width: 30%;
     float: right;
+    margin: 0 auto;
+    /* display: flex;
+    align-items: center;
+    text-align: center; */
   }
 
   .dish_desc .dish_mini_desc {
@@ -385,15 +446,19 @@ div {
     background-color: #242424;
   }
 
-  .dish_desc .decription_dish,
-  .dish_desc .dish_bill {
+  .dish_desc .decription_dish {
     width: 50%;
     text-align: left;
   }
 
+  .dish_desc .dish_bill {
+    width: 50%;
+    text-align: center;
+  }
+
   .show_content_dish .dish_order {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 1rem;
   }
 
@@ -405,39 +470,69 @@ div {
 
   .dish_order .dish_ingredients {
     width: 100%;
-    text-align: center;
+    /* text-align: center; */
   }
 
   .dish_order .title_ingredients {
+    width: 100%;
+    text-align: left;
     text-decoration: underline;
   }
 }
 
-@media (min-width: 320px) {
-  .show_ray_wrapper {
-    margin: 0 auto;
-    height: 300px;
-    font-size: 1rem;
-  }
-
+@media (min-width: 280px) {
   .show_content_dish p {
-    font-size: 0.875rem;
-  }
-
-  .dish_frame .dish_name {
-    font-size: 0.92rem;
-  }
-
-  .show_content_dish .dish_order {
-    margin-top: 0.25rem;
-  }
-
-  .dish_desc .dish_price {
-    text-align: center;
+    font-size: clamp(0.79rem, 0.85rem, 1.15rem);
   }
 }
 
-@media (min-width: 710px) {
+@media (min-width: 430px) {
+  .btn {
+    /* padding: 0.25rem 0.5rem; */
+    font-size: clamp(0.8rem, 0.86rem, 1.2rem);
+  }
+  .show_ray_wrapper {
+    width: 60%;
+    height: 300px;
+    font-size: 1rem;
+    background-color: blue;
+  }
+
+  .show_content_dish p {
+    font-size: clamp(0.79rem, 0.8rem, 1.15rem);
+  }
+
+  .dish_frame .dish_name {
+    font-size: clamp(0.85rem, 0.94rem, 1.25rem);
+  }
+
+  .dish_desc .dish_price {
+    font-size: clamp(0.85rem, 0.9rem, 1.25rem);
+  }
+
+  .centralize_info_dish {
+    top: calc(1vw);
+    gap: 0.25rem;
+  }
+}
+
+@media (min-width: 560px) {
+  .show_content_dish p {
+    font-size: clamp(0.9rem, 0.96rem, 1.3rem);
+  }
+  .centralize_info_dish {
+    position: relative;
+    top: calc(1vw - 0.68rem);
+    flex-grow: 2;
+  }
+}
+
+@media (min-width: 760px) {
+  .btn {
+    /* padding: 0.25rem 0.5rem; */
+    font-size: clamp(0.5rem, 0.65rem, 0.8rem);
+  }
+
   .showcase_mobile_wrapper {
     display: none;
   }
@@ -446,9 +541,56 @@ div {
     display: block;
   }
 
+  .showcase_content_desktop {
+    width: 100%;
+    height: auto;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    grid-auto-flow: dense;
+    display: grid;
+    place-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .show_ray_wrapper {
+    width: 100%;
+    height: 300px;
+    font-size: 1rem;
+    background-color: blue;
+  }
+
+  .showcase_content_desktop .each_day_dish {
+    height: 100%;
+    padding: 0.5rem 0;
+  }
+
+  .this_day {
+    position: relative;
+    top: calc(-47vh);
+    left: 0;
+    width: calc(28%);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .this_day .actual_date {
+    width: 100%;
+    height: 100%;
+    padding: 1rem 0.5rem;
+    font-size: clamp(1rem, 1.15rem, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: left;
+  }
+
   .menu_scarf {
     width: 99%;
-    height: auto;
+    height: 300px;
   }
 
   .dish_frame .dish_name {

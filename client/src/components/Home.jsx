@@ -68,7 +68,6 @@ function Home() {
 
     console.log("result:", result);
   }; */
-
   useEffect(() => {
     try {
       const removeLoading = () => {
