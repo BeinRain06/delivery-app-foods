@@ -18,8 +18,10 @@ function CardHome({ ...props }) {
           <p className="name_meal">{props.name} </p>
           <div>
             <ul className="rate_content">
-              <li className="ratings_score">ratings: {props.ratings} </li>
-              <li className="ratings">
+              <li key={props.id} className="ratings_score">
+                ratings: {props.ratings}
+              </li>
+              <li key={props.id} className="ratings">
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>
@@ -36,8 +38,8 @@ function CardHome({ ...props }) {
           <div className="side_ing">
             <span className="title_ing">Ingredients</span>
             <ul className="ingredients_used .flex-row ">
-              {props.ingredients.split().map((ingredient) => {
-                return <li>{ingredient}</li>;
+              {props.ingredients.split().map((ingredient, i) => {
+                return <li key={i}>{ingredient}</li>;
               })}
             </ul>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import { MealContext } from "../context/MealsContext";
-import { getMeals } from "../callAPI/MealsApi";
-import HomeFetchingError from "../../errorBoundary/home_error_boundary";
+import { MealContext } from "../context/MealsContext.jsx";
+import { getMeals } from "../callAPI/MealsApi.jsx";
+import HomeFetchingError from "../../errorBoundary/home_error_boundary.jsx";
 import "./loading.css";
 
 function Loading() {

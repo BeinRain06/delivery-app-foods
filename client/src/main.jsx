@@ -3,8 +3,10 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import MealContextProvider from "./context/MealsContext.jsx";
 import TemplateContextProvider from "./context/TemplateContext.jsx";
+import DailyContextProvider from "./context/DailyContext.jsx";
 import { INITIAL_STATE } from "./context/MealsContext.jsx";
 import { INITIAL_STATE_ONE } from "./context/TemplateContext.jsx";
+import { INITIAL_STATE_TWO } from "./context/DailyContext.jsx";
 import "@fortawesome/fontawesome-free/js/all.js";
 import "@fortawesome/fontawesome-free/css/all.css";
 import App from "./App.jsx";
@@ -15,7 +17,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <MealContextProvider {...INITIAL_STATE}>
         <TemplateContextProvider {...INITIAL_STATE_ONE}>
-          <App />
+          <DailyContextProvider {...INITIAL_STATE_TWO}>
+            <App />
+          </DailyContextProvider>
         </TemplateContextProvider>
       </MealContextProvider>
     </BrowserRouter>

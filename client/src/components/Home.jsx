@@ -81,10 +81,6 @@ function Home() {
       };
 
       console.log("meals:", meals);
-      console.log("seaFoods:", seaFoods);
-      console.log("vegetarians", vegetarians);
-      console.log("meats:", meats);
-      console.log("desserts:", desserts);
       removeLoading();
     } catch (err) {
       console.log(err);
