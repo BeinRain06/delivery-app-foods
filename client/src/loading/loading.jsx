@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { MealContext } from "../context/MealsContext.jsx";
+import { DailyContext } from "../context/DailyContext.jsx";
 import { getMeals } from "../callAPI/MealsApi.jsx";
 import HomeFetchingError from "../../errorBoundary/home_error_boundary.jsx";
 import "./loading.css";
@@ -55,6 +56,7 @@ function Loading() {
       };
 
       insureFetchData();
+
       console.log("123....234");
     } catch (err) {
       console.log(err);

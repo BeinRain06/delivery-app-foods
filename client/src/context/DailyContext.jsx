@@ -6,7 +6,7 @@ export const INITIAL_STATE_TWO = {
   selectVegetarians: [],
   selectDesserts: [],
   endThisVar: "Meats",
-  mondayMenu: [],
+  mondayMenu: {},
   lastActiveDay: {
     day: "Mon",
     isActive: true,

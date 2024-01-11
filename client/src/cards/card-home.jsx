@@ -18,7 +18,7 @@ function CardHome({ ...props }) {
           <p className="name_meal">{props.name} </p>
           <div>
             <ul className="rate_content">
-              <li key={props.id} className="ratings_score">
+              <li key={props.name} className="ratings_score">
                 ratings: {props.ratings}
               </li>
               <li key={props.id} className="ratings">
