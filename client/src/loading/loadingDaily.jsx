@@ -61,10 +61,10 @@ function LoadingDaily() {
     mySet.add("Meats").add("Seafoods").add("Vegetarians").add("Desserts");
 
     let indA1 = meatsData.length / 2;
-    let indA2 = meatsData.length - indA1 + 1;
+    let indA2 = meatsData.length - meatsData.length / 2 + 1;
 
     let indA3 = desData.length / 2;
-    let indA4 = desData.length - indA3 + 1;
+    let indA4 = desData.length - desData.length / 2 + 1;
 
     let tmpArr1 = [],
       tmpArr2 = [],
@@ -72,18 +72,23 @@ function LoadingDaily() {
 
     mySet.forEach(async (item, i) => {
       if (item === "Meats" || item === "Seafoods" || item === "Vegetarians") {
-        let count = 3;
+        let count = 4;
+        tmpArr1 = [];
+        tmpArr2 = [];
+        tmpArr = [];
+        indA1 = meatsData.length / 2;
+        indA2 = meatsData.length - meatsData.length / 2 + 1;
 
-        for (let i = 0; i < meatsData.length; i++) {
-          if (i <= indA1) {
-            item === "Meats" && tmpArr1.push(meatsData[i]);
-            item === "Seafoods" && tmpArr1.push(seaData[i]);
-            item === "Vegetarians" && tmpArr1.push(vegData[i]);
-          } else {
-            item === "Meats" && tmpArr2.push(meatsData[i]);
-            item === "Seafoods" && tmpArr2.push(seaData[i]);
-            item === "Vegetarians" && tmpArr2.push(vegData[i]);
-          }
+        for (let i = 0; i <= indA1; i++) {
+          item === "Meats" && tmpArr1.push(meatsData[i]);
+          item === "Seafoods" && tmpArr1.push(seaData[i]);
+          item === "Vegetarians" && tmpArr1.push(vegData[i]);
+        }
+
+        for (let i = indA2; i < meatsData.length; i++) {
+          item === "Meats" && tmpArr2.push(meatsData[i]);
+          item === "Seafoods" && tmpArr2.push(seaData[i]);
+          item === "Vegetarians" && tmpArr2.push(vegData[i]);
         }
 
         do {
@@ -93,6 +98,9 @@ function LoadingDaily() {
           tmpArr2.splice(b, 1);
           count--;
         } while (count > 0);
+
+        console.log("tmpArr1 & tmpArr2:", tmpArr1, tmpArr2);
+
         tmpArr = tmpArr1.concat(tmpArr2);
 
         item === "Meats" && (await handleSelectedMeats(tmpArr));
@@ -117,23 +125,32 @@ function LoadingDaily() {
           handleMondayMenu((prev) => {
             return { ...prev, vegetarians: tmpArr };
           });
+        /* console.log("tmpArr1: 121", tmpArr1);
+        console.log("tmpArr2: 122", tmpArr2);
+        console.log("tmpArr: 123", tmpArr);
 
+        
+ */
+
+        indA1 = meatsData.length / 2;
+        indA2 = meatsData.length - meatsData.length / 2 + 1;
         tmpArr1 = [];
         tmpArr2 = [];
         tmpArr = [];
       } else if (item === "Desserts") {
-        let count = 3;
+        let count = 2;
+        tmpArr1 = [];
+        tmpArr2 = [];
+        tmpArr = [];
+        indA3 = desData.length / 2;
+        indA4 = desData.length - desData.length / 2 + 1;
 
-        for (let i = 0; i < desData.length; i++) {
-          if (i <= indA3) {
-            item === "Meats" && tmpArr1.push(mesData[i]);
-            item === "Seafoods" && tmpArr1.push(seaData[i]);
-            item === "Vegetarians" && tmpArr1.push(vegData[i]);
-          } else {
-            item === "Meats" && tmpArr2.push(mesData[i]);
-            item === "Seafoods" && tmpArr2.push(seaData[i]);
-            item === "Vegetarians" && tmpArr2.push(vegData[i]);
-          }
+        for (let i = 0; i <= indA3; i++) {
+          item === "Desserts" && tmpArr1.push(desData[i]);
+        }
+
+        for (let i = indA4; i < desData.length; i++) {
+          item === "Desserts" && tmpArr2.push(desData[i]);
         }
 
         do {
@@ -143,6 +160,8 @@ function LoadingDaily() {
           tmpArr2.splice(b, 1);
           count--;
         } while (count > 0);
+
+        console.log("tmpArr1 & tmpArr2:", tmpArr1, tmpArr2);
 
         tmpArr = tmpArr1.concat(tmpArr2);
 
@@ -154,6 +173,11 @@ function LoadingDaily() {
             return { ...prev, desserts: tmpArr };
           });
 
+        /*    console.log("tmpArr1: 121", tmpArr1);
+        console.log("tmpArr2: 122", tmpArr2);
+        console.log("tmpArr: 123", tmpArr); */
+        indA3 = desData.length / 2;
+        indA4 = desData.length - desData.length / 2 + 1;
         tmpArr1 = [];
         tmpArr2 = [];
         tmpArr = [];
@@ -194,8 +218,8 @@ function LoadingDaily() {
     ) {
       if (mondayMenu.length === 0) {
         const result = await fetchData((indexChange = 0));
-        const sendRes = result.data.data;
-        return sendRes;
+
+        return result;
       } else {
         setTimeout(async () => {
           await handleSelectedMeats(mondayMenu.meats);
