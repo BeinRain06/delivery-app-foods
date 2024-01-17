@@ -16,6 +16,7 @@ export const INITIAL_STATE = {
   meats: [],
   vegetarians: [],
   desserts: [],
+  orders: [],
   ratings: {},
   openWeek: false,
   indexDayFormat: "",
@@ -189,6 +190,13 @@ const initStateContext = {
 
 export const MealContext = createContext(initStateContext);
 
+export const obtainUser = () => {
+  const {
+    state: { user },
+  } = useContext(MealContext);
+
+  return user;
+};
 function MealContextProvider({ children, ...INITIAL_STATE }) {
   return (
     <MealContext.Provider value={functionsDeliveryContext(INITIAL_STATE)}>

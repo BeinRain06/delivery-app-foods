@@ -1,16 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useReducer } from "react";
 
 import { MealContext } from "../context/MealsContext";
+import {
+  TemplateContext,
+  INITIAL_STATE_ONE,
+  reducer,
+} from "../context/TemplateContext";
+import Button from "../button/button-shape";
 import "./card-home.css";
 
 function CardHome({ ...props }) {
-  const {
-    state: { meals, meats, seaFoods, vegetarians, desserts },
-    handleUpstreamOrder,
-  } = useContext(MealContext);
-
   return (
-    <li key={props.id} className="dish" onClick={() => console.log(e.target)}>
+    <li key={props.id} className="dish" onClick={(e) => console.log(e.target)}>
       <div className="dish_content flex-row">
         <img src={props.image} className="my_dish_img" alt="dish missing" />
 
@@ -48,11 +49,11 @@ function CardHome({ ...props }) {
               <li>
                 <p className="dish_price">${props.price}</p>
               </li>
-              <li onClick={handleUpstreamOrder}>
-                <button type="button" className=" btn btn_order">
-                  Order
-                </button>
-              </li>
+              <Button
+                mealid={props._id}
+                mealname={props.name}
+                mealprice={props.price}
+              />
             </ul>
           </div>
         </div>

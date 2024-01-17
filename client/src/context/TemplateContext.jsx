@@ -1,6 +1,10 @@
-import React, { useReducer, createContext, useState, useCallback } from "react";
-
-import { MealContext } from "./MealsContext";
+import React, {
+  useReducer,
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+} from "react";
 
 export const INITIAL_STATE_ONE = {
   isNewLocation: false,
@@ -170,13 +174,14 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
   }, []);
 
   const handleUpstreamOrder = useCallback((e) => {
-    const mealID = e.target.parentElement.getAttribute("mealID");
-    const mealName = e.target.parentElement.getAttribute("mealName");
-    const mealPrice = e.target.parentElement.getAttribute("mealPrice");
+    console.log(e.target);
+    const mealID = e.target.parentElement.getAttribute("data-mealid");
+    const mealName = e.target.parentElement.getAttribute("data-mealname");
+    const mealPrice = e.target.parentElement.getAttribute("data-price");
 
     let orderItems = [];
-    let indexItem;
-    let qty;
+    let indexItem = null;
+    let qty = 0;
 
     let orderSpecsCurrent = state.orderSpecsCurrent;
 
@@ -188,13 +193,17 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
         quantity: qty,
         price: mealPrice,
       });
+
+      console.log("orderItems:", orderItems);
     } else {
-      indexItem = orderSpecsCurrent.findIndex((item) => item.meal === mealId);
+      indexItem = orderSpecsCurrent.findIndex((item) => item.meal === mealID);
       if (indexItem) {
+        let orderItem = orderSpecsCurrent[indexItem];
         orderItems = {
           ...orderSpecsCurrent,
-          [indexItem]: { quantity: quantity + 1, ...rest },
+          [indexItem]: { ...orderItem, quantity: orderItem.quantity + 1 },
         };
+        console.log("orderItems:", orderItems);
       } else {
         qty += 1;
         orderItems.push({
@@ -203,14 +212,61 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
           quantity: qty,
           price: mealPrice,
         });
+        console.log("orderItems:", orderItems);
       }
     }
 
-    dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: orderItems });
+    setTimeout(async () => {
+      await updatingValueOrderSpecsCurrent(orderItems, dispatch).then(
+        updatingASecondTime(orderItems, dispatch)
+      );
+
+      /*   await updatingValueOrderSpecsCurrent(orderItems).then((orderItems) =>
+        console.log(orderItems)
+      ); */
+      console.log(state.orderSpecsCurrent);
+    }, 3500);
   }, []);
 
-  const handleClearOrderSpecs = (emptySpecs) => {
-    dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: emptySpecs });
+  const updatingValueOrderSpecsCurrent = (orderItems, dispatch) => {
+    return new Promise(function (resolve, reject) {
+      setTimeout(async () => {
+        await dispatch({
+          type: ACTIONS_TYPES.ORDER_SPECS,
+          payload: orderItems,
+        });
+        resolve(orderItems);
+        console.log(state.orderSpecsCurrent);
+      }, 3000);
+
+      /* console.log(orderSpecsCurrent); */
+    });
+  };
+
+  const updatingASecondTime = (orderItems, dispatch) => {
+    return new Promise(function (resolve, reject) {
+      setTimeout(async () => {
+        await dispatch({
+          type: ACTIONS_TYPES.ORDER_SPECS,
+          payload: orderItems,
+        });
+        resolve(orderItems);
+        console.log(state.orderSpecsCurrent);
+      }, 3000);
+    });
+  };
+
+  const handleOrderSpecs = async (emptySpecs) => {
+    setTimeout(() => {
+      const updateSpecsCurrent = async () => {
+        await dispatch({
+          type: ACTIONS_TYPES.ORDER_SPECS,
+          payload: emptySpecs,
+        });
+      };
+      updateSpecsCurrent();
+    }, 4000);
+    return await state.orderSpecsCurrent;
   };
 
   const useAsyncGenerator = (generatorFn) => {
@@ -282,7 +338,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
     handleTimer,
     handleTemplateOrdersDay,
     handleUpstreamOrder,
-    handleClearOrderSpecs,
+    handleOrderSpecs,
     wholeCountDownTimersDay,
     useAsyncGenerator,
   };
@@ -296,6 +352,7 @@ const initStateContext = {
   handleNewLocation: () => {},
   handleFirstTimeOrder: () => {},
   handleThisOrder: () => {},
+  TemplateContext: () => {},
   handleTicketNumber: () => {},
   handleHoursPrint: () => {},
   handleTotalPrice: () => {},
@@ -303,12 +360,38 @@ const initStateContext = {
   handleTimer: () => {},
   handleTemplateOrdersDay: () => {},
   handleUpstreamOrder: () => {},
-  handleClearOrderSpecs: () => {},
+  handleOrderSpecs: () => {},
   wholeCountDownTimersDay: () => {},
   useAsyncGenerator: () => {},
 };
 
 export const TemplateContext = createContext(initStateContext);
+
+export const affectThisOrder = () => {
+  const {
+    state: { thisOrder },
+    handleThisOrder,
+  } = useContext(TemplateContext);
+
+  return { thisOrder, handleThisOrder };
+};
+
+export const grabOrderSpecsCurrent = () => {
+  const {
+    state: { orderSpecsCurrent },
+  } = useContext(TemplateContext);
+  return orderSpecsCurrent;
+};
+
+export const UpstreamOrderFunction = ({ e }) => {
+  const { handleUpstreamOrder } = useContext(TemplateContext);
+
+  const callUpstreamOrder = async (e) => {
+    await handleUpstreamOrder(e);
+  };
+
+  return <span>{callUpstreamOrder(e)}</span>;
+};
 
 function TemplateContextProvider({ children, ...INITIAL_STATE_ONE }) {
   return (

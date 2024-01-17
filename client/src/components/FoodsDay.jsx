@@ -4,6 +4,7 @@ import { DailyContext } from "../context/DailyContext";
 import moment from "moment";
 import Loading from "../loading/loading";
 import LoadingDaily from "../loading/loadingDaily";
+import Button from "../button/button-shape";
 import "./FoodsDay.css";
 
 function FoodsDay() {
@@ -359,19 +360,11 @@ function FoodsDay() {
                                             {meal.ingredients}
                                           </p>
                                         </div>
-                                        <div
-                                          className="ordering"
-                                          data-mealid={meal._id}
-                                          data-mealname={meal.name}
-                                          data-price={meal.price}
-                                        >
-                                          <button
-                                            className="btn btn_order"
-                                            onClick={handleUpstreamOrder}
-                                          >
-                                            Order
-                                          </button>
-                                        </div>
+                                        <Button
+                                          mealid={meal._id}
+                                          mealname={meal.name}
+                                          mealprice={meal.price}
+                                        />
                                       </div>
                                     </div>
                                   </div>
@@ -423,19 +416,11 @@ function FoodsDay() {
                                             {meal.ingredients}
                                           </p>
                                         </div>
-                                        <div
-                                          className="ordering"
-                                          data-mealid={meal._id}
-                                          data-mealname={meal.name}
-                                          data-price={meal.price}
-                                        >
-                                          <button
-                                            className="btn btn_order"
-                                            onClick={handleUpstreamOrder}
-                                          >
-                                            Order
-                                          </button>
-                                        </div>
+                                        <Button
+                                          mealid={meal._id}
+                                          mealname={meal.name}
+                                          mealprice={meal.price}
+                                        />
                                       </div>
                                     </div>
                                   </div>
@@ -512,16 +497,11 @@ function FoodsDay() {
                                                 {meal.ingredients}
                                               </p>
                                             </div>
-                                            <div
-                                              className="ordering"
-                                              data-mealid={meal._id}
-                                              data-mealname={meal.name}
-                                              data-price={meal.price}
-                                            >
-                                              <button className="btn btn_order">
-                                                Order
-                                              </button>
-                                            </div>
+                                            <Button
+                                              mealid={meal._id}
+                                              mealname={meal.name}
+                                              mealprice={meal.price}
+                                            />
                                           </div>
                                         </div>
                                       </div>
@@ -577,16 +557,11 @@ function FoodsDay() {
                                                 {meal.ingredients}
                                               </p>
                                             </div>
-                                            <div
-                                              className="ordering"
-                                              data-mealid={meal._id}
-                                              data-mealname={meal.name}
-                                              data-price={meal.price}
-                                            >
-                                              <button className="btn btn_order">
-                                                Order
-                                              </button>
-                                            </div>
+                                            <Button
+                                              mealid={meal._id}
+                                              mealname={meal.name}
+                                              mealprice={meal.price}
+                                            />
                                           </div>
                                         </div>
                                       </div>

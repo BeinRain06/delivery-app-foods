@@ -8,7 +8,7 @@ import "./loading.css";
 
 function LoadingDaily() {
   const {
-    state: { lastActiveDay, arrayDayWeeK },
+    state: { lastActiveDay, arrayDayWeeK, mondayMenu },
     handleSelectedMeats,
     handleSelectedSeafoods,
     handleSelectedDesserts,
@@ -216,8 +216,10 @@ function LoadingDaily() {
       lastActiveDay.day === moment().format("ddd") &&
       lastActiveDay.day === "Mon"
     ) {
-      if (mondayMenu.length === 0) {
-        const result = await fetchData((indexChange = 0));
+      console.log("mondayMenu :", Array.from(mondayMenu).length);
+      if (Array.from(mondayMenu).length === 0) {
+        let indexChange = 0;
+        const result = await fetchData(indexChange);
 
         return result;
       } else {

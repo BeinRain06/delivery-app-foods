@@ -70,22 +70,27 @@ function Home() {
   }; */
   useEffect(() => {
     try {
-      const removeLoading = () => {
+      const removeLoading = (timeset) => {
         if (loading) {
           setTimeout(async () => {
             console.log("Loading ...");
 
             await setLoading(false);
-          }, 6000);
+          }, timeset);
         }
       };
 
       console.log("meals:", meals);
-      removeLoading();
+
+      if (meals.length === 0) {
+        removeLoading(6000);
+      } else {
+        removeLoading(2000);
+      }
     } catch (err) {
       console.log(err);
     }
-  }, [meals]);
+  }, []);
 
   return (
     <>

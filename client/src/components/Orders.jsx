@@ -3,7 +3,13 @@ import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
 import { MealContext } from "../context/MealsContext";
 import { TemplateContext } from "../context/TemplateContext";
-import { initiateOrder, updateThisOrder } from "../callAPI/OrdersApi";
+
+import {
+  initiateOrder,
+  updateThisLocationOrder,
+  updateThisTotalPriceOrder,
+} from "../callAPI/OrdersApi";
+
 import { postPayment } from "../callAPI/PaymentApi";
 import { userLogging } from "../callAPI/UsersApi";
 import CardOrder from "../cards/card-order";
@@ -25,11 +31,14 @@ function Orders() {
     state: {
       orderSpecsCurrent,
       thisOrder,
+      firstTimeOrder,
       hoursPrinted,
       totalPrice,
       ticketNumber,
       payment,
       dataTemplatesOrdersDay,
+      isNewLocation,
+      timer,
     },
     handleFirstTimeOrder,
     handleTicketNumber,
@@ -70,9 +79,12 @@ function Orders() {
   const totalRef = useRef(null);
   const validateRef = useRef(null);
 
-  const orderOftheDay = orders.filter(
-    (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
-  );
+  const orderOftheDay =
+    user.id === undefined
+      ? []
+      : orders.filter(
+          (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
+        );
 
   const openToNewLocation = () => {
     if (minimizeOrApplyRef.current.textContent === "Apply") {
@@ -171,7 +183,7 @@ function Orders() {
     validateRef.current.style.border = "2px solid yellow"; // rather add a class (enhance border, border-radius=50% ---> after click go back to default way is was displaying)
 
     //not yet ( this update)
-    updateThisOrder(dataNewLocation);
+    updateThisLocationOrder(dataNewLocation);
     let timerOn = callTimer();
     handleTimer(timerOn);
 
@@ -219,27 +231,27 @@ function Orders() {
     }
   };
 
-  const handleControlRadio = (e) => {
+  const handleControlRadio = async (e) => {
     console.log(e.target);
 
     if (e.target.id === "reg_price_2") {
       if (user.id === undefined) {
-        handleFirstTimeOrder(true);
+        await handleFirstTimeOrder(true);
         return;
       } else {
-        handleFirstTimeOrder(false);
+        await handleFirstTimeOrder(false);
 
-        const myOrder = initiateOrder();
+        const myOrder = await initiateOrder();
 
         handleTotalPrice(() => {
           let total = myOrder.totalPrice;
-          let totalArr = Array.from(total);
+          /*  let totalArr = Array.from(total);
           let output = "";
           totalArr.map((elt) => {
             output += elt + " ";
           });
-          console.log(output);
-          return output;
+          console.log(output); */
+          return total;
         });
       }
 
@@ -314,7 +326,17 @@ function Orders() {
     clearTimer(getDeadTime());
   }, []); */
 
-  useEffect(() => {}, [orderSpecs, indexDayFormat]);
+  useEffect(() => {}, [indexDayFormat]);
+
+  useEffect(() => {
+    const updateTotalPrice = async () => {
+      if (user.id !== undefined) {
+        await updateThisTotalPriceOrder;
+      }
+    };
+    console.log("orderSpecCurrent:", orderSpecsCurrent);
+    updateTotalPrice();
+  }, [orderSpecsCurrent.length]);
 
   return (
     <main className="welcome_orders">
@@ -323,22 +345,28 @@ function Orders() {
         <hr className="breakpoint_orders"></hr>
         <div className="recap_wrapper">
           <ul className="ready_ordered">
-            {orderSpecs.length !== 0 ? (
+            {orderSpecsCurrent.length !== 0 ? (
               meals.map((mealItem, index) => {
-                const orderSpec = orderSpecs[index];
+                const orderSpec = orderSpecsCurrent[index];
                 if (mealItem._id === orderSpec.meal) {
-                  <CardOrder
-                    key={mealItem._id}
-                    name={mealItem.name}
-                    quantity={mealItem.quantity}
-                    origin={mealItem.origin}
-                    ratings={mealItem.ratings}
-                    price={mealItem.price}
-                  />;
+                  return (
+                    <CardOrder
+                      key={mealItem._id}
+                      name={mealItem.name}
+                      quantity={mealItem.quantity}
+                      origin={mealItem.origin}
+                      ratings={mealItem.ratings}
+                      price={mealItem.price}
+                    />
+                  );
                 }
               })
             ) : (
-              <span className="no_orders"> No Items</span>
+              <div className="wrapper_no_items">
+                <div className="content_no">
+                  <span className="no_items">No Items</span>
+                </div>
+              </div>
             )}
             {/* <li className="keeping_table">
               <div className="dish_table">
@@ -524,362 +552,376 @@ function Orders() {
       {dataTemplatesOrdersDay.length !== 0 ? (
         <TemplateOrder />
       ) : (
-        <div className="available_ticket">
-          <div
-            className="available_book_content"
-            ref={ticketManualRef}
-            onClick={hideBookManual}
-          >
-            <div className="available_book_order">
-              <div className="entitled">
-                <span className="title_order">1 Book Order</span>
-              </div>
-              <div className="logo_restaurant">
-                <span className="label_restaurant">TDS</span>
+        orderSpecsCurrent.length !== 0 && (
+          <div className="available_ticket">
+            <div
+              className="available_book_content"
+              ref={ticketManualRef}
+              onClick={hideBookManual}
+            >
+              <div className="available_book_order">
+                <div className="entitled">
+                  <span className="title_order">1 Book Order</span>
+                </div>
+                <div className="logo_restaurant">
+                  <span className="label_restaurant">TDS</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="available_ticket_content" ref={ticketTempRef}>
-            <h4 className="title_order">Sample</h4>
-            <hr className="breakpoint_ticket"></hr>
-            <div className="sample_ticket">
-              <div className="header_sample">
-                <div className="sample_logo">
-                  <div className="logo_brand">
-                    <span>T</span>
-                    <span>D</span>
-                    <span>S</span>
+            <div className="available_ticket_content" ref={ticketTempRef}>
+              <h4 className="title_order">Sample</h4>
+              <hr className="breakpoint_ticket"></hr>
+              <div className="sample_ticket">
+                <div className="header_sample">
+                  <div className="sample_logo">
+                    <div className="logo_brand">
+                      <span>T</span>
+                      <span>D</span>
+                      <span>S</span>
+                    </div>
+                  </div>
+                  <div className="current_day_time">
+                    <h4>{hoursPrinted}</h4>{" "}
+                    {/* change with ok button last step */}
+                  </div>
+                  <div className="statement_to_client">
+                    <p>AS you order, your time is valued by our Team</p>
                   </div>
                 </div>
-                <div className="current_day_time">
-                  <h4>{hoursPrinted}</h4>{" "}
+                <div className="type_sample">
+                  <p style={{ fontWeight: "bold" }}>Delivery Foods</p>
+                  <p>Ticket N³%: {ticketNumber} </p>
                   {/* change with ok button last step */}
                 </div>
-                <div className="statement_to_client">
-                  <p>AS you order, your time is valued by our Team</p>
-                </div>
-              </div>
-              <div className="type_sample">
-                <p style={{ fontWeight: "bold" }}>Delivery Foods</p>
-                <p>Ticket N³%: {ticketNumber} </p>
-                {/* change with ok button last step */}
-              </div>
-              <div className="spec_details_orders">
-                <table>
-                  <tr>
-                    <th>meals</th>
-                    <th>quantity</th>
-                    <th>price</th>
-                    <th>ToTal</th>
-                  </tr>
-                  {}
-                  {orderSpecsCurrent.map((order, i) => {
-                    const meal = order.meal;
-                    const qty = order.quantity;
-                    const minTotal = (meal.price * qty).toFixed(2);
-                    return (
+                <div className="spec_details_orders">
+                  <table>
+                    <thead>
                       <tr>
-                        <td>{meal.name}</td>
-                        <td>{qty}</td>
-                        <td>${meal.price}</td>
-                        <td>${minTotal}</td>
+                        <th>meals</th>
+                        <th>quantity</th>
+                        <th>price</th>
+                        <th>ToTal</th>
                       </tr>
-                    );
-                  })}
+                    </thead>
+                    {}
+                    {orderSpecsCurrent.map((order, i) => {
+                      const meal = order.meal;
+                      const qty = order.quantity;
+                      const minTotal = (meal.price * qty).toFixed(2);
+                      return (
+                        <tbody>
+                          <tr>
+                            <td>{meal.name}</td>
+                            <td>{qty}</td>
+                            <td>${meal.price}</td>
+                            <td>${minTotal}</td>
+                          </tr>
+                        </tbody>
+                      );
+                    })}
 
-                  <tr>
-                    <td>
-                      <i className="fa-solid fa-minus"></i>
-                    </td>
-                    <td>
-                      <i className="fa-solid fa-minus"></i>
-                    </td>
-                    <td>
-                      <i className="fa-solid fa-minus"></i>
-                    </td>
-                    <td>${thisOrder.totalPrice}</td>
-                  </tr>
-                </table>
-              </div>
+                    <tfoot>
+                      <tr>
+                        <td>
+                          <i className="fa-solid fa-minus"></i>
+                        </td>
+                        <td>
+                          <i className="fa-solid fa-minus"></i>
+                        </td>
+                        <td>
+                          <i className="fa-solid fa-minus"></i>
+                        </td>
+                        <td>${thisOrder.totalPrice}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
 
-              <div className="totalPrice_in">
-                <form
-                  className="control_radio"
-                  onSubmit={(e) => handleSubmitOrder(e)}
-                >
-                  <ul
-                    className="input_radio_price"
-                    onChange={(e) => handleControlRadio(e)}
+                <div className="totalPrice_in">
+                  <form
+                    className="control_radio"
+                    onSubmit={(e) => handleSubmitOrder(e)}
                   >
-                    <li>
-                      <input
-                        type="radio"
-                        name="radio_price"
-                        id="reg_price_1"
-                        className="reg_price_1 reg_price"
-                      />
-                      <label htmlFor="none">keep ordering</label>
-                    </li>
-                    <li>
-                      <input
-                        type="radio"
-                        name="radio_price"
-                        id="reg_price_2"
-                        className="reg_price_2 reg_price"
-                      />
-                      <label htmlFor="totalPrice">total Price</label>
-                    </li>
-                  </ul>
-                  <span className="total_bill" ref={totalRef}>
-                    $ {totalPrice}
-                  </span>
-                  <div className="submit_container" ref={applyOrderRef}>
-                    {/*   <button
+                    <ul
+                      className="input_radio_price"
+                      onChange={(e) => handleControlRadio(e)}
+                    >
+                      <li>
+                        <input
+                          type="radio"
+                          name="radio_price"
+                          id="reg_price_1"
+                          className="reg_price_1 reg_price"
+                        />
+                        <label htmlFor="none">keep ordering</label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          name="radio_price"
+                          id="reg_price_2"
+                          className="reg_price_2 reg_price"
+                        />
+                        <label htmlFor="totalPrice">total Price</label>
+                      </li>
+                    </ul>
+                    <span className="total_bill" ref={totalRef}>
+                      $ {totalPrice}
+                    </span>
+                    <div className="submit_container" ref={applyOrderRef}>
+                      {/*   <button
                   type="button"
                   className="btn_apply_order"
                   onClick={callTimer}
                 >
                   Apply
                 </button> */}
-                    {isNewLocation && (
-                      <div className="wrapping_new_location">
-                        <span className="title_hold">Location</span>
-                        <ul
-                          className="figure_area"
-                          onChange={handleNewRadioInput}
-                        >
-                          <li>
-                            <input
-                              type="radio"
-                              name="location"
-                              id="name_area_one"
-                              className="name_area area_expected_one"
-                              ref={newRadioRefOne}
-                            />
-                            <label htmlFor="home">home</label>
-                          </li>
-                          <li>
-                            <input
-                              type="radio"
-                              name="location"
-                              id="name_area_two"
-                              className="name_area area_expected_two"
-                              ref={newRadioRefTwo}
-                            />
-                            <label htmlFor="home">new Location</label>
-                          </li>
-                        </ul>
-                        <div className="add_more_info">
-                          <form
-                            className="control_in_new_direction"
-                            onSubmit={handleFirstStepLoc}
+                      {isNewLocation && (
+                        <div className="wrapping_new_location">
+                          <span className="title_hold">Location</span>
+                          <ul
+                            className="figure_area"
+                            onChange={handleNewRadioInput}
                           >
-                            <ul
-                              className="list_appearance"
-                              ref={newLocationRef}
+                            <li>
+                              <input
+                                type="radio"
+                                name="location"
+                                id="name_area_one"
+                                className="name_area area_expected_one"
+                                ref={newRadioRefOne}
+                              />
+                              <label htmlFor="home">home</label>
+                            </li>
+                            <li>
+                              <input
+                                type="radio"
+                                name="location"
+                                id="name_area_two"
+                                className="name_area area_expected_two"
+                                ref={newRadioRefTwo}
+                              />
+                              <label htmlFor="home">new Location</label>
+                            </li>
+                          </ul>
+                          <div className="add_more_info">
+                            <form
+                              className="control_in_new_direction"
+                              onSubmit={handleFirstStepLoc}
                             >
-                              <li className="adding_phone">
-                                <label htmlFor="phone"> add a number</label>
-                                <input
-                                  type="number"
-                                  name="newNum"
-                                  id="number_add"
-                                  className="number_add"
-                                />
-                              </li>
-                              <li className="adding_city" ref={newCityRef}>
-                                <label htmlFor="city">city</label>
-                                <input
-                                  type="text"
-                                  name="newCity"
-                                  id="city_add"
-                                  className="city_add"
-                                />
-                              </li>
-                              <li className="adding_street" ref={newStreetRef}>
-                                <label htmlFor="street">street</label>
-                                <input
-                                  type="text"
-                                  name="newStreet"
-                                  id="street_add"
-                                  className="street_add"
-                                />
-                              </li>
-                            </ul>
+                              <ul
+                                className="list_appearance"
+                                ref={newLocationRef}
+                              >
+                                <li className="adding_phone">
+                                  <label htmlFor="phone"> add a number</label>
+                                  <input
+                                    type="number"
+                                    name="newNum"
+                                    id="number_add"
+                                    className="number_add"
+                                  />
+                                </li>
+                                <li className="adding_city" ref={newCityRef}>
+                                  <label htmlFor="city">city</label>
+                                  <input
+                                    type="text"
+                                    name="newCity"
+                                    id="city_add"
+                                    className="city_add"
+                                  />
+                                </li>
+                                <li
+                                  className="adding_street"
+                                  ref={newStreetRef}
+                                >
+                                  <label htmlFor="street">street</label>
+                                  <input
+                                    type="text"
+                                    name="newStreet"
+                                    id="street_add"
+                                    className="street_add"
+                                  />
+                                </li>
+                              </ul>
 
-                            <ul className="spread_new_button">
-                              <li>
-                                <button
-                                  type="button"
-                                  className="btn_on_new btn_loc_one"
-                                  onClick={closeFromNewLocation}
-                                >
-                                  Reject
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  type="submit"
-                                  className="btn_on_new btn_loc_two"
-                                  onClick={handleFirstStepLoc}
-                                >
-                                  OK
-                                </button>
-                              </li>
-                            </ul>
-                          </form>
+                              <ul className="spread_new_button">
+                                <li>
+                                  <button
+                                    type="button"
+                                    className="btn_on_new btn_loc_one"
+                                    onClick={closeFromNewLocation}
+                                  >
+                                    Reject
+                                  </button>
+                                </li>
+                                <li>
+                                  <button
+                                    type="submit"
+                                    className="btn_on_new btn_loc_two"
+                                    onClick={handleFirstStepLoc}
+                                  >
+                                    OK
+                                  </button>
+                                </li>
+                              </ul>
+                            </form>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="one_more_step">
+                        <div className="one_more_content" ref={oneMoreStepRef}>
+                          <div className="first_my_word">
+                            <span className="remind_next">One more step:</span>
+                            <p className="small_task">
+                              click on the Button
+                              <span className="remind_validation">
+                                validate
+                              </span>
+                              Please, to terminate the process of sending your
+                              <strong>order</strong>
+                            </p>
+                          </div>
+                          <ul className="process_decision">
+                            <li className="back_my_need">
+                              <span className="drop_">
+                                <i className="fa-solid fa-chevron-left fa-2x"></i>
+                                <i className="fa-solid fa-chevron-left fa-2x"></i>
+                              </span>
+                              <button
+                                type="button"
+                                className="no_mind"
+                                onClick={handleStepBackLoc}
+                              >
+                                Back
+                              </button>
+                            </li>
+                            <li className="agree_your_proposal">
+                              <button
+                                type="button"
+                                className="yes_sure"
+                                onClick={handleMoveToValidation}
+                              >
+                                OK
+                              </button>
+                            </li>
+                          </ul>
                         </div>
                       </div>
-                    )}
 
-                    <div className="one_more_step">
-                      <div className="one_more_content" ref={oneMoreStepRef}>
-                        <div className="first_my_word">
-                          <span className="remind_next">One more step:</span>
-                          <p className="small_task">
-                            click on the Button
-                            <span className="remind_validation">validate</span>
-                            Please, to terminate the process of sending your
-                            <strong>order</strong>
-                          </p>
-                        </div>
-                        <ul className="process_decision">
-                          <li className="back_my_need">
-                            <span className="drop_">
-                              <i className="fa-solid fa-chevron-left fa-2x"></i>
-                              <i className="fa-solid fa-chevron-left fa-2x"></i>
-                            </span>
-                            <button
-                              type="button"
-                              className="no_mind"
-                              onClick={handleStepBackLoc}
-                            >
-                              Back
-                            </button>
-                          </li>
-                          <li className="agree_your_proposal">
-                            <button
-                              type="button"
-                              className="yes_sure"
-                              onClick={handleMoveToValidation}
-                            >
-                              OK
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
+                      <button
+                        type="button"
+                        className="btn_apply_order"
+                        onClick={openToNewLocation}
+                        ref={minimizeOrApplyRef}
+                      >
+                        Apply
+                      </button>
                     </div>
+                  </form>
+                </div>
 
+                {firstTimeOrder && (
+                  <div className="appealing_registration">
+                    {/* //write css */}
+                    <LogOrRegisterForm />
+                  </div>
+                )}
+
+                <br></br>
+
+                {/* start and display when you hit button validate */}
+                <div className="order_track_time">
+                  <div>
+                    Your order will be send in less than
+                    <span style={{ fontWeight: "bold" }}> 2 hours</span>
+                  </div>
+                  <div className="remaining_track_time">
+                    <ul className="post_track_time">
+                      <li>Time Remaining</li>
+
+                      <li className="time_left">{timer}</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="address_customers">
+                  <div className="address_side">
+                    <p>Location : Titi Garage</p>
+                    <p className="grateful_words">
+                      Thanks you Trusting TDs Services
+                    </p>
+                  </div>
+
+                  <div className="submit_ticket">
                     <button
                       type="button"
-                      className="btn_apply_order"
-                      onClick={openToNewLocation}
-                      ref={minimizeOrApplyRef}
+                      id="btn_validate_order"
+                      className="btn_validate_order"
+                      ref={validateRef}
+                      onClick={validateThisOrder}
                     >
-                      Apply
+                      validate
+                    </button>
+                    <button
+                      type="button"
+                      id="btn_play_game"
+                      className="btn_play_game"
+                    >
+                      Fourth Meal Game
                     </button>
                   </div>
-                </form>
-              </div>
 
-              {firstTimeOrder && (
-                <div className="appealing_registration">
-                  {/* //write css */}
-                  <LogOrRegisterForm />
-                </div>
-              )}
+                  <div className="noti_payment">
+                    <p className="notification">
+                      You will be shortly send a code to complete the
+                      transaction
+                    </p>
 
-              <br></br>
+                    <div className="payment_wrapper">
+                      <button type="button" className="btn_sub btn_payment">
+                        Payment
+                      </button>
 
-              {/* start and display when you hit button validate */}
-              <div className="order_track_time">
-                <div>
-                  Your order will be send in less than
-                  <span style={{ fontWeight: "bold" }}> 2 hours</span>
-                </div>
-                <div className="remaining_track_time">
-                  <ul className="post_track_time">
-                    <li>Time Remaining</li>
-
-                    <li className="time_left">{timer}</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="address_customers">
-                <div className="address_side">
-                  <p>Location : Titi Garage</p>
-                  <p className="grateful_words">
-                    Thanks you Trusting TDs Services
-                  </p>
-                </div>
-
-                <div className="submit_ticket">
-                  <button
-                    type="button"
-                    id="btn_validate_order"
-                    className="btn_validate_order"
-                    ref={validateRef}
-                    onClick={validateThisOrder}
-                  >
-                    validate
-                  </button>
-                  <button
-                    type="button"
-                    id="btn_play_game"
-                    className="btn_play_game"
-                  >
-                    Fourth Meal Game
-                  </button>
-                </div>
-
-                <div className="noti_payment">
-                  <p className="notification">
-                    You will be shortly send a code to complete the transaction
-                  </p>
-
-                  <div className="payment_wrapper">
-                    <button type="button" className="btn_sub btn_payment">
-                      Payment
-                    </button>
-
-                    {/* visibility set true when button payment is hitted */}
-                    <div className="payment_methods">
-                      <ul>
-                        <li>
-                          {/* <span>use</span> */}
-                          <span>
-                            <i className="fa-brands fa-cc-paypal"></i>
-                          </span>
-                        </li>
-                        <li>
-                          {/* <span>use</span> */}
-                          <span>
-                            <img
-                              src={MTN}
-                              className="img_payment"
-                              alt="missing payment"
-                            />
-                          </span>
-                        </li>
-                        <li>
-                          {/* <span>use</span> */}
-                          <span>
-                            <img
-                              src={ORANGE}
-                              className="img_payment"
-                              alt="missing payment"
-                            />
-                          </span>
-                        </li>
-                      </ul>
+                      {/* visibility set true when button payment is hitted */}
+                      <div className="payment_methods">
+                        <ul>
+                          <li>
+                            {/* <span>use</span> */}
+                            <span>
+                              <i className="fa-brands fa-cc-paypal"></i>
+                            </span>
+                          </li>
+                          <li>
+                            {/* <span>use</span> */}
+                            <span>
+                              <img
+                                src={MTN}
+                                className="img_payment"
+                                alt="missing payment"
+                              />
+                            </span>
+                          </li>
+                          <li>
+                            {/* <span>use</span> */}
+                            <span>
+                              <img
+                                src={ORANGE}
+                                className="img_payment"
+                                alt="missing payment"
+                              />
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )
       )}
 
       <div className="sticking_template_order">
