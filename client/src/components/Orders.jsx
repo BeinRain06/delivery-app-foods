@@ -346,20 +346,23 @@ function Orders() {
         <div className="recap_wrapper">
           <ul className="ready_ordered">
             {orderSpecsCurrent.length !== 0 ? (
-              meals.map((mealItem, index) => {
-                const orderSpec = orderSpecsCurrent[index];
-                if (mealItem._id === orderSpec.meal) {
-                  return (
-                    <CardOrder
-                      key={mealItem._id}
-                      name={mealItem.name}
-                      quantity={mealItem.quantity}
-                      origin={mealItem.origin}
-                      ratings={mealItem.ratings}
-                      price={mealItem.price}
-                    />
-                  );
-                }
+              orderSpecsCurrent.map((orderSpecItem, index) => {
+                console.log("orderSpecItem :", orderSpecItem);
+                console.log("meals:", meals);
+
+                const mealItem = meals.find(
+                  (item) => item.id === orderSpecItem.meal
+                );
+                return (
+                  <CardOrder
+                    key={mealItem.id}
+                    name={mealItem.name}
+                    quantity={mealItem.quantity}
+                    origin={mealItem.origin}
+                    ratings={mealItem.ratings}
+                    price={mealItem.price}
+                  />
+                );
               })
             ) : (
               <div className="wrapper_no_items">

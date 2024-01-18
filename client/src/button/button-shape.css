@@ -49,6 +49,44 @@
   border: 2px solid #eaeff3;
 }
 
+.order_confirmation {
+  position: relative;
+  display: flex;
+  flex-basis: 50%;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn_confirm_order,
+.btn_reject_order {
+  width: 3.4rem;
+  padding: 0.25rem;
+  display: flex;
+  justify-content: center;
+}
+
+.btn_con_order,
+.btn_rej_order {
+  width: 3.4rem;
+  color: #fff;
+  font-size: clamp(0.65rem, 0.72rem, 0.75rem);
+  /*  background-color: #1c7e4d; */
+  background-color: #3cb617;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  border-radius: 5px;
+  border: 2px solid #fff;
+  animation: animRejectOrConfirm 4.1s ease-in-out forwards;
+}
+
+.btn_rej_order {
+  color: #444;
+  background-color: #d1cbbe;
+  border: 2px solid #333;
+}
+
 @media (min-width: 316px) {
   .btn {
     font-size: 17px;
@@ -68,5 +106,25 @@
   .btn_order,
   .btn_ordered {
     width: 5rem;
+  }
+}
+
+@keyframes animRejectOrConfirm {
+  0% {
+    visibility: hidden;
+    opacity: 0.45;
+    border-radius: 40%;
+  }
+
+  75% {
+    visibility: hidden;
+    opacity: 0.76;
+    border-radius: 40%;
+  }
+
+  100% {
+    visibility: visible;
+    opacity: 1;
+    border-radius: 5px;
   }
 }

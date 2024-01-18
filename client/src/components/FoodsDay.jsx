@@ -272,9 +272,9 @@ function FoodsDay() {
                     ? selectMeats.map((item, i) => {
                         return (
                           <li
-                            key={item._id}
+                            key={item.id}
                             className="min_showcase"
-                            data-mealindex={item._id}
+                            data-mealindex={item.id}
                             onClick={(e) => focusMeal(e)}
                           >
                             <div className="mini_meal_img">
@@ -293,9 +293,9 @@ function FoodsDay() {
                     : suitRenderMeals(endThisVar).map((item, i) => {
                         return (
                           <li
-                            key={item._id}
+                            key={item.id}
                             className="min_showcase"
-                            data-mealindex={item._id}
+                            data-mealindex={item.id}
                           >
                             <div className="mini_meal_img">
                               <div className="box_mini_img">
@@ -320,9 +320,9 @@ function FoodsDay() {
                       ? selectMeats.map((meal, i) => {
                           return (
                             <li
-                              key={meal._id}
+                              key={meal.id}
                               className="each_day_dish"
-                              data-mealindex={meal._id}
+                              data-mealindex={meal.id}
                             >
                               <div className="show_ray_wrapper">
                                 <div>
@@ -361,7 +361,7 @@ function FoodsDay() {
                                           </p>
                                         </div>
                                         <Button
-                                          mealid={meal._id}
+                                          mealid={meal.id}
                                           mealname={meal.name}
                                           mealprice={meal.price}
                                         />
@@ -376,9 +376,9 @@ function FoodsDay() {
                       : suitRenderMeals(endThisVar).map((meal, i) => {
                           return (
                             <li
-                              key={meal._id}
+                              key={meal.id}
                               className="each_day_dish"
-                              data-mealindex={meal._id}
+                              data-mealindex={meal.id}
                             >
                               <div className="show_ray_wrapper">
                                 <div>
@@ -417,7 +417,7 @@ function FoodsDay() {
                                           </p>
                                         </div>
                                         <Button
-                                          mealid={meal._id}
+                                          mealid={meal.id}
                                           mealname={meal.name}
                                           mealprice={meal.price}
                                         />
@@ -454,9 +454,9 @@ function FoodsDay() {
                         ? selectMeats.map((meal, i) => {
                             return (
                               <li
-                                key={meal._id}
+                                key={meal.id}
                                 className="each_day_dish flex-row"
-                                data-mealindex={meal._id}
+                                data-mealindex={meal.id}
                               >
                                 <div className="showcase_dish">
                                   <div className="show_ray_wrapper">
@@ -498,7 +498,7 @@ function FoodsDay() {
                                               </p>
                                             </div>
                                             <Button
-                                              mealid={meal._id}
+                                              mealid={meal.id}
                                               mealname={meal.name}
                                               mealprice={meal.price}
                                             />
@@ -514,9 +514,9 @@ function FoodsDay() {
                         : suitRenderMeals(endThisVar).map((meal, i) => {
                             return (
                               <li
-                                key={meal._id}
+                                key={meal.id}
                                 className="each_day_dish flex-row"
-                                data-mealindex={meal._id}
+                                data-mealindex={meal.id}
                               >
                                 <div className="showcase_dish">
                                   <div className="show_ray_wrapper">
@@ -558,7 +558,7 @@ function FoodsDay() {
                                               </p>
                                             </div>
                                             <Button
-                                              mealid={meal._id}
+                                              mealid={meal.id}
                                               mealname={meal.name}
                                               mealprice={meal.price}
                                             />

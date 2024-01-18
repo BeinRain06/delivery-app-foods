@@ -50,7 +50,7 @@ function CardHome({ ...props }) {
                 <p className="dish_price">${props.price}</p>
               </li>
               <Button
-                mealid={props._id}
+                mealid={props.id}
                 mealname={props.name}
                 mealprice={props.price}
               />
