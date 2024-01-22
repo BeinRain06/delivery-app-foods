@@ -118,11 +118,12 @@ function LogOrRegisterForm() {
     <div className="registration_wrapper">
       <div className="register_content">
         <div className="login_face" ref={loginRef}>
-          <h3 className="title_appeal">LoGin</h3>
+          <h3 className="title_appeal_log">LoGin</h3>
           <form className="login_panel_control" onSubmit={handleLogin}>
-            <label htmlFor="login">login</label>
+            {/* <label htmlFor="login">login</label> */}
             <ul>
               <li>
+                <label htmlFor="email">email</label>
                 <input
                   type="text"
                   name="email"
@@ -131,6 +132,7 @@ function LogOrRegisterForm() {
                 />
               </li>
               <li>
+                <label htmlFor="password">password</label>
                 <input
                   type="text"
                   name="password"
@@ -159,11 +161,11 @@ function LogOrRegisterForm() {
           </form>
         </div>
         <div className="registering_face">
-          <h3 className="title_appeal">reGisTer</h3>
+          <h3 className="title_appeal_reg ">reGisTer</h3>
           <form className="register_panel_control" onSubmit={handleRegistering}>
-            <label htmlFor="register">Register</label>
             <ul>
               <li>
+                <label htmlFor="email">email</label>
                 <input
                   type="text"
                   name="email"
@@ -172,6 +174,7 @@ function LogOrRegisterForm() {
                 />
               </li>
               <li>
+                <label htmlFor="password">password</label>
                 <input
                   type="text"
                   name="password"
@@ -180,6 +183,7 @@ function LogOrRegisterForm() {
                 />
               </li>
               <li>
+                <label htmlFor="city">city</label>
                 <input
                   type="text"
                   name="city"
@@ -188,6 +192,7 @@ function LogOrRegisterForm() {
                 />
               </li>
               <li>
+                <label htmlFor="street">street</label>
                 <input
                   type="text"
                   name="street"
@@ -196,6 +201,7 @@ function LogOrRegisterForm() {
                 />
               </li>
               <li>
+                <label htmlFor="country">country</label>
                 <input
                   type="text"
                   name="country"
@@ -204,6 +210,7 @@ function LogOrRegisterForm() {
                 />
               </li>
               <li>
+                <label htmlFor="phone">phone</label>
                 <input
                   type="text"
                   name="phone"
@@ -212,6 +219,7 @@ function LogOrRegisterForm() {
                 />
               </li>
               <li>
+                <label htmlFor="email">email</label>
                 <input
                   type="text"
                   name="email"

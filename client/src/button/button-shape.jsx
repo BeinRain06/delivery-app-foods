@@ -43,6 +43,7 @@ export const Ordered = ({
   } = useContext(TemplateContext);
 
   const [waiting, setWaiting] = useState(true);
+  const [item, setItem] = useState([]);
 
   const buildOrderItem = () => {
     const mealID = mealid;
@@ -55,12 +56,22 @@ export const Ordered = ({
 
     if (orderSpecsCurrent.length === 0) {
       qty += 1;
+
       orderItems.push({
         meal: mealID,
         name: mealName,
         quantity: qty,
         price: mealPrice,
       });
+
+      /*  setItem(() =>
+        item.push({
+          meal: mealID,
+          name: mealName,
+          quantity: qty,
+          price: mealPrice,
+        })
+      ); */
     } else {
       indexItem = orderSpecsCurrent.findIndex((item) => item.meal === mealID);
 
@@ -74,6 +85,14 @@ export const Ordered = ({
             quantity: orderItem.quantity + 1,
           }),
         ];
+
+        /*  setItem(() => [
+          ...orderSpecsCurrent,
+          (orderSpecsCurrent[indexItem] = {
+            ...orderItem,
+            quantity: orderItem.quantity + 1,
+          }),
+        ]); */
       } else {
         qty += 1;
 
@@ -86,6 +105,16 @@ export const Ordered = ({
             price: mealPrice,
           },
         ];
+
+        /* setItem(() => [
+          ...orderSpecsCurrent,
+          {
+            meal: mealID,
+            name: mealName,
+            quantity: qty,
+            price: mealPrice,
+          },
+        ]); */
       }
     }
 
@@ -111,10 +140,10 @@ export const Ordered = ({
       sendMyNewOrderSpecs();
     }, 3000); */
 
-    buildOrderItem();
     setTimeout(() => {
+      buildOrderItem();
       console.log("orderSpecsCurrent context API:", orderSpecsCurrent);
-    }, 1000);
+    }, 4000);
   }, []);
 
   return (
@@ -182,9 +211,15 @@ export const Reject = ({ isClicked, setIsCliked }) => {
       console.log("updating...");
     }, 2000);
 
+    let newOrderSpecs;
+
     const lastIndex = orderSpecsCurrent.length - 1;
 
-    let newOrderSpecs = orderSpecsCurrent.splice(lastIndex, 1);
+    /*   if (lastIndex === 0) {
+      newOrderSpecs = [];
+    } */
+
+    newOrderSpecs = orderSpecsCurrent.splice(lastIndex, 1);
 
     setTimeout(async () => {
       await handleOrderSpecs(newOrderSpecs);

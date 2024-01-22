@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
+import { MealContext } from "../context/MealsContext";
 import "./card-order.css";
 
-function CardOrder({ props }) {
+function CardOrder({ ...props }) {
   const {
     state: { meals, orderSpecs },
     handleClear,
@@ -13,19 +14,19 @@ function CardOrder({ props }) {
     <li className="keeping_table">
       <div className="dish_table">
         <div className="dish_topic">
-          <p>{props.name}</p>
+          <p className="dish_current_name">{props.name}</p>
           <p>
             <span> Orders :</span>
             <span className="number_order">{props.quantity}</span>
           </p>
         </div>
         <div className="dish_country">{props.origin}</div>
-        <div className="dish_sub_operation ">
+        <div className="dish_sub_opering ">
           <div className="clearing ">
             <button
               type="button"
               id="btn_clear"
-              className=" btn_sub btn_clear "
+              className=" btn_subCard btn_clear "
               onClick={handleClear}
             >
               clear
@@ -35,7 +36,7 @@ function CardOrder({ props }) {
             <button
               type="button"
               id="remove_meal"
-              className="btn_sub remove_meal"
+              className="btn_subCard remove_meal"
               onClick={handleDecrease}
             >
               <i className="fa-solid fa-minus"></i>
@@ -43,7 +44,7 @@ function CardOrder({ props }) {
             <button
               type="button"
               id="add_meal"
-              className="btn_sub add_meal"
+              className="btn_subCard add_meal"
               onClick={handleIncrease}
             >
               <i className="fa-solid fa-plus"></i>
@@ -57,15 +58,15 @@ function CardOrder({ props }) {
           <p className="dish_price">Price: ${props.price} </p>
         </div>
 
-        <div className="brief_overview_meal">
+        <div className="brief_over_meal">
           <div className="brief_img">
             <img
-              src={AhmadIMG}
+              src={props.image}
               className="dish_order_img"
               alt="oops overview"
             />
           </div>
-          <p className="dish_order_desc">Description: Italian</p>
+          <p className="dish_order_desc">Description: {props.origin}</p>
         </div>
       </div>
     </li>

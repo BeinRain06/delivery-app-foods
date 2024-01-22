@@ -11,29 +11,45 @@ form {
   width: 100%;
 }
 
+.btn_ratings_login,
+.btn_ratings_register {
+  position: relative;
+  top: 0.5rem;
+  width: 6rem;
+  height: 32px;
+  display: grid;
+  place-items: center;
+}
+
 @media (min-width: 180px) {
   .registration_wrapper {
     position: relative;
     top: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.35);
+    left: 0;
+    width: 80vw;
+    height: calc(132vh - 3rem);
+    margin: auto;
+    background: rgba(0, 0, 0, 0.65);
   }
 
   .register_content {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
+    top: 0;
+    left: 0;
+    /*  transform: translate(-25%, -25%); */
+    width: 100%;
+    height: 100%;
     padding: 0.5rem;
+    margin: 0 auto;
     color: floralwhite;
     background-color: rgba(247, 244, 242, 0.363);
   }
 
-  .title_appeal {
-    width: 100%;
-    padding: 0.5rem;
+  .title_appeal_log,
+  .title_appeal_reg {
+    width: 30%;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.5rem;
     color: #fff;
     background-color: #444;
     opacity: 0.95;
@@ -41,20 +57,21 @@ form {
     flex-direction: row;
     text-align: left;
     align-items: center;
-    border-top: 2px solid #fff;
-    border-bottom: 2px solid #fff;
+    /*  border-top: 2px solid #fff;
+    border-bottom: 2px solid #fff; */
+  }
+
+  .title_appeal_reg {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
   }
 
   .login_face,
   .registering_face {
     width: 100%;
     height: auto;
-    padding: 0.5rem;
-  }
-
-  form label {
-    padding: 0.5rem 0;
-    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    padding: 1rem 0.5rem;
   }
 
   .register_content ul {
@@ -65,26 +82,75 @@ form {
     gap: 0.5rem;
   }
 
-  .login_panel_control li {
+  .login_panel_control li,
+  .register_panel_control li {
     width: 100%;
-    height: 28px;
-
+    height: auto;
     box-shadow: 0px 0px 5px #4e4949;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
-  input {
+  .login_panel_control label,
+  .register_panel_control label {
+    height: 25px;
+    padding: 0.5rem 0;
+  }
+
+  .login_panel_control input,
+  .register_panel_control input {
     width: 100%;
     padding: 0.25rem;
     color: #fff;
     background-color: rgba(0, 0, 0, 0.3);
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
     display: flex;
     align-items: center;
     border: 2px solid #ebe0e0;
   }
 }
 
+@media (min-width: 600px) {
+  .registration_wrapper {
+    width: 70vw;
+  }
+}
+
 @media (min-width: 960px) {
-  .register_content {
-    width: 60%;
+  .registration_wrapper {
+    width: 64vw;
+    height: calc(146vh - 3rem);
+  }
+
+  .title_appeal_log,
+  .title_appeal_reg {
+    font-size: clamp(0.9rem, 1.1rem, 1.22rem);
+  }
+
+  /* .title_appeal_reg {
+    font-size: clamp(0.9rem, 1rem, 1.12rem);
+  } */
+
+  .login_panel_control li,
+  .register_panel_control li {
+    gap: 0.75rem;
+  }
+
+  .login_panel_control label,
+  .register_panel_control label {
+    font-size: clamp(0.85rem, 1rem, 1.2rem);
+  }
+
+  .login_panel_control input,
+  .register_panel_control input {
+    width: 100%;
+    padding: 0.5rem;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    display: flex;
+    align-items: center;
+    border: 2px solid #ebe0e0;
   }
 }

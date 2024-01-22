@@ -78,13 +78,14 @@
   text-align: center;
   border-radius: 5px;
   border: 2px solid #fff;
-  animation: animRejectOrConfirm 4.1s ease-in-out forwards;
+  animation: animRejectConfirm 4.1s ease-in-out forwards;
 }
 
 .btn_rej_order {
   color: #444;
   background-color: #d1cbbe;
   border: 2px solid #333;
+  /*  animation: animReject 4.1s ease-in-out forwards; */
 }
 
 @media (min-width: 316px) {
@@ -109,22 +110,45 @@
   }
 }
 
-@keyframes animRejectOrConfirm {
+/* @keyframes animReject {
   0% {
     visibility: hidden;
     opacity: 0.45;
     border-radius: 40%;
+    transform: rotate(-180deg);
+  }
+
+  50% {
+    transform: rotate(-120deg);
+    visibility: visible;
+    opacity: 0.85;
   }
 
   75% {
-    visibility: hidden;
-    opacity: 0.76;
+    transform: rotate(-60deg) scale(0.5);
+    visibility: visible;
+    opacity: 0.72;
     border-radius: 40%;
   }
 
   100% {
+    transform: rotate(0deg) scale(1);
     visibility: visible;
     opacity: 1;
+    border-radius: 5px;
+  }
+} */
+
+@keyframes animRejectConfirm {
+  0% {
+    opacity: 0.25;
+    transform: scale(0.45);
+    border-radius: 10%;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
     border-radius: 5px;
   }
 }

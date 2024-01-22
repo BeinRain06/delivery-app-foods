@@ -63,12 +63,18 @@ ul {
 }
 
 .appealing_registration {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.35);
+  height: 132vh;
+  padding: 1rem 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 5;
 }
 
 @media (min-width: 180px) {
@@ -121,7 +127,7 @@ ul {
   .welcome_orders {
     width: 100vw;
     min-height: 100vh;
-    padding: 0 0.5rem;
+    padding: 0 0.25rem;
     margin: 0 auto;
     overflow-x: hidden;
   }
@@ -144,14 +150,25 @@ ul {
   .ready_ordered {
     width: 100%;
     padding: 0.35rem 0;
+    margin: 0 auto;
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 100%;
-    gap: 0.5rem;
+    gap: 0.15rem;
     overflow-x: auto;
+    overscroll-behavior-inline: contain;
     scrollbar-width: thin;
     /*  background-color: #b6be9f; */
     background-color: #d2d3cf;
+  }
+
+  .snaps_inline_0 {
+    scroll-snap-type: inline mandatory;
+    scroll-padding-inline: 0.5rem;
+  }
+
+  .snaps_inline_0 > * {
+    scroll-snap-align: start;
   }
 
   /* .keeping_table {
@@ -291,11 +308,12 @@ ul {
   .available_book_content {
     position: relative;
     left: 15%;
-    visibility: hidden;
+    visibility: visible;
     opacity: 0.2;
     padding: 0 1rem;
     margin: 0 auto;
     transition: all 1s ease-in-out;
+    display: none;
   }
 
   .available_book_content.anim_show_book {
@@ -378,6 +396,7 @@ ul {
     padding: 0.5rem;
     background-color: #fff;
     font-size: 0.8rem;
+    z-index: 2;
   }
 
   .sample_ticket .logo_brand {
@@ -412,6 +431,7 @@ ul {
   }
 
   .header_sample .statement_to_client {
+    display: none;
     font-size: 0.5rem;
     width: 30%;
   }
@@ -434,9 +454,10 @@ ul {
   }
 
   .spec_details_orders {
+    position: relative;
     width: 100%;
     padding: 0.5rem 0;
-    max-height: 160px;
+    height: auto;
     font-size: 0.62rem;
   }
 
@@ -450,6 +471,7 @@ ul {
   table tr {
     width: 100%;
     padding: 0.25rem 0;
+    height: auto;
     font-size: 14px;
     display: flex;
     justify-content: center;
@@ -460,12 +482,27 @@ ul {
     text-align: center;
   }
 
+  .table_recap {
+    position: relative;
+    width: 100%;
+    height: 25px;
+  }
+
+  .table_recap table {
+    width: 100%;
+    height: 100%;
+  }
+
   .totalPrice_in {
     /*  --apply-visibility: hidden; */
+    position: relative;
     width: 100%;
+    height: 85px;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
+    justify-content: center;
     gap: 1rem;
   }
 
@@ -481,16 +518,20 @@ ul {
   .input_radio_price {
     position: relative;
     top: 0;
-    left: -1rem;
-
-    width: 78%;
+    left: -0.5rem;
+    /*  width: 78%; */
+    width: 98%;
     padding: 0.75rem 0 0.5rem;
-    font-size: 15px;
+    /* font-size: clamp(0.8rem, 0.9rem, 1rem); */
+    font-size: clamp(0.5rem, 0.6rem, 0.65rem);
     display: grid;
-    grid-template-columns: repeat(2, minmax(170px, 1fr));
+    place-items: center;
+    /*  grid-template-columns: repeat(2, minmax(170px, 1fr)); */
+    grid-template-columns: repeat(2, minmax(80px, 1fr));
     grid-area: area1;
     grid-column: 1 / span 2;
     grid-row: 1 / span 1;
+    margin: 0 auto;
     /* background-color: blue; */
   }
 
@@ -562,8 +603,8 @@ ul {
   .reg_price {
     position: relative;
     top: 0;
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
     background-color: transparent;
     outline: none;
     border-radius: 50%;
@@ -574,8 +615,8 @@ ul {
   .order_track_time {
     position: relative;
     height: 90px;
-    padding: 0.5rem 0;
-    margin: 1rem 0 0.75rem;
+    padding: 0;
+    margin: 0 0 0.75rem;
     font-size: 0.65rem;
     display: flex;
     justify-content: center;
@@ -1226,33 +1267,6 @@ ul {
     font-size: 0.975rem;
   }
 
-  /* .dish_table {
-    width: 100%;
-    font-size: 0.975rem;
-  }
-
-  .dish_topic .number_order {
-    width: 20px;
-    height: 20px;
-    vertical-align: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .dish_consumed {
-    padding: 0.75rem;
-  }
-
-  .ready_ordered .brief_overview_meal {
-    padding: 0 0.5rem;
-  }
-
-  .ready_ordered .brief_overview_meal .dish_order_img {
-    width: 90px;
-    height: 60px;
-  } */
-
   /*available ticket*/
 
   .btn_validate_order,
@@ -1274,9 +1288,10 @@ ul {
   }
 
   .header_sample .statement_to_client {
-    font-size: 0.62rem;
+    font-size: clamp(0.55rem, 0.6rem, 0.7rem);
     width: 28%;
     text-align: center;
+    display: block;
   }
 
   .type_sample > p {
@@ -1331,16 +1346,29 @@ ul {
   } */
 }
 
-@media (min-width: 460px) {
+@media (min-width: 400px) {
   .ready_ordered {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 50%;
   }
 
-  /* .keeping_table {
+  .ready_ordered {
     width: 100%;
-  } */
+    padding: 0.35rem 0.25rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 230px));
+    grid-auto-flow: unset;
+    grid-auto-columns: 100%;
+    grid-auto-columns: auto;
+    gap: 0.75rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    /*  background-color: #b6be9f; */
+    background-color: #d2d3cf;
+  }
 
   /*available ticket*/
 
@@ -1363,11 +1391,6 @@ ul {
     font-size: 0.875rem;
   }
 
-  .header_sample .statement_to_client {
-    font-size: 0.7rem;
-    width: 28%;
-  }
-
   .type_sample > p {
     font-size: 0.8rem;
   }
@@ -1380,6 +1403,10 @@ ul {
 
   .spec_details_orders {
     font-size: 0.875rem;
+  }
+
+  .input_radio_price {
+    font-size: clamp(0.8rem, 0.9rem, 1rem);
   }
 
   .order_track_time {
@@ -1467,14 +1494,8 @@ ul {
   } */
 }
 
-@media (min-width: 710px) {
-  .ready_ordered {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 35%;
-  }
-
-  /*available ticket*/
+@media (min-width: 800px) {
+  /*  available ticket */
 
   .btn_validate_order,
   .btn_play_game {
@@ -1524,7 +1545,7 @@ ul {
     padding: 0.25rem;
   }
 
-  /*sticking template*/
+  /* sticking template */
 
   .msg_grateful_order .grateful_img {
     height: 186px;
@@ -1541,7 +1562,8 @@ ul {
     font-size: 0.9rem;
   }
 
-  /*order day*/
+  /* order day */
+
   .template_day {
     padding: 0.35rem 0.5rem;
     grid-auto-columns: auto;
@@ -1551,16 +1573,13 @@ ul {
 }
 
 @media (min-width: 960px) {
-  p {
-    font-size: 0.92rem;
+  .input_radio_price {
+    position: relative;
+    top: 0;
+    left: -0.5rem;
+    font-size: clamp(0.95rem, 1rem, 1.12rem);
+    grid-template-columns: repeat(2, minmax(80px, 1fr));
   }
-
-  .ready_ordered {
-    display: grid;
-    grid-auto-flow: unset;
-    grid-template-columns: repeat(auto-fill, 230px);
-  }
-  /*sticking template*/
 
   .msg_grateful_order {
     font-size: 1.25rem;
@@ -1573,6 +1592,10 @@ ul {
     width: 40%;
     font-size: 1.1rem;
     margin: 0 auto;
+  }
+
+  .appealing_registration {
+    height: 146vh;
   }
 
   /*order day*/

@@ -13,7 +13,7 @@ function Home() {
   } = useContext(MealContext);
 
   const {
-    state: { isNewLocation },
+    state: { orderSpecsCurrent },
     useAsyncGenerator,
   } = useContext(TemplateContext);
 
@@ -81,6 +81,7 @@ function Home() {
       };
 
       console.log("meals:", meals);
+      console.log("orderSpecsurrent seen by home:", orderSpecsCurrent);
 
       if (meals.length === 0) {
         removeLoading(6000);

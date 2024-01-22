@@ -344,23 +344,24 @@ function Orders() {
         <h4 className="title_order">Orders</h4>
         <hr className="breakpoint_orders"></hr>
         <div className="recap_wrapper">
-          <ul className="ready_ordered">
+          <ul className="ready_ordered snaps_inline_0">
             {orderSpecsCurrent.length !== 0 ? (
               orderSpecsCurrent.map((orderSpecItem, index) => {
                 console.log("orderSpecItem :", orderSpecItem);
                 console.log("meals:", meals);
 
                 const mealItem = meals.find(
-                  (item) => item.id === orderSpecItem.meal
+                  (item) => item._id === orderSpecItem.meal
                 );
                 return (
                   <CardOrder
-                    key={mealItem.id}
+                    key={mealItem._id}
                     name={mealItem.name}
-                    quantity={mealItem.quantity}
+                    quantity={orderSpecItem.quantity}
                     origin={mealItem.origin}
                     ratings={mealItem.ratings}
                     price={mealItem.price}
+                    image={mealItem.image}
                   />
                 );
               })
@@ -371,183 +372,6 @@ function Orders() {
                 </div>
               </div>
             )}
-            {/* <li className="keeping_table">
-              <div className="dish_table">
-                <div className="dish_topic">
-                  <p>Jutsu Chicken</p>
-                  <p>
-                    <span> Orders :</span>
-                    <span className="number_order">3</span>
-                  </p>
-                </div>
-                <div className="dish_country">Italian</div>
-                <div className="dish_sub_operation ">
-                  <div className="clearing ">
-                    <button
-                      type="button"
-                      id="btn_clear"
-                      className=" btn_sub btn_clear "
-                      onClick={handleClear}
-                    >
-                      clear
-                    </button>
-                  </div>
-                  <div className="adjust_order ">
-                    <button
-                      type="button"
-                      id="remove_meal"
-                      className="btn_sub remove_meal"
-                      onClick={handleDecrease}
-                    >
-                      <i className="fa-solid fa-minus"></i>
-                    </button>
-                    <button
-                      type="button"
-                      id="add_meal"
-                      className="btn_sub add_meal"
-                      onClick={handleIncrease}
-                    >
-                      <i className="fa-solid fa-plus"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="dish_consumed">
-                  <p>Notes :4.6</p>
-
-                  <p className="dish_price">Price: $5</p>
-                </div>
-
-                <div className="brief_overview_meal">
-                  <div className="brief_img">
-                    <img
-                      src={AhmadIMG}
-                      className="dish_order_img"
-                      alt="oops overview"
-                    />
-                  </div>
-                  <p className="dish_order_desc">Description: Italian</p>
-                </div>
-              </div>
-            </li>
-            <li className="keeping_table">
-              <div className="dish_table">
-                <div className="dish_topic">
-                  <p>Jutsu Chicken</p>
-                  <p>
-                    <span> Orders :</span>
-                    <span className="number_order">3</span>
-                  </p>
-                </div>
-                <div className="dish_country">Italian</div>
-                <div className="dish_sub_operation">
-                  <div className="clearing">
-                    <button
-                      type="button"
-                      id="btn_clear"
-                      className=" btn_sub btn_clear "
-                      onClick={handleClear}
-                    >
-                      clear
-                    </button>
-                  </div>
-                  <div className="adjust_order">
-                    <button
-                      type="button"
-                      id="remove_meal"
-                      className="btn_sub remove_meal"
-                      onClick={handleDecrease}
-                    >
-                      <i className="fa-solid fa-minus"></i>
-                    </button>
-                    <button
-                      type="button"
-                      id="add_meal"
-                      className="btn_sub add_meal"
-                      onClick={handleIncrease}
-                    >
-                      <i className="fa-solid fa-plus"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="dish_consumed">
-                  <p>Notes :4.6</p>
-
-                  <p className="dish_price">Price: $5</p>
-                </div>
-
-                <div className="brief_overview_meal">
-                  <div className="brief_img">
-                    <img
-                      src={AhmadIMG}
-                      className="dish_order_img"
-                      alt="oops overview"
-                    />
-                  </div>
-                  <p className="dish_order_desc">Description: Italian</p>
-                </div>
-              </div>
-            </li>
-            <li className="keeping_table">
-              <div className="dish_table">
-                <div className="dish_topic">
-                  <p>Jutsu Chicken</p>
-                  <p>
-                    <span> Orders :</span>
-                    <span className="number_order">3</span>
-                  </p>
-                </div>
-                <div className="dish_country">Italian</div>
-                <div className="dish_sub_operation">
-                  <div className="clearing">
-                    <button
-                      type="button"
-                      id="btn_clear"
-                      className=" btn_sub btn_clear "
-                      onClick={handleClear}
-                    >
-                      clear
-                    </button>
-                  </div>
-                  <div className="adjust_order">
-                    <button
-                      type="button"
-                      id="remove_meal"
-                      className="btn_sub remove_meal"
-                      onClick={handleDecrease}
-                    >
-                      <i className="fa-solid fa-minus"></i>
-                    </button>
-                    <button
-                      type="button"
-                      id="add_meal"
-                      className="btn_sub add_meal"
-                      onClick={handleIncrease}
-                    >
-                      <i className="fa-solid fa-plus"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="dish_consumed">
-                  <p>Notes :4.6</p>
-
-                  <p className="dish_price">Price: $5</p>
-                </div>
-
-                <div className="brief_overview_meal">
-                  <div className="brief_img">
-                    <img
-                      src={AhmadIMG}
-                      className="dish_order_img"
-                      alt="oops overview"
-                    />
-                  </div>
-                  <p className="dish_order_desc">Description: Italian</p>
-                </div>
-              </div>
-            </li> */}
           </ul>
         </div>
       </div>
@@ -601,29 +425,35 @@ function Orders() {
                     <thead>
                       <tr>
                         <th>meals</th>
-                        <th>quantity</th>
+                        <th>qty</th>
                         <th>price</th>
                         <th>ToTal</th>
                       </tr>
                     </thead>
                     {}
                     {orderSpecsCurrent.map((order, i) => {
-                      const meal = order.meal;
+                      const mealId = order.meal;
+                      const meal = meals.find((item) => item._id === mealId);
                       const qty = order.quantity;
                       const minTotal = (meal.price * qty).toFixed(2);
                       return (
-                        <tbody>
-                          <tr>
-                            <td>{meal.name}</td>
-                            <td>{qty}</td>
-                            <td>${meal.price}</td>
-                            <td>${minTotal}</td>
-                          </tr>
-                        </tbody>
+                        <>
+                          <tbody>
+                            <tr>
+                              <td>{meal.name}</td>
+                              <td>{qty}</td>
+                              <td>${meal.price}</td>
+                              <td>${minTotal}</td>
+                            </tr>
+                          </tbody>
+                        </>
                       );
                     })}
-
-                    <tfoot>
+                  </table>
+                </div>
+                <div className="table_recap">
+                  <table>
+                    <tbody>
                       <tr>
                         <td>
                           <i className="fa-solid fa-minus"></i>
@@ -636,7 +466,7 @@ function Orders() {
                         </td>
                         <td>${thisOrder.totalPrice}</td>
                       </tr>
-                    </tfoot>
+                    </tbody>
                   </table>
                 </div>
 
@@ -831,8 +661,6 @@ function Orders() {
                     <LogOrRegisterForm />
                   </div>
                 )}
-
-                <br></br>
 
                 {/* start and display when you hit button validate */}
                 <div className="order_track_time">
@@ -1033,7 +861,7 @@ function Orders() {
         {/* newest order coming */}
         <div className="new_command">
           <button type="button" className="btn_sub btn_newest_order">
-            newest order{" "}
+            newest order
             <span className="new_command_number">{orders.length}</span>
           </button>
         </div>

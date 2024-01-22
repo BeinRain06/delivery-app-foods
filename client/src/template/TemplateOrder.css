@@ -163,7 +163,7 @@
   .spec_details_orders {
     width: 100%;
     padding: 0.5rem 0;
-    max-height: 160px;
+    height: auto;
     font-size: 0.62rem;
   }
 
