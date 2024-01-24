@@ -3,8 +3,6 @@ const mealsRouter = require("./routes/meals-route");
 
 const categoriesRouter = require("./routes/categories-route");
 
-const favouritesRouter = require("./routes/favourites-route");
-
 const ordersRouter = require("./routes/orders-route");
 
 const userRouter = require("./routes/users-route");
@@ -15,7 +13,7 @@ const ratingsRouter = require("./routes/ratings-route");
 
 const paymentRouter = require("./routes/payments-route");
 
-const authJwt = require("./protect-api/jwt");
+const requireAuthJwt = require("./protect-api/jwt");
 
 const errorHandler = require("./protect-api/error-handler");
 
@@ -26,6 +24,7 @@ const express = require("express");
 const app = express();
 
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 const cors = require("cors");
 
@@ -42,14 +41,11 @@ app.use(
   })
 );
 
+app.use(cookieParser());
+
 const PORT = process.env.PORT;
 
 const api = process.env.API_BASE_URL;
-
-//mongoD connect call
-const connectDB = require("./config/db");
-
-connectDB();
 
 //implement multer
 const multer = require("multer");
@@ -110,17 +106,16 @@ app.use(
 // Alias New Routes middleware
 app.use(`${api}/meals`, mealsRouter);
 app.use(`${api}/categories`, categoriesRouter);
-app.use(`${api}/favourites/users`, favouritesRouter);
 app.use(`${api}/orders`, ordersRouter);
 app.use(`${api}/payments`, paymentRouter);
 app.use(`${api}/users`, userRouter);
 app.use(`${api}/ratings`, ratingsRouter);
 app.use(`${api}/ratedmeals`, ratedMealRouter);
+
 // middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-/* app.use(authJwt); */
+app.use(requireAuthJwt());
 app.use(errorHandler);
 
 //middleware display index.html
@@ -130,10 +125,15 @@ app.get("/", (req, res) => {
   res.json({ users: "Hello My Back!" });
 });
 
-app.get("/", (req, res) => {
-  res.json({ users: "Hello My Back!" });
-});
+//mongoDB connect call &  nodejs server listening port
+const connectDB = require("./config/db");
 
-app.listen(PORT, () => {
+connectDB().then(() =>
+  app.listen(PORT, () => {
+    console.log(`server running on port ${PORT}`);
+  })
+);
+
+/* app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
-});
+}); */

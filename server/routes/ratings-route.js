@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const moment = require("moment");
 
 /* const RatingUser = require("../models/rating-user");
  */
@@ -14,16 +15,73 @@ const Meal = require("../models/meal");
 router.use(express.urlencoded({ extended: false }));
 
 //FOR GET
-router.get("/", async (req, res) => {
+router.get("/rating:userId&:mealId", async (req, res) => {
   try {
     const userId = req.params.userId;
+    const mealId = req.params.mealId;
 
-    const ratings = await Rating.findOne({ user: userId }).populate({
+    /*  const ratings = await Rating.findOne({ user: userId }).populate({
       path: "ratedMeals",
-      populate: ["meal", "note", "feedback"],
-    });
+      populate: [{ path: "meal", populate: "name" }, "note", "feedback"],
+    }); */
 
-    res.json({ success: true, data: ratings });
+    const rating = await Rating.findOne({ user: userId });
+
+    if (rating) {
+      const ratedMealElt = rating.ratedMeals;
+
+      const ratedMealsIdMealRef = rating.ratedMeals.meal;
+
+      const ratedMealId = await ratedMealsIdMealRef.map((thisMealId, i) => {
+        if (thisMealId === mealId) {
+          const indexMeal = i;
+          return { thisMealId, indexMeal };
+        }
+      });
+
+      if (ratedMealId.thisMealId) {
+        const thisMealId = ratedMealId.thisMealId;
+
+        const mealGrabbed = await Meal.findById(thisMealId).select(
+          "_id",
+          "name",
+          "longDesc",
+          "origin"
+        );
+
+        const { _id, name, longDesc, origin } = mealGrabbed;
+
+        const note = ratedMealElt.note[ratedMealId.indexMeal];
+
+        const feedback =
+          ratedMealElt.feedback[ratedMealId.indexMeal] !== undefined
+            ? ratedMealElt.feedback[ratedMealId.indexMeal]
+            : "";
+
+        const dateMention = ratedMealElt.dateMention[ratedMealId.indexMeal];
+
+        const result = {
+          _id,
+          name,
+          longDesc,
+          origin,
+          note,
+          feedback,
+          dateMention,
+        };
+
+        return res.status(200).json({ success: true, data: result });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: "This Meal hasn't yet been rated by the user",
+        });
+      }
+    } else {
+      return res
+        .status(200)
+        .json({ success: true, data: "This User hasn't rated any meals" });
+    }
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -34,53 +92,81 @@ router.get("/", async (req, res) => {
 });
 
 // FOR POST (CREATE)
-router.post("/rating", async (req, res) => {
+router.post("/rating:userId", async (req, res) => {
   try {
-    const userId = req.body.user;
+    const userId = req.params.userId;
 
-    let newRatedMeal = new RatedMeal({
-      meal: req.body.meal,
-      note: req.body.note,
-      feedback: req.body.feedback,
+    const rating = await Rating.findOne({ user: userId }).populate({
+      path: "ratedMeals",
+      populate: [
+        { path: "meal", populate: ["_id", "name", "origin"] },
+        "note",
+        "feedback",
+        "dateMention",
+      ],
     });
 
-    /* newRatedMeal = await newRatedMeal
-      .save()
-      .populate({ path: "meal", populate: ["_id", "name"] }); */
+    if (!rating) {
+      const feedback = req.body.feedback !== undefined ? req.body.feedback : "";
 
-    newRatedMeal = await newRatedMeal.save();
+      const dateMention = moment().format("Do MMMM, YYYY");
 
-    let newRating = new Rating({
-      user: userId,
-      ratedMeals: newRatedMeal._id,
-    });
-
-    /* const ratedMeals = await Rating.findById(userId).then(
-      (res) => res.ratedMeals
-    );
-
-    const exist = ratedMeals.forEach(async (ratingMeal, index) => {
-      if (ratingMeal.meal === req.body.meal) {
-        ratingMeal = newRatedMeal;
-        ratedMeals = await Rating.findByIdAndUpdate(userId).then(
-          (res) => res.ratedMeals
-        );
-        return index;
-      }
-    });
-
-    if (!exist) {
-      let newRating = new Rating({
-        user: req.body.user,
-        ratedMeals: newRatedMeal,
+      let newRatedMeal = new RatedMeal({
+        meal: [req.body.meal],
+        note: [req.body.note],
+        feedback: [feedback],
+        dateMention: [dateMention],
       });
-    } */
 
-    /*   newRating = await newRating.save().populate(); */
+      newRatedMeal = await newRatedMeal.save();
 
-    newRating = await newRating.save();
+      let newRating = new Rating({
+        user: userId,
+        ratedMeals: newRatedMeal._id,
+      });
 
-    res.json({ success: true, data: newRating });
+      newRating = await newRating.save();
+
+      return res.json({ success: true, data: newRating });
+    } else {
+      let newArrMeal = rating.ratedMeals.meal;
+      newArrMeal = [
+        ...newArrMeal,
+        (newArrMeal[newArrMeal.length] = req.body.meal),
+      ];
+      let newArrNote = rating.ratedMeals.note;
+      newArrNote = [
+        ...newArrNote,
+        (newArrNote[newArrNote.length] = req.body.note),
+      ];
+      let newArrFeedback = rating.ratedMeals.feedback;
+      newArrFeedback = [
+        ...newArrFeedback,
+        (newArrFeedback[newArrFeedback.length] = req.body.feedback),
+      ];
+      let newArrDateMention = rating.ratedMeals.dateMention;
+      newArrDateMention = [
+        ...newArrDateMention,
+        (newArrDateMention[newArrDateMention.length] =
+          moment().format("Do MMMM, YYYY")),
+      ];
+
+      const updateRatedMeals = await RatedMeal.findByIdAndUpdate(
+        rating.ratedMeals._id,
+        {
+          meal: newArrMeal,
+          note: newArrNote,
+          feedback: newArrFeedback,
+          dateMention: newArrDateMention,
+        },
+        { new: true }
+      );
+
+      res.status(200).json({
+        success: true,
+        data: rating,
+      });
+    }
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -90,32 +176,8 @@ router.post("/rating", async (req, res) => {
   }
 });
 
-//GET SINGlE RATING
-/* router.get("/:userId", async (req, res) => {
-  try {
-    console.log(`try to get the rating ${req.params.userId}`);
-
-    let ratingId = await Rating.findOne({ user: userId }).then(
-      (res) => res._id
-    );
-
-    const userId = req.params.userId;
-    res.json({
-      success: true,
-      ratingId: ratingId,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: "Error: something went wrong can't get this single rating",
-    });
-
-    console.log(err);
-  }
-}); */
-
 // FOR PUT (UPDATE)
-router.put("/rating/:userId", async (req, res) => {
+router.put("/rating:userId", async (req, res) => {
   try {
     console.log("rating on updation process");
 
@@ -123,45 +185,99 @@ router.put("/rating/:userId", async (req, res) => {
 
     const mealId = req.body.meal;
 
-    let ratingId = await Rating.findOne({ user: userId }).then(
-      (res) => res._id
-    );
+    const rating = await Rating.findOne({ user: userId });
 
-    const updateRating = await Rating.findByIdAndUpdate(
-      ratingId,
-      {
-        user: userId, // userId
-        ratedMeals: req.body.ratedMeals,
-      },
-      { new: true }
-    );
+    if (rating) {
+      const ratingMeal = rating.ratedMeals.map((theMealId, i) => {
+        if (theMealId === mealId) {
+          const indexMeal = i;
+          return { theMealId, indexMeal };
+        }
+      });
 
-    //update key properties *ratings*  within Meal Collection
+      if (ratingMeal.theMealId) {
+        let newArrMeal = rating.ratedMeals.meal;
+        newArrMeal = [
+          ...newArrMeal,
+          (newArrMeal[ratingMeal.indexMeal] = req.body.meal),
+        ];
+        let newArrNote = rating.ratedMeals.note;
+        newArrNote = [
+          ...newArrNote,
+          (newArrNote[ratingMeal.indexMeal] = req.body.note),
+        ];
+        let newArrFeedback = rating.ratedMeals.feedback;
+        newArrFeedback = [
+          ...newArrFeedback,
+          (newArrFeedback[newArrFeedback.length] =
+            newArrFeedback[newArrFeedback.length] !== undefined
+              ? req.body.feedback
+              : ""),
+        ];
+        let newArrDateMention = rating.ratedMeals.dateMention;
+        newArrDateMention = [
+          ...newArrDateMention,
+          (newArrDateMention[ratingMeal.indexMeal] =
+            moment().format("Do MMMM, YYYY")),
+        ];
 
-    const rating = await Rating.find().populate({
-      path: "ratedMeals",
-      populate: [
-        "note",
-        { path: "meal", populate: ["_id", "name", "ratings"] },
-      ],
-    });
+        const updateRatedMeals = await RatedMeal.findByIdAndUpdate(
+          rating.ratedMeals._id,
+          {
+            meal: newArrMeal,
+            note: newArrNote,
+            feedback: newArrFeedback,
+            dateMention: newArrDateMention,
+          },
+          { new: true }
+        );
 
-    const notesMeal = async () => {
-      return await Promise.all(
-        rating.map((item) => {
-          const ratedMeals = item.ratedMeals;
-          ratedMeals.map((elt) => {
-            if (elt.meal._id === mealId) {
-              return elt.note;
-            }
-          });
-        })
-      );
+        const notesArr = retrieveAllMealNote(ratingMeal.theMealId);
+
+        const tmpArr = occurenceEachNote(notesArr);
+
+        const maxNoteRes = maxNote(tmpArr);
+
+        const updateMeal = await Meal.findByIdAndUpdate(
+          ratingMeal.theMealId,
+          {
+            ratings: maxNoteRes,
+          },
+          { new: true }
+        );
+
+        res.json({
+          success: true,
+          data: updateRatedMeals,
+          data_meal: updateMeal,
+        });
+      } else {
+        throw new Error(" User hasn't rated this Meal Once");
+      }
+    } else {
+      throw new Error("Cannot Update ratings for this user!");
+    }
+
+    const retrieveAllMealNote = async (mealId) => {
+      const ratings = await Rating.find();
+      let tmpArrNotes = [];
+      const usersRatedMeals = ratings.map((rating, i) => {
+        const singleRatedMeals = rating.ratedMeals;
+
+        singleRatedMeals.meal.map((item, i) => {
+          if (item === mealId) {
+            const noteToTake = singleRatedMeals.notes[i];
+            tmpArrNotes.push(noteToTake);
+          }
+        });
+      });
+
+      return tmpArrNotes;
     };
 
-    const occurenceEachNote = () => {
+    const occurenceEachNote = (notesArr) => {
       let tmpArr = [];
-      let notesMeal = notesMeal();
+      let notesMeal = notesArr;
 
       for (let i = 0; i < notesMeal.length; i++) {
         let count = 0,
@@ -175,14 +291,17 @@ router.put("/rating/:userId", async (req, res) => {
               tmpArr.push(ratingObj);
             } else {
               const indexExist = tmpArr.findIndex(
-                (elt, i) => elt[i] === noteAttributed
+                (elt, i) => elt[i].rating === noteAttributed
               );
 
               if (indexExist) {
-                tmpArr = {
+                tmpArr = [
                   ...tmpArr,
-                  [indexExist]: { ...ratingObj, [count]: count },
-                };
+                  (tmpArr[indexExist] = {
+                    ...tmpArr[indexExist],
+                    [count]: count,
+                  }),
+                ];
               }
             }
 
@@ -194,8 +313,8 @@ router.put("/rating/:userId", async (req, res) => {
       return tmpArr;
     };
 
-    const maxNote = () => {
-      const ourNotes = occurenceEachNote();
+    const maxNote = (occurenceNote) => {
+      const ourNotes = occurenceNote;
 
       const maxCount = ourNotes.reduce((acc, val) => {
         let newacc = acc.count < val.count ? val.count : acc.count;
@@ -204,23 +323,13 @@ router.put("/rating/:userId", async (req, res) => {
       }, 0);
 
       const mynewNote = ourNotes.map((note) => {
-        if (note.count === maxcount) {
+        if (note.count === maxCount) {
           return +note.rating;
         }
       });
 
       return mynewNote;
     };
-
-    const updateMeal = await Meal.findByIdAndUpdate(
-      mealId,
-      {
-        ratings: maxNote(),
-      },
-      { new: true }
-    );
-
-    res.json({ success: true, dataRating: updateRating, dataMeal: updateMeal });
   } catch (err) {
     res.status(500).json({
       success: false,

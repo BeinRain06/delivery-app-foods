@@ -15,6 +15,7 @@ router.post("/order", async (req, res) => {
   try {
     const orderSpecIds = Promise.all(
       req.body.ordersSpecs.map(async (orderSpec) => {
+        // instance of OrderSpecs Model
         let newOrderSpec = new OrderSpecs({
           meal: orderSpec.meal,
           quantity: orderSpec.quantity,
@@ -53,49 +54,6 @@ router.post("/order", async (req, res) => {
       })
     );
 
-    /*  const isHome = async () => {
-      let city = req.body.city;
-      let street = req.body.street;
-      let country = req.body.country;
-
-      let location;
-
-      try {
-        //all field not entered (use this also to make an **alert** or **showAlert** in UI of frontend)
-        if (city === "" || street === "" || country === "") {
-          return res.status(500).json({
-            success: false,
-            error: "Error: Error: one ore more location field missing ! ",
-          });
-        }
-
-        if (city === "" && street === "" && country === "") {
-          const userId = req.body.user; // userId passed here
-          const user = await User.findById(userId);
-          city = user.city;
-          street = user.street;
-          country = user.country;
-        }
-
-        if (city !== "" && street !== "" && country !== "") {
-          city = req.body.city;
-          street = req.body.street;
-          country = req.body.country;
-        }
-
-        location = { city, street, country };
-
-        return location;
-      } catch (err) {
-        res
-          .status(500)
-          .json({ success: false, error: "Error: cannot match location " });
-        console.log(err);
-      }
-    };
-
-    const location = isHome(); */
-
     let order = new Order({
       ordersSpecs: ordersItems,
       city: location.city,
@@ -119,8 +77,8 @@ router.post("/order", async (req, res) => {
   }
 });
 
-// FOR UPDATE
-router.put("/order:orderId", async (req, res) => {
+// UPDATING NEW LOCATION
+router.put("/order/newlocation:orderId", async (req, res) => {
   try {
     const updateOrder = await Order.findByIdAndUpdate(
       req.params.orderId,
@@ -128,6 +86,67 @@ router.put("/order:orderId", async (req, res) => {
         phone: req.body.phone,
         city: req.body.city,
         street: req.body.street,
+      },
+      { new: true }
+    );
+    console.log(" Order successfully updated", updateOrder);
+
+    res.json({ success: true, data: updateOrder });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: "Error: something went wrong can't create rated-meal",
+    });
+    console.log(err);
+  }
+});
+
+// UPDATING ORDER TOTAL PRICE
+router.put("/order:orderId", async (req, res) => {
+  try {
+    const ordersItems = Promise.all(
+      req.body.orderSpecs.map(async (item) => {
+        let orderSpecId = item._id;
+
+        if (orderSpecId === undefined) {
+          let newOrderSpec = new OrderSpecs({
+            meal: item.meal,
+            quantity: item.quantity,
+          });
+          newOrderSpec = await newOrderSpec.save();
+
+          orderSpecId = newOrderSpec._id;
+        }
+
+        const orderSpec = await OrderSpecs.findById(orderSpecId).populate(
+          "meal",
+          ["_id", "name", "price", "origin", "ratings"]
+        );
+        return orderSpec;
+      })
+    );
+
+    const totalPrices = Promise.all(
+      ordersItems.map(async (orderItem) => {
+        const orderSpec = await OrderSpecs.findById(orderItem._id).populate(
+          "meal",
+          "price"
+        );
+
+        const totalPrice = orderSpec.meal.price * orderSpec.quantity;
+
+        return totalPrice;
+      })
+    );
+
+    const totalPrice = totalPrices.reduce((acc, elt) => acc + elt, 0);
+
+    const updateOrder = await Order.findByIdAndUpdate(
+      req.params.orderId,
+      {
+        orderSpecs: ordersItems,
+        totalPrice: totalPrice,
+        codePayment: totalPrice.toString(16),
       },
       { new: true }
     );
