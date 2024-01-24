@@ -17,7 +17,7 @@ export const INITIAL_STATE = {
   vegetarians: [],
   desserts: [],
   orders: [],
-  ratings: {},
+  ratings: [],
   openWeek: false,
   indexDayFormat: "",
   openTagRatings: false,
@@ -64,9 +64,6 @@ export const reducer = (state, action) => {
 
     case ACTIONS_TYPES.RATINGS:
       return { ...state, ratings: action.payload };
-
-    case ACTIONS_TYPES.NEW_RATING:
-      return { ...state, newStandRating: action.payload };
 
     case ACTIONS_TYPES.ORDERS:
       return { ...state, orders: action.payload };
@@ -193,10 +190,21 @@ export const MealContext = createContext(initStateContext);
 export const obtainUser = () => {
   const {
     state: { user },
+    handleUser,
   } = useContext(MealContext);
 
-  return user;
+  return { user, handleUser };
 };
+
+export const ratingsChange = () => {
+  const {
+    state: { ratings },
+    handleRatings,
+  } = useContext(MealContext);
+
+  return { ratings, handleRatings };
+};
+
 function MealContextProvider({ children, ...INITIAL_STATE }) {
   return (
     <MealContext.Provider value={functionsDeliveryContext(INITIAL_STATE)}>

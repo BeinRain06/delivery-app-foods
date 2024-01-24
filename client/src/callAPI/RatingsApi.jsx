@@ -1,14 +1,18 @@
 import React, { useContext } from "react";
 import { ACTIONS_TYPES, MealContext } from "../context/MealsContext";
+import { obtainUser, ratingsChange } from "../context/MealsContext";
 import axios from "axios";
 
 //ratings : {} , ratedMeals : []  (GET METHOD)
-export async function getThisUserRatings() {
-  const {
+export async function getThisUserRatings(mealId) {
+  /* const {
     state: { meals, user },
     handleRatings,
     handleRatedMeals,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
+
+  const { user, handleUser } = obtainUser();
+  const { ratings, handleRatings } = ratingsChange();
 
   const userId = user.id;
 
@@ -16,157 +20,91 @@ export async function getThisUserRatings() {
 
   try {
     let ratings = {};
-    const res = await axios.get(api_url);
+    const res = await axios.get(`${api_url}/${userId}/${mealId}`);
     ratings = res.data.data; //res.data(axios res) - .data (structured data response in backend)
     let ratedMeals = ratings.ratedMeals;
 
-    handleRatings();
+    handleRatings(ratings);
 
-    handleRatedMeals();
+    handleRatedMeals(ratedMeals);
   } catch (err) {
     console.log(err);
   }
 }
 
-/* export async function getMealOnCurrentRatings(userId) {} */
-
 //ratings : {} , ratedMeals : []  (POST/PUT METHOD)
-export async function postOrUpdateRatings() {
-  const { state, dispatch } = useContext(MealContext);
+export async function postOrUpdateRatings(mealIdRef, note, feedback) {
+  handleRatings(newRatings);
 
-  let api_url1, api_url2;
+  console.log("new post rating:", result);
 
   try {
-    let ratedMeals = state.ratedMeals;
-    let potentialNewRating = state.newStandRating;
-    let ratedPulse = { success: false, index: null };
+    const { user, handleUser } = obtainUser();
+    const { ratings, handleRatings } = ratingsChange();
 
-    let ratedMeal, userId;
+    const userId = user.id;
 
-    const mealId = state.spottedForRating.meal;
+    api_url = `http://localhost:5000/api/delivery/ratings/${userId}`;
 
-    let potentialNewRatedMeals =
-      ratedMeals.length !== 0 &&
-      ratedMeals.forEach((item, index) => {
-        if (item.meal === mealId) {
-          item.note = potentialNewRating.note;
-          item.feedback = potentialNewRating.feedback;
+    const mealPresent = getThisUserRatings(mealIdRef);
 
-          ratedPulse = { success: true, index: index };
+    if (mealPresent._id) {
+      //put(update) a new rating
+
+      const res = await axios.put(
+        api_url,
+        {
+          meal: mealIdRef,
+          note: note,
+          feedback: feedback,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      const result = res.data.data;
+
+      const newRatings = ratings.map((rating, i) => {
+        if (rating._id === result._id) {
+          rating = result;
         }
       });
 
-    //  ==> HERE YOU ARE
-    if (ratedMeals.length === 0) {
-      //POST METHOD Rating  & RatedMeal -axios
+      handleRatings(newRatings);
 
-      /* RatedMeal */
-      api_url1 = `http://localhost:5000/api/delivery/ratedmeals`;
-
-      const res = await axios.post(api_url1, {
-        method: "post",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        data: {
-          meal: potentialNewRating.meal,
-          note: potentialNewRating.note,
-          feedback: potentialNewRating.feedback,
-        },
-      });
-
-      const catchRes = res.data.data;
-
-      ratedMeals.push(catchRes);
-
-      /* Rating*/
-      api_url2 = `http://localhost:5000/api/delivery/ratings`;
-
-      const res1 = await axios.post(api_url2, {
-        method: "post",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        data: {
-          user: ratedMeal.userId,
-          ratedMeals: ratedMeals,
-        },
-      });
-    }
-
-    if (ratedPulse.success) {
-      let index = ratedPulse.index;
-
-      ratedMeal = potentialNewRatedMeals[index];
-
-      //PUT METHOD Rating  & RatedMeal -axios
-
-      /* RatedMeal */
-      api_url1 = `http://localhost:5000/api/delivery/ratedmeals/${ratedMeal._id}`;
-
-      const res = await axios.put(api_url1, {
-        method: "put",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        body: {
-          meal: ratedMeal.meal,
-          note: ratedMeal.note,
-          feedback: ratedMeal.feedback,
-        },
-      });
-
-      /* Rating*/
-      api_url2 = `http://localhost:5000/api/delivery/ratings/${userId}`;
-
-      const res1 = await axios.put(api_url2, {
-        method: "put",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        body: {
-          user: ratedMeal.userId,
-          ratedMeals: potentialNewRatedMeals,
-        },
-      });
+      console.log("new update rating:", result);
     } else {
-      //POST METHOD  RatedMeal  &  PUT METHOD Rating -axios
+      //post a new rating
 
-      /* RatedMeal */
-      api_url1 = `http://localhost:5000/api/delivery/ratedmeals`;
+      const res = await axios.post(
+        api_url,
+        {
+          meal: mealIdRef,
+          note: note,
+          feedback: feedback,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
 
-      const res = await axios.post(api_url1, {
-        method: "post",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        body: {
-          meal: potentialNewRating.meal,
-          note: potentialNewRating.note,
-          feedback: potentialNewRating.feedback,
-        },
+      const result = res.data.data;
+
+      const newRatings = ratings.map((rating, i) => {
+        if (rating._id === result._id) {
+          rating = result;
+        }
       });
 
-      const catchRes = res.data.data;
+      handleRatings(newRatings);
 
-      potentialNewRatedMeals.push(catchRes);
-
-      /* Rating*/
-      api_url2 = `http://localhost:5000/api/delivery/ratings/${userId}`;
-
-      const res1 = await axios.put(api_url2, {
-        method: "put",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        body: {
-          user: ratedMeal.userId,
-          ratedMeals: potentialNewRatedMeals,
-        },
-      });
+      console.log("new post rating:", result);
     }
-
-    /*  dispatch({ type: ACTIONS_TYPES.RATINGS, payload: ratedMeals }); */
   } catch (err) {
     console.log(err);
   }

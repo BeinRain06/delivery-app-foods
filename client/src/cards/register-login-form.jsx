@@ -41,10 +41,12 @@ function LogOrRegisterForm() {
       phone === "" ||
       email === ""
     ) {
+      setErrMsgRegister(true);
+
       setTimeout(() => {
-        setErrMsgRegister(true);
+        setErrMsgRegister(false);
       }, 3000);
-      setErrMsgRegister(false);
+
       name === "";
       password === "";
       city === "";
@@ -54,7 +56,9 @@ function LogOrRegisterForm() {
       email === "";
       return;
     }
+
     registeringData = { name, password, city, street, country, phone, email };
+    console.log(registeringData);
 
     userRegistering(registeringData);
 

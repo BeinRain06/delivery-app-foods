@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { getThisUserRatings } from "../callAPI/RatingsApi";
+import { postOrUpdateRatings } from "../callAPI/RatingsApi";
 import { updateRatedMeal } from "../callAPI/RatedMealsApi";
 
 import { postRatedMeal } from "../callAPI/RatedMealsApi";
@@ -38,9 +38,9 @@ const MiniCardWeeksOrders = ({ props }) => {
       return;
     }
 
-    await getThisUserRatings();
+    await postOrUpdateRatings(meal, note, feedback);
 
-    let existInratedMeal = ratings.ratedMeals.map((ratedMeal) => {
+    /* let existInratedMeal = ratings.ratedMeals.map((ratedMeal) => {
       if (ratedMeal.meal === mealId) {
         return ratedMeal;
       }
@@ -61,7 +61,7 @@ const MiniCardWeeksOrders = ({ props }) => {
       let newRatedMeal;
       newRatedMeal = { meal, nite, feedback };
       postRatedMeal(newRatedMeal);
-    }
+    } */
 
     //... post or update ratings ? how to know ?
   };
