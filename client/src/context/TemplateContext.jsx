@@ -15,9 +15,9 @@ export const INITIAL_STATE_ONE = {
   hoursPrinted: "time",
   totalPrice: "_ _ _ _",
   timer: "00:00:00",
-  payment: {},
+  payment: [],
   orderSpecsCurrent: [],
-  countDownDownTimerArr: [], //arr of string
+  countDownTimerArr: [], //arr of string
   dataTemplatesOrdersDay: [], // arr of obj
 };
 
@@ -69,7 +69,7 @@ export const reducer = (state, action) => {
       return { ...state, payment: action.payload };
 
     case ACTIONS_TYPES.COUNT_DOWN_TIMER:
-      return { ...state, countDownDownTimerArr: action.payload };
+      return { ...state, countDownTimerArr: action.payload };
 
     case ACTIONS_TYPES.TEMPLATE_ORDERS_DAY:
       return { ...state, dataTemplatesOrdersDay: action.payload };
@@ -162,10 +162,10 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
   }, []);
 
   const wholeCountDownTimersDay = useCallback((newTimer) => {
-    const oldArrTimers = state.countDownDownTimerArr;
-    const nextIndex = oldArrTimers.length + 1;
+    const oldArrTimers = state.countDownTimerArr;
+    const nextIndex = oldArrTimers.length;
     let newArrTimers;
-    newArrTimers = { ...oldArrTimers, [nextIndex]: newTimer };
+    newArrTimers = [...oldArrTimers, (oldArrTimers[nextIndex] = newTimer)];
 
     dispatch({
       type: ACTIONS_TYPES.COUNT_DOWN_TIMER,
@@ -374,6 +374,15 @@ export const affectThisOrder = () => {
   } = useContext(TemplateContext);
 
   return { thisOrder, handleThisOrder };
+};
+
+export const updateStatusPayment = () => {
+  const {
+    state: { payment },
+    handlePayment,
+  } = useContext(TemplateContext);
+
+  return { payment, handlePayment };
 };
 
 export const grabOrderSpecsCurrent = () => {

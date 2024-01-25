@@ -35,6 +35,7 @@ orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
   phone: {
     type: String,
@@ -47,7 +48,6 @@ orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    required: true,
     default: "pending",
   },
   codePayment: {

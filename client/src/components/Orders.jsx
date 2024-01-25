@@ -48,15 +48,14 @@ function Orders() {
     handlePayment,
     handleTimer,
     handleNewLocation,
-    handleClearOrderSpecs,
+    handleOrderSpecs,
     handleTemplateOrdersDay,
     wholeCountDownTimersDay,
   } = useContext(TemplateContext);
 
   const {
     state: { meals, orders, indexDayFormat, user },
-    handleOrders,
-    handleRatingsFeedback,
+    handleRatings,
     handleDayShift,
   } = useContext(MealContext);
 
@@ -126,51 +125,53 @@ function Orders() {
   const handleFirstStepLoc = (e) => {
     e.preventDefault();
     if (newRadioRefOne.current.checked) {
-      let phone = e.target.elements.newNum.value;
-      if (phone === "") {
+      let phone = e.target.elements.newNum;
+      if (phone.value === "") {
         alert("Please Enter a phone number");
         handleNewLocation(false);
         return;
       }
 
-      let city = "";
-      let street = "";
+      let city = "home";
+      let street = "home";
 
-      let storeNew;
+      let newLocation = {
+        phone: phone.value,
+        city: city,
+        street: street,
+      };
 
-      storeNew = { phone, city, street };
-
-      setDataNewLocation(storeNew);
+      setDataNewLocation(newLocation);
 
       //close new location
       handleNewLocation(false);
-      newPhone = "";
+      phone.value = "";
 
       //move to one more step
       oneMoreStepRef.current.style.visibility = "visible";
     } else if (newRadioRefTwo.current.checked) {
-      let phone = e.target.elements.newNum.value;
-      let city = e.target.elements.newCity.value;
-      let street = e.target.elements.newStreet.value;
+      let phone = e.target.elements.newNum;
+      let city = e.target.elements.newCity;
+      let street = e.target.elements.newStreet;
 
-      if (phone === "" || city === "" || street === "") {
+      if (phone.value === "" || city.value === "" || street.value === "") {
         alert("Please Enter All the field");
         handleNewLocation(false);
         return;
       }
-      available_ticket;
-      let storeNew;
-
-      storeNew = { phone, city, street };
-
-      setDataNewLocation(storeNew);
+      let newlocation = {
+        phone: phone.value,
+        city: city.value,
+        street: street.value,
+      };
+      setDataNewLocation(newlocation);
 
       //close new location box
       handleNewLocation(false);
 
-      newPhone === "";
-      newCity === "";
-      newStreet === "";
+      phone.value === "";
+      city.value === "";
+      street.value === "";
 
       //move to one more step
       oneMoreStepRef.current.style.visibility = "visible";
@@ -183,7 +184,12 @@ function Orders() {
     validateRef.current.style.border = "2px solid yellow"; // rather add a class (enhance border, border-radius=50% ---> after click go back to default way is was displaying)
 
     //not yet ( this update)
-    updateThisLocationOrder(dataNewLocation);
+    const newPartLocation = updateThisLocationOrder(
+      dataNewLocation,
+      thisOrder.id
+    );
+    handleThisOrder(newPartLocation);
+
     let timerOn = callTimer();
     handleTimer(timerOn);
 
@@ -236,29 +242,22 @@ function Orders() {
 
     if (e.target.id === "reg_price_2") {
       if (user.id === undefined) {
-        await handleFirstTimeOrder(true);
+        setTimeout(() => {
+          handleFirstTimeOrder(true);
+        }, 3000);
         return;
       } else {
         await handleFirstTimeOrder(false);
 
-        const myOrder = await initiateOrder();
+        const newThisOrder = await initiateOrder(user.id, orderSpecsCurrent);
 
-        handleTotalPrice(() => {
-          let total = myOrder.totalPrice;
-          /*  let totalArr = Array.from(total);
-          let output = "";
-          totalArr.map((elt) => {
-            output += elt + " ";
-          });
-          console.log(output); */
-          return total;
-        });
+        handleTotalPrice(async () => await newThisOrder.totalPrice);
       }
 
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
     } else if (e.target.id === "reg_price_1") {
-      setTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_");
+      handleTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_");
       applyOrderRef.current.classList.remove("addShowBtn");
       totalRef.current.classList.add("anim_height");
     }
@@ -330,11 +329,19 @@ function Orders() {
 
   useEffect(() => {
     const updateTotalPrice = async () => {
+      let newChange;
       if (user.id !== undefined) {
-        await updateThisTotalPriceOrder;
+        newChange = await updateThisTotalPriceOrder(
+          thisOrder.id,
+          orderSpecsCurrent
+        );
+        await handleThisOrder(newChange);
       }
+      setTimeout(() => {
+        console.log("update Total Price:", newChange);
+      }, 3000);
     };
-    console.log("orderSpecCurrent:", orderSpecsCurrent);
+
     updateTotalPrice();
   }, [orderSpecsCurrent.length]);
 
@@ -808,21 +815,22 @@ function Orders() {
 
             <div className="days_week_order">
               <ul className="days_dish_recap">
-                {orders.map((item, i) => {
-                  let dateOrderedFormat = item.dateOrdered.format("MMM D");
+                {orders.length !== 0 &&
+                  orders.map((item, i) => {
+                    let dateOrderedFormat = item.dateOrdered.format("MMM D");
 
-                  if (dateOrderedFormat === indexDayFormat) {
-                    return <CardWeekOrders ordersSpecs={item.ordersSpecs} />;
-                  } else {
-                    return (
-                      <div className="wrapper_no_items">
-                        <div className="content_no">
-                          <span className="no_items">No Items</span>
+                    if (dateOrderedFormat === indexDayFormat) {
+                      return <CardWeekOrders ordersSpecs={item.ordersSpecs} />;
+                    } else {
+                      return (
+                        <div className="wrapper_no_items">
+                          <div className="content_no">
+                            <span className="no_items">No Items</span>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  }
-                })}
+                      );
+                    }
+                  })}
                 {/* <li className="day_dish_recall">
                   <div className="dish_table">
                     <div className="dish_sub_operation">

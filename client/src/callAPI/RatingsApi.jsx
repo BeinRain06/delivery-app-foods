@@ -1,16 +1,8 @@
-import React, { useContext } from "react";
-import { ACTIONS_TYPES, MealContext } from "../context/MealsContext";
 import { obtainUser, ratingsChange } from "../context/MealsContext";
 import axios from "axios";
 
 //ratings : {} , ratedMeals : []  (GET METHOD)
 export async function getThisUserRatings(mealId) {
-  /* const {
-    state: { meals, user },
-    handleRatings,
-    handleRatedMeals,
-  } = useContext(MealContext); */
-
   const { user, handleUser } = obtainUser();
   const { ratings, handleRatings } = ratingsChange();
 
@@ -60,7 +52,7 @@ export async function postOrUpdateRatings(mealIdRef, note, feedback) {
         },
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -88,7 +80,7 @@ export async function postOrUpdateRatings(mealIdRef, note, feedback) {
         },
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
         }
       );

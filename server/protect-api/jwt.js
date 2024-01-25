@@ -1,5 +1,5 @@
 // install and require npm **expressJwt** package
-const expressJwt = require("express-jwt");
+const { expressjwt: jwt } = require("express-jwt");
 
 require("dotenv").config();
 
@@ -10,7 +10,7 @@ function requireAuthJwt() {
 
   //question: where are cookies needed ?
 
-  return expressJwt({
+  return jwt({
     secret,
     algorithms: ["HS256"],
     isRevoked: isRevokedCallback,
@@ -18,10 +18,7 @@ function requireAuthJwt() {
     path: [
       { url: /\/api\/delivery\/meals(.*)/, methods: ["GET", "OPTIONS"] },
       { url: /\/api\/delivery\/categories(.*)/, methods: ["GET", "OPTIONS"] },
-      {
-        url: /\/api\/delivery\/favourites\/users(.*)/,
-        methods: ["GET", "OPTIONS"],
-      },
+
       {
         url: /\/api\/delivery\/orders(.*)/,
         methods: ["GET", "OPTIONS", "POST", "PUT"],
@@ -29,10 +26,13 @@ function requireAuthJwt() {
       {
         url: /\/api\/delivery\/payments(.*)/,
         methods: ["GET", "POST"],
-      }`${api}/users/login`,
+      },
+      {
+        url: /\/api\/delivery\/users\/register(.*)/,
+        methods: ["POST", "PUT"],
+      },
+      `${api}/users/login`,
 
-      `${api}/users/register`,
-      `/`,
       `${api}/ratedmeals`,
       `${api}/ratings`,
 

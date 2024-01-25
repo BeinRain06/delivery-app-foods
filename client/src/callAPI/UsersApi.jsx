@@ -1,5 +1,3 @@
-import React, { useContext } from "react";
-import { ACTIONS_TYPES, MealContext } from "../context/MealsContext";
 import { obtainUser } from "../context/MealsContext";
 import axios from "axios";
 
@@ -13,13 +11,6 @@ export async function userRegistering(
   email
 ) {
   try {
-    /*   const {
-      state: { user },
-      handleUser,
-    } = useContext(MealContext); */
-
-    const { user, handleUser } = obtainUser();
-
     let userIdentity;
 
     let api_url = "http://localhost:5000/api/delivery/users/register";
@@ -38,7 +29,7 @@ export async function userRegistering(
       },
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
       }
     );
@@ -46,7 +37,7 @@ export async function userRegistering(
     userIdentity = res.data.data;
     console.log(userIdentity);
 
-    handleUser(userIdentity);
+    return userIdentity;
   } catch (err) {
     console.log(err);
   }
@@ -54,13 +45,6 @@ export async function userRegistering(
 
 export async function userLogging(email, password) {
   try {
-    /*  const {
-      state: { user },
-      handleUser,
-    } = useContext(MealContext); */
-
-    const { user, handleUser } = obtainUser();
-
     let userIdentity;
 
     let api_url = "http://localhost:5000/api/delivery/users/login";
@@ -68,7 +52,7 @@ export async function userLogging(email, password) {
     const res = await axios.post(
       api_url,
       {
-        user: email,
+        email: email,
         password: password,
       },
       {
@@ -82,7 +66,34 @@ export async function userLogging(email, password) {
 
     console.log(userIdentity);
 
-    // console.log(token);
+    return userIdentity;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function updatingRegistering(email) {
+  try {
+    const { user, handleUser } = obtainUser();
+
+    let userIdentity;
+
+    let api_url = "http://localhost:5000/api/delivery/users/register";
+
+    const res = await axios.put(
+      api_url,
+      {
+        email: email,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    userIdentity = res.data.data;
+    console.log(userIdentity);
 
     handleUser(userIdentity);
   } catch (err) {

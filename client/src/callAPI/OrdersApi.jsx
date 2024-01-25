@@ -1,117 +1,80 @@
-import React, { useContext } from "react";
 import axios from "axios";
-import { obtainUser } from "../context/MealsContext";
 
-import {
-  affectThisOrder,
-  grabOrderSpecsCurrent,
-} from "../context/TemplateContext";
-
-export async function initiateOrder() {
+export async function initiateOrder(userId, orderSpecsCurrent) {
   try {
-    const user = obtainUser();
-
-    const handleThisFnOrder = async (setThisOrder) => {
-      const setnewChange = await affectThisOrder().handleThisOrder(
-        setThisOrder
-      );
-    };
-
     let api_url = "http://localhost:5000/api/delivery/orders";
 
-    const res = await axios.post(`${api_url}/order`, {
-      method: "post",
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded",
-      },
-      data: {
+    const res = await axios.post(
+      `${api_url}/order`,
+      {
         ordersSpecs: orderSpecsCurrent,
-        user: user.id,
+        user: userId,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    const thisOrder = await res.data.data;
+    const order = await res.data.data;
 
-    console.log(thisOrder);
+    console.log(order);
 
-    handleThisFnOrder(order);
-
-    return thisOrder;
-
-    // console.log(token);
+    return order;
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function updateThisLocationOrder(phone, city, street) {
+export async function updateThisLocationOrder(dataNewLocation, orderId) {
   try {
-    const thisVarOrder = affectThisOrder().thisOrder;
-
-    const handleThisFnOrder = async (setThisOrder) => {
-      const setnewChange = await affectThisOrder().handleThisOrder(
-        setThisOrder
-      );
-    };
-
-    const orderId = thisVarOrder._id;
+    const { phone, city, street } = dataNewLocation;
 
     let api_url = "http://localhost:5000/api/delivery/orders/order/newlocation";
 
-    const res = await axios.put(`${api_url}/${orderId}`, {
-      method: "put",
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded",
-      },
-      data: {
+    const res = await axios.put(
+      `${api_url}/${orderId}`,
+      {
         phone: phone,
         city: city,
         street: street,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const order = res.data.data;
 
-    handleThisFnOrder(order);
-
     console.log(order);
 
-    // console.log(token);
-
-    handleThisFnOrder(order);
+    return order;
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function updateThisTotalPriceOrder() {
+export async function updateThisTotalPriceOrder(orderId, orderSpecsCurrent) {
   try {
-    const orderSpecsCurrent = grabOrderSpecsCurrent();
-
-    const thisVarOrder = affectThisOrder().thisOrder;
-
-    const handleThisFnOrder = async (setThisOrder) => {
-      const setnewChange = await affectThisOrder().handleThisOrder(
-        setThisOrder
-      );
-    };
-
-    const orderId = thisVarOrder._id;
-
     let api_url = "http://localhost:5000/api/delivery/orders/order";
 
-    const res = await axios.put(`${api_url}/${orderId}`, {
-      method: "put",
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded",
-      },
-      data: {
+    const res = await axios.put(
+      `${api_url}/${orderId}`,
+      {
         orderSpecs: orderSpecsCurrent,
       },
-    });
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const order = res.data.data;
-    await handleThisFnOrder(order);
 
     return order;
   } catch (err) {

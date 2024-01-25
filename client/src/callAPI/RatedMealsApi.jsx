@@ -1,5 +1,3 @@
-import React, { useContext } from "react";
-import { ACTIONS_TYPES, MealContext } from "../context/MealsContext";
 import axios from "axios";
 
 export async function updateRatedMeal(ratedMealId, meal, note, feedback) {
@@ -7,17 +5,19 @@ export async function updateRatedMeal(ratedMealId, meal, note, feedback) {
     let ratedMeal;
     const api_url = "http://localhost:5000/api/delivery/ratedMeals/ratedmeal";
 
-    const res = await axios.put(`${api_url}/${ratedMealId}`, {
-      method: "put",
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded",
-      },
-      data: {
+    const res = await axios.put(
+      `${api_url}/${ratedMealId}`,
+      {
         meal: meal,
         note: note,
         feedback: feedback,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     ratedMeal = res.data.data;
     console.log(ratedMeal);
@@ -32,17 +32,19 @@ export async function postRatedMeal(meal, note, feedback) {
     const api_url =
       "http://localhost:5000/api/delivery/ratedMeals/newratedmeal";
 
-    const res = await axios.post(api_url, {
-      method: "post",
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded",
-      },
-      data: {
+    const res = await axios.post(
+      api_url,
+      {
         meal: meal,
         note: note,
         feedback: feedback,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     ratedMeal = res.data.data;
     console.log(ratedMeal);

@@ -54,7 +54,12 @@ router.get("/login", async (req, res) => {
     const maxAge = 3 * 1000 * 60 * 60 * 24; // 3days in ms
     //jwt signing
     const token = createToken(user.id, user.isAdmin);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge });
+
+    res.cookie(
+      "jwt",
+      { token: token, user: user.id },
+      { httpOnly: true, maxAge: maxAge }
+    );
 
     res.json({ success: true, data: user });
   } catch (err) {
@@ -65,7 +70,7 @@ router.get("/login", async (req, res) => {
   }
 });
 
-//POST user( create)
+//POST user register
 /*new user*/
 router.post("/register", async (req, res) => {
   try {
@@ -82,13 +87,17 @@ router.post("/register", async (req, res) => {
     });
 
     user = await user.save();
+    const userId = user.id;
 
     const maxAge = 3 * 1000 * 60 * 60 * 24; // 3days in ms
     //jwt signing
     const token = createToken(user.id, user.isAdmin);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge });
+    res.cookie("jwt", { token }, { httpOnly: true, maxAge: maxAge });
+    res.cookie("userId", { userId }, { httpOnly: true, maxAge: maxAge });
 
     res.status(200).json({ success: true, data: user });
+
+    console.log(`token - ${user.name} :`, token);
   } catch (err) {
     res
       .status(500)
@@ -101,7 +110,10 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     //find user by email
-    const user = await User.findOne({ email: req.body.email }).populate();
+    console.log("req :", req.body);
+    const user = await User.findOne({ email: req.body.email });
+
+    console.log("this User:", user);
 
     const secret = process.env.secret;
 
@@ -112,16 +124,17 @@ router.post("/login", async (req, res) => {
       });
     }
     //compare password enter with the existing one in data using bcrypt
-    if (user && bcrypt.comparSync(req.body.password, user.passwordHash)) {
+    if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
       const maxAge = 3 * 1000 * 60 * 60 * 24; // 3days in ms
       //jwt signing
       const token = createToken(user.id, user.isAdmin);
-      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge });
+      res.cookie("jwt", { token }, { httpOnly: true, maxAge: maxAge });
+      res.cookie("userId", { userId }, { httpOnly: true, maxAge: maxAge });
 
       return res.status(200).json({
         success: true,
-        message: "User Authenticated!",
-        data: data,
+        message: `User ${user.name} Authenticated!`,
+        data: {},
       });
     } else {
       return res.status(400).json({
@@ -138,12 +151,11 @@ router.post("/login", async (req, res) => {
 });
 
 //PUT(update user)
-router.put("/register:userId", async (req, res) => {
+router.put("/register", async (req, res) => {
   try {
+    //t]TWO OPTIONS: forgot Password/ update info user
     let newPassword;
-    const userId = req.params.userId;
-    const userExist = await User.findById(userId);
-
+    const user = await User.findOne({ email: req.body.email });
     if (req.body.isAdmin) {
       throw new Error("Invalid Update! Specifying Admin parameter");
     }
@@ -155,30 +167,34 @@ router.put("/register:userId", async (req, res) => {
       newPassword = req.body.password;
     }
 
-    const updateUser = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        name: req.body.name,
-        passwordHash: bcrypt.hashSync(newPassword, 10),
-        city: req.body.city,
-        street: req.body.city,
-        country: req.body.country,
-        phone: req.body.phone,
-        email: req.body.email,
-        isAdmin: userExist.isAdmin,
-      },
-      { new: true }
-    );
+    if (user) {
+      const updateUser = await User.findByIdAndUpdate(
+        user.id,
+        {
+          name: req.body.name,
+          passwordHash: bcrypt.hashSync(newPassword, 10),
+          city: req.body.city,
+          street: req.body.city,
+          country: req.body.country,
+          phone: req.body.phone,
+          email: req.body.email,
+        },
+        { new: true }
+      );
+      const userId = user.id;
+      const maxAge = 3 * 1000 * 60 * 60 * 24; // 3days in ms
+      //jwt signing
+      const token = createToken(user.id, user.isAdmin);
+      res.cookie("jwt", { token }, { httpOnly: true, maxAge: maxAge });
+      res.cookie("userId", { userId }, { httpOnly: true, maxAge: maxAge });
 
-    const maxAge = 3 * 1000 * 60 * 60 * 24; // 3days in ms
-    //jwt signing
-    const token = createToken(user.id, user.isAdmin);
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge });
-
-    res.status(200).json({
-      success: true,
-      data: updateUser,
-    });
+      return res.status(200).json({
+        success: true,
+        data: updateUser,
+      });
+    } else {
+      throw new Error("Cannot found User!");
+    }
   } catch (err) {
     res
       .status(500)
@@ -207,9 +223,10 @@ router.delete("/:userId", async (req, res) => {
 /*get Favourites*/
 
 //GET an User favourite
-router.get("/favourites:userId", async (req, res) => {
+router.get("/favourites", async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.cookie.jwt.user;
+
     /* const favourites = await Favourite.findBy({}).sort({ ratings: -1 }).limit(3); */
     const user = await User.findById(userId).populate({
       path: "favourites",

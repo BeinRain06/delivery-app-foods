@@ -54,10 +54,28 @@ router.post("/order", async (req, res) => {
       })
     );
 
+    const userHomeLocation = async () => {
+      const userId = req.body.user;
+      let city, street;
+
+      if (req.body.city === "home" || req.body.street === "home") {
+        const currentUser = await User.findById(userId);
+        city = currentUser.city;
+        street = currentUser.street;
+        return { city, street };
+      } else {
+        city = req.body.city;
+        street = req.body.street;
+        return { city, street };
+      }
+    };
+
+    const { city, street } = userHomeLocation();
+
     let order = new Order({
       ordersSpecs: ordersItems,
-      city: location.city,
-      street: location.street,
+      city: city,
+      street: street,
       totalPrice: totalPrice,
       user: req.body.user, // frontend pass id of user login or created (retrieve the id user after user is authenticated)
       phone: req.body.phone,

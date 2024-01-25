@@ -1,7 +1,9 @@
 import React, { useContext, useRef, useState } from "react";
 import { MealContext } from "../context/MealsContext";
+import { TemplateContext } from "../context/TemplateContext";
 import { userLogging, userRegistering } from "../callAPI/UsersApi";
 import { initiateOrder } from "../callAPI/OrdersApi";
+import moment from "moment";
 import "./register-login-form.css";
 
 function LogOrRegisterForm() {
@@ -9,16 +11,21 @@ function LogOrRegisterForm() {
     state: { user },
     handleRegisterForm,
     handleLoginForm,
-    handleFirstTimeOrder,
+    handleUser,
+  } = useContext(MealContext);
+
+  const {
+    state: { orderSpecsCurrent, thisOrder, totalPrice },
+    handleThisOrder,
+    handleTotalPrice,
     handleTicketNumber,
     handleHoursPrint,
-    handleTotalPrice,
-  } = useContext(MealContext);
+    handleFirstTimeOrder,
+  } = useContext(TemplateContext);
   const loginRef = useRef();
   const [errMsgLogin, setErrMsgLogin] = useState(false);
   const [errMsgRegister, setErrMsgRegister] = useState(false);
 
-  const [totalPrice, setTotalPrice] = useState("_ _ _ _");
   const [ticketNumber, setTicketNumber] = useState("_ _ _ _ _ _");
   const [hoursPrinted, setHoursPrinted] = useState("time");
 
@@ -60,25 +67,36 @@ function LogOrRegisterForm() {
     registeringData = { name, password, city, street, country, phone, email };
     console.log(registeringData);
 
-    userRegistering(registeringData);
+    handleUser(async () => await userRegistering(registeringData));
 
     const myOrder = initiateOrder();
-    handleTotalPrice(() => {
-      let total = myOrder.totalPrice;
-      let totalArr = Array.from(total);
-      let output = "";
-      totalArr.map((elt) => {
-        output += elt + " ";
-      });
-      console.log(output);
-      return output;
-    });
 
-    handleTicketNumber((totalPrice - 3).toString(16));
+    setTimeout(() => {
+      const primarUpdation = async () => {
+        await handleTotalPrice(() => {
+          let total = myOrder.totalPrice;
+          let totalArr = Array.from(total);
+          let output = "";
+          totalArr.map((elt) => {
+            output += elt + " ";
+          });
+          console.log(output);
+          return output;
+        });
+        await handleHoursPrint(moment().format("hh:mm a"));
+      };
 
-    handleHoursPrint(moment().format("hh:mm a"));
+      primarUpdation();
+    }, 5000);
 
-    handleFirstTimeOrder(false);
+    setTimeout(() => {
+      const secondaryUpdation = async () => {
+        await handleTicketNumber((totalPrice - 3).toString(16));
+        await handleFirstTimeOrder(false);
+      };
+
+      secondaryUpdation();
+    }, 4000);
   };
 
   const handleLogin = (e) => {
@@ -97,25 +115,39 @@ function LogOrRegisterForm() {
       return;
     }
     loginData = { email, password };
-    userLogging(loginData);
 
-    const myOrder = initiateOrder();
-    handleTotalPrice(() => {
-      let total = myOrder.totalPrice;
-      let totalArr = Array.from(total);
-      let output = "";
-      totalArr.map((elt) => {
-        output += elt + " ";
-      });
-      console.log(output);
-      return output;
-    });
+    setTimeout(() => {
+      const primarUpdation = async () => {
+        await handleUser(() => userLogging(loginData));
+        await handleThisOrder(() => initiateOrder(user.id, orderSpecsCurrent));
+      };
+      primarUpdation();
+    }, 5000);
 
-    handleTicketNumber((totalPrice - 3).toString(16));
+    setTimeout(() => {
+      const secondaryUpdation = async () => {
+        await handleTotalPrice(() => {
+          let total = thisOrder.totalPrice;
+          let totalArr = Array.from(total);
+          let output = "";
+          totalArr.map((elt) => {
+            output += elt + " ";
+          });
+          console.log(output);
+          return output;
+        });
+        await handleHoursPrint(moment().format("hh:mm a"));
+      };
+      secondaryUpdation();
+    }, 4300);
 
-    handleHoursPrint(moment().format("hh:mm a"));
-
-    handleFirstTimeOrder(false);
+    setTimeout(() => {
+      const thirdlyUpdation = async () => {
+        await handleTicketNumber((totalPrice - 3).toString(16));
+        await handleFirstTimeOrder(false);
+      };
+      thirdlyUpdation();
+    }, 4000);
   };
 
   return (
