@@ -2,72 +2,40 @@ import React, { useState, useContext, useEffect } from "react";
 
 import { MealContext } from "../context/MealsContext.jsx";
 import { TemplateContext } from "../context/TemplateContext.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import mealSplice, {
+  mealActions,
+  recordAllMealSliceState,
+} from "../redux/services/MealSplice.jsx";
+import templateSlice, {
+  templateActions,
+  recordAllTemplateSliceState,
+} from "../redux/services/TemplateSlice.jsx";
 import CardHome from "../cards/card-home.jsx";
 import Loading from "../loading/loading.jsx";
 
 import "./Home.css";
 
 function Home() {
-  const {
+  /*  const {
     state: { meals, meats, seaFoods, vegetarians, desserts },
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
 
-  const {
+  /*  const {
     state: { orderSpecsCurrent },
     useAsyncGenerator,
-  } = useContext(TemplateContext);
+  } = useContext(TemplateContext); */
+
+  const dispatch = useDispatch();
+
+  const { meals, meats, seaFoods, vegetarians, desserts } = useSelector(
+    recordAllMealSliceState
+  );
+
+  const { orderSpecsCurrent } = useSelector(recordAllTemplateSliceState);
 
   const [loading, setLoading] = useState(true);
 
-  /* useEffect(() => {
-    const getAllMeals = useCallback(async () => {
-      let tmpResArray = [0, 1, 2, 3, 4];
-      await tmpResArray.map((item) => {
-        useAsyncGenerator(getAllTypesFoods);
-      });
-    }, []);
-    console.log(getAllMeals());
-  }, []); */
-
-  /* const getAllMeals = useCallback(() => {
-    let tmpArray = [0, 1, 2, 3, 4];
-    tmpArray.map(async (item) => {
-      const holdItem = await useAsyncGenerator(getAllTypesFoods);
-      setTmpResArray((prevState) => ({ ...prevState, holdItem }));
-    });
-  }, [meals]); */
-
-  /* const fetchData = async () => {
-    
-    const result = await getMeals();
-    const meals = result.data.data;
-    let desData = [];
-    let vegData = [];
-    let seaData = [];
-    let meatsData = [];
-
-    if (meals) {
-      handleMeals(meals);
-      await meals.map((item, i) => {
-        if (item.category._id === import.meta.env.VITE_ID_SEAFOODS) {
-          seaData.push(item);
-        } else if (item.category._id === import.meta.env.VITE_ID_MEATS) {
-          meatsData.push(item);
-        } else if (item.category._id === import.meta.env.VITE_ID_VEGETARIANS) {
-          vegData.push(item);
-        } else if (item.category._id === import.meta.env.VITE_ID_DESSERTS) {
-          desData.push(item);
-        }
-      });
-    }
-
-    handleSeaFoods(seaData);
-    handleDesserts(desData);
-    handleMeats(meatsData);
-    handleVegetarians(vegData);
-
-    console.log("result:", result);
-  }; */
   useEffect(() => {
     try {
       const removeLoading = (timeset) => {

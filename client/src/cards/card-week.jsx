@@ -5,7 +5,7 @@ import "./card-week.css";
 function CardWeek({ ...props }) {
   let i = +props.id;
   /*  let current = moment().startof("week").add(i, "days"); */
-  console.log("first day :", moment.weekdays(0));
+  /* console.log("first day :", moment.weekdays(0)); */
   let current = moment().add(i, "days");
 
   let activeClass = i === 0 ? "active_day day_week" : "day_week";

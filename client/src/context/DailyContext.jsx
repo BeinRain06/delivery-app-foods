@@ -131,6 +131,7 @@ const dailyContextDataExit = (INITIAL_STATE_TWO) => {
       payload: newVegetarians,
     });
   }, []);
+
   return {
     state,
     handleLastActiveDay,

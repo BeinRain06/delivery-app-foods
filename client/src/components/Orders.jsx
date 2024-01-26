@@ -3,6 +3,15 @@ import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
 import { MealContext } from "../context/MealsContext";
 import { TemplateContext } from "../context/TemplateContext";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  mealActions,
+  recordAllMealSliceState,
+} from "../redux/services/MealSplice";
+import {
+  templateActions,
+  recordAllTemplateSliceState,
+} from "../redux/services/TemplateSlice";
 
 import {
   initiateOrder,
@@ -27,7 +36,7 @@ import "./Orders.css";
 }
 
 function Orders() {
-  const {
+  /* const {
     state: {
       orderSpecsCurrent,
       thisOrder,
@@ -51,13 +60,32 @@ function Orders() {
     handleOrderSpecs,
     handleTemplateOrdersDay,
     wholeCountDownTimersDay,
-  } = useContext(TemplateContext);
+  } = useContext(TemplateContext); */
 
-  const {
+  /* const {
     state: { meals, orders, indexDayFormat, user },
     handleRatings,
     handleDayShift,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
+
+  const dispatch = useDispatch();
+
+  const {
+    orderSpecsCurrent,
+    thisOrder,
+    firstTimeOrder,
+    hoursPrinted,
+    totalPrice,
+    ticketNumber,
+    payment,
+    dataTemplatesOrdersDay,
+    isNewLocation,
+    timer,
+  } = useSelector(recordAllTemplateSliceState);
+
+  const { meals, orders, indexDayFormat, user } = useSelector(
+    recordAllMealSliceState
+  );
 
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
@@ -87,7 +115,8 @@ function Orders() {
 
   const openToNewLocation = () => {
     if (minimizeOrApplyRef.current.textContent === "Apply") {
-      handleNewLocation(true);
+      /*  handleNewLocation(true); */
+      dispatch(templateActions.handleNewLocation(true));
     } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
       ticketTempRef.current.style.classList.add("anim_hide_template");
 
@@ -104,12 +133,14 @@ function Orders() {
   };
 
   const closeFromNewLocation = () => {
-    handleNewLocation(false);
+    /* handleNewLocation(false); */
+    dispatch(templateActions.handleNewLocation(false));
   };
 
   const handleStepBackLoc = () => {
     oneMoreStepRef.current.style.visibility = "hidden";
-    handleNewLocation(true);
+    /* handleNewLocation(true); */
+    dispatch(templateActions.handleNewLocation(true));
     validateRef.current.style.classList.remove("impact_more_step");
   };
 
@@ -117,9 +148,13 @@ function Orders() {
     oneMoreStepRef.current.style.visibility = "hidden";
     validateRef.current.style.classList.add("impact_more_step");
 
-    handleTicketNumber((totalPrice - 3).toString(16));
+    /* handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00");
+    handleTimer("02:00:00"); */
+
+    dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
+    dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
+    dispatch(templateActions.handleTimer("02:00:00"));
   };
 
   const handleFirstStepLoc = (e) => {
@@ -128,7 +163,8 @@ function Orders() {
       let phone = e.target.elements.newNum;
       if (phone.value === "") {
         alert("Please Enter a phone number");
-        handleNewLocation(false);
+        /*  handleNewLocation(false); */
+        dispatch(templateActions.handleNewLocation(false));
         return;
       }
 
@@ -144,7 +180,8 @@ function Orders() {
       setDataNewLocation(newLocation);
 
       //close new location
-      handleNewLocation(false);
+      /*  handleNewLocation(false); */
+      dispatch(templateActions.handleNewLocation(false));
       phone.value = "";
 
       //move to one more step
@@ -156,7 +193,8 @@ function Orders() {
 
       if (phone.value === "" || city.value === "" || street.value === "") {
         alert("Please Enter All the field");
-        handleNewLocation(false);
+        /* handleNewLocation(false); */
+        dispatch(templateActions.handleNewLocation(false));
         return;
       }
       let newlocation = {
@@ -167,7 +205,8 @@ function Orders() {
       setDataNewLocation(newlocation);
 
       //close new location box
-      handleNewLocation(false);
+      /* handleNewLocation(false); */
+      dispatch(templateActions.handleNewLocation(false));
 
       phone.value === "";
       city.value === "";
@@ -188,12 +227,18 @@ function Orders() {
       dataNewLocation,
       thisOrder.id
     );
-    handleThisOrder(newPartLocation);
+
+    /* handleThisOrder(newPartLocation);
+     handleTimer(timerOn);
+    wholeCountDownTimersDay(callTimer()); */
+
+    dispatch(templateActions.handleThisOrder(newPartLocation));
 
     let timerOn = callTimer();
-    handleTimer(timerOn);
 
-    wholeCountDownTimersDay(callTimer());
+    dispatch(templateActions.handleTimer(timerOn));
+
+    dispatch(templateActions.wholeCountDownTimersDay(callTimer()));
 
     //post to collection payment
     postPayment(thisOrder._id, "mtn-money", thisOrder.codePayment);
@@ -209,13 +254,16 @@ function Orders() {
     };
 
     // store element templateOrder in the specified Template in Context API
-    handleTemplateOrdersDay(templateOrderVar);
+
+    /* handleTemplateOrdersDay(templateOrderVar); */
+
+    dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
   };
 
-  const resetDataHoldingTemplate = () => {
+  /*  const resetDataHoldingTemplate = () => {
     handleTicketNumber("_ _ _ _ _ _");
     handleHoursPrint("time");
     handleTotalPrice("_ _ _ _");
@@ -223,6 +271,23 @@ function Orders() {
     handlePayment({});
     handleClearOrderSpecs([]);
     handleTimer("00:00:00");
+  }; */
+
+  const resetDataHoldingTemplate = () => {
+    handleTicketNumber("_ _ _ _ _ _");
+    handleHoursPrint("time");
+    handleTotalPrice("_ _ _ _");
+    handleThisOrder({});
+    handlePayment([]);
+    handleClearOrderSpecs([]);
+    handleTimer("00:00:00");
+    dispatch(templateActions.handleTicketNumber("_ _ _ _ _ _"));
+    dispatch(templateActions.handleHoursPrint("time"));
+    dispatch(templateActions.handleTotalPrice("_ _ _ _"));
+    dispatch(templateActions.handleThisOrder({}));
+    dispatch(templateActions.handlePayment([]));
+    dispatch(templateActions.handleClearOrderSpecs([]));
+    dispatch(templateActions.handleTimer("00:00:00"));
   };
 
   const handleNewRadioInput = (e) => {
@@ -243,21 +308,33 @@ function Orders() {
     if (e.target.id === "reg_price_2") {
       if (user.id === undefined) {
         setTimeout(() => {
-          handleFirstTimeOrder(true);
+          /* handleFirstTimeOrder(true); */
+          dispatch(templateActions.handleFirstTimeOrder(true));
         }, 3000);
         return;
       } else {
-        await handleFirstTimeOrder(false);
+        /*  await handleFirstTimeOrder(false); */
+        await dispatch(templateActions.handleFirstTimeOrder(false));
 
         const newThisOrder = await initiateOrder(user.id, orderSpecsCurrent);
 
-        handleTotalPrice(async () => await newThisOrder.totalPrice);
+        /* handleTotalPrice(async () => await newThisOrder.totalPrice); */
+
+        await dispatch(
+          templateActions.handleTotalPrice(newThisOrder.totalPrice)
+        );
       }
 
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
     } else if (e.target.id === "reg_price_1") {
-      handleTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_");
+      /*  handleTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_"); */
+
+      dispatch(
+        templateActions.handleTotalPrice(
+          "_" + " " + "_" + " " + "_" + " " + "_"
+        )
+      );
       applyOrderRef.current.classList.remove("addShowBtn");
       totalRef.current.classList.add("anim_height");
     }
@@ -287,18 +364,29 @@ function Orders() {
     let { diff, hrs, min, sec } = getRemainingTime(cb);
 
     if (diff >= 0) {
-      handleTimer(
+      /*  handleTimer(
         (hrs > 9 ? hrs : "0" + hrs) +
           ": " +
           (min > 9 ? min : "0" + min) +
           ":" +
           (sec > 9 ? sec : "0" + sec)
+      ); */
+
+      dispatch(
+        templateActions.handleTimer(
+          (hrs > 9 ? hrs : "0" + hrs) +
+            ": " +
+            (min > 9 ? min : "0" + min) +
+            ":" +
+            (sec > 9 ? sec : "0" + sec)
+        )
       );
     }
   };
 
   const clearTimer = (cb) => {
-    handleTimer("02:00:00");
+    /*  handleTimer("02:00:00"); */
+    dispatch(templateActions.handleTimer("02:00:00"));
     //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
     if (interval.current) clearInterval(interval.current);
 
@@ -335,7 +423,9 @@ function Orders() {
           thisOrder.id,
           orderSpecsCurrent
         );
-        await handleThisOrder(newChange);
+        /* await handleThisOrder(newChange); */
+
+        await dispatch(templateActions.handleThisOrder(newChange));
       }
       setTimeout(() => {
         console.log("update Total Price:", newChange);
@@ -354,9 +444,6 @@ function Orders() {
           <ul className="ready_ordered snaps_inline_0">
             {orderSpecsCurrent.length !== 0 ? (
               orderSpecsCurrent.map((orderSpecItem, index) => {
-                console.log("orderSpecItem :", orderSpecItem);
-                console.log("meals:", meals);
-
                 const mealItem = meals.find(
                   (item) => item._id === orderSpecItem.meal
                 );

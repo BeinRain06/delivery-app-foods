@@ -3,18 +3,23 @@ import { MealContext } from "../context/MealsContext";
 import { DailyContext } from "../context/DailyContext";
 import moment from "moment";
 import Loading from "../loading/loading";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  recordAllDailySliceState,
+  dailyActions,
+} from "../redux/services/DailySplice";
 import LoadingDaily from "../loading/loadingDaily";
 import Button from "../button/button-shape";
 import "./FoodsDay.css";
 
 function FoodsDay() {
-  const {
+  /*  const {
     state: { meals, meats, seaFoods, vegetarians, desserts, welcome },
     handleUpstreamOrder,
     handleWelcome,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
 
-  const {
+  /* const {
     state: {
       lastActiveDay,
       arrayDayWeeK,
@@ -25,7 +30,16 @@ function FoodsDay() {
       endThisVar,
     },
     handleEndThisVar,
-  } = useContext(DailyContext);
+  } = useContext(DailyContext); */
+  const dispatch = useDispatch();
+
+  const {
+    selectMeats,
+    selectSeafoods,
+    selectVegetarians,
+    selectDesserts,
+    endThisVar,
+  } = useSelector(recordAllDailySliceState);
 
   const [loading, setLoading] = useState(true);
 
@@ -34,16 +48,6 @@ function FoodsDay() {
   const desMealRef = useRef(null);
 
   const topMiniRef = useRef(null);
-
-  /*  const mySet = new Set();
-
-  mySet.add("Meats").add("Seafoods");
-  mySet.add("Vegetarians").add("Desserts"); */
-
-  /*  const meatId = import.meta.env.VITE_ID_MEATS;
-  const seafoodId = import.meta.env.VITE_ID_SEAFOODS;
-  const vegetarianId = import.meta.env.VITE_ID_VEGETARIANS;
-  const dessertId = import.meta.env.VITE_ID_DESSERTS; */
 
   let mySet = new Set();
 
@@ -58,40 +62,33 @@ function FoodsDay() {
     if (e.target.parentElement.getAttribute("data-meal") === "Meals") {
       mealCategory = "Meals";
 
-      setTimeout(async () => {
+      /* setTimeout(async () => {
         await handleEndThisVar("Meals");
-      }, 3000);
+      }, 3000); */
     } else if (
       e.target.parentElement.getAttribute("data-meal") === "Seafoods"
     ) {
       mealCategory = "Seafoods";
-      setTimeout(async () => {
+      /*  setTimeout(async () => {
         await handleEndThisVar("Seafoods");
-      }, 3000);
+      }, 3000); */
     } else if (
       e.target.parentElement.getAttribute("data-meal") === "Vegetarians"
     ) {
       mealCategory = "Vegetarians";
-      setTimeout(async () => {
+      /*   setTimeout(async () => {
         await handleEndThisVar("Vegetarians");
-      }, 3000);
+      }, 3000); */
     } else if (
       e.target.parentElement.getAttribute("data-meal") === "Desserts"
     ) {
       mealCategory = "Desserts";
-      setTimeout(async () => {
+      /* setTimeout(async () => {
         await handleEndThisVar("Desserts");
-      }, 3000);
+      }, 3000); */
     }
 
-    /*  const playNewEnd = mySet.forEach(async (item, i) => {
-      if (e.target.parentElement.getAttribute("data-meal") === item) {
-        setTimeout(async () => {
-          await handleEndThisVar(mySet[i]);
-        }, 3000);
-        return mySet[i];
-      }
-    }); */
+    dispatch(dailyActions.handleEndThisVar({ mealCategory }));
 
     console.log("meal meal cate", mealCategory);
 
@@ -111,8 +108,7 @@ function FoodsDay() {
   const suitRenderMeals = (mealCategory) => {
     console.log("mealCategory:", mealCategory);
     console.log("selectSeafoods:", selectSeafoods);
-    console.log("vegetarians:", selectVegetarians);
-    console.log("esserts:", selectDesserts);
+
     if (mealCategory === "Meats") {
       return selectMeats;
     } else if (mealCategory === "Seafoods") {
@@ -209,7 +205,6 @@ function FoodsDay() {
         setLoading(false);
       }, 3000);
       console.log("meals:", meals);
-      console.log("meats:", meats);
       console.log("selectMeats:", selectMeats);
     } catch (err) {
       console.log(err);

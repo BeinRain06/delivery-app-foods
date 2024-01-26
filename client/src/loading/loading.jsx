@@ -1,19 +1,26 @@
 import React, { useState, useContext, useEffect } from "react";
 import { MealContext } from "../context/MealsContext.jsx";
 import { DailyContext } from "../context/DailyContext.jsx";
+import {
+  mealActions,
+  recordAllMealSliceState,
+} from "../redux/services/MealSplice.jsx";
+import { useDispatch, useSelector } from "react-redux";
 import { getMeals } from "../callAPI/MealsApi.jsx";
 import HomeFetchingError from "../../errorBoundary/home_error_boundary.jsx";
 import "./loading.css";
 
 function Loading() {
-  const {
+  /* const {
     handleMeals,
     handleMeats,
     handleSeaFoods,
     handleVegetarians,
     handleDesserts,
     handleWelcome,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
+
+  const dispatch = useDispatch();
 
   const [hasError, setHasError] = useState(false);
 
@@ -26,7 +33,9 @@ function Loading() {
     let meatsData = [];
 
     if (meals) {
-      handleMeals(meals);
+      // handleMeals(meals);
+      dispatch(mealActions.handleMeals(meals));
+
       await meals.map((item, i) => {
         if (item.category._id === import.meta.env.VITE_ID_SEAFOODS) {
           seaData.push(item);
@@ -40,10 +49,15 @@ function Loading() {
       });
     }
 
-    handleSeaFoods(seaData);
+    /* handleSeaFoods(seaData);
     handleDesserts(desData);
     handleMeats(meatsData);
-    handleVegetarians(vegData);
+    handleVegetarians(vegData); */
+
+    dispatch(mealActions.handleSeaFoods(seaData));
+    dispatch(mealActions.handleDesserts(desData));
+    dispatch(mealActions.handleMeats(meatsData));
+    dispatch(mealActions.handleVegetarians(vegData));
 
     console.log("result:", result);
   };
@@ -52,7 +66,8 @@ function Loading() {
     try {
       const insureFetchData = async () => {
         await fetchData();
-        await handleWelcome(false);
+        // await handleWelcome(false);
+        dispatch(mealActions.handleWelcome(false));
       };
 
       insureFetchData();

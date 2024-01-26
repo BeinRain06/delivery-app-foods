@@ -118,16 +118,21 @@ function LogOrRegisterForm() {
 
     setTimeout(() => {
       const primarUpdation = async () => {
+        console.log("loginData :", loginData);
         await handleUser(() => userLogging(loginData));
         await handleThisOrder(() => initiateOrder(user.id, orderSpecsCurrent));
       };
       primarUpdation();
     }, 5000);
 
+    console.log("thisorder :", thisOrder);
+    console.log("user:", user);
+
     setTimeout(() => {
       const secondaryUpdation = async () => {
         await handleTotalPrice(() => {
           let total = thisOrder.totalPrice;
+          console.log("thisorder totalPrice :", total);
           let totalArr = Array.from(total);
           let output = "";
           totalArr.map((elt) => {

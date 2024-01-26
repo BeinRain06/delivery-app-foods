@@ -152,9 +152,12 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
 
   const handleTemplateOrdersDay = useCallback((newTemplate) => {
     const oldArrTemplate = state.dataTemplatesOrdersDay;
-    const nextIndex = oldArrTemplate.length++;
+    const nextIndex = oldArrTemplate.length;
     let newArrTemplateOrders;
-    newArrTemplateOrders = { ...oldArrTimers, [nextIndex]: newTemplate };
+    newArrTemplateOrders = [
+      ...oldArrTemplate,
+      (oldArrTemplate[nextIndex] = newTemplate),
+    ];
     dispatch({
       type: ACTIONS_TYPES.TEMPLATE_ORDERS_DAY,
       payload: newArrTemplateOrders,
