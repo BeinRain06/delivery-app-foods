@@ -1,4 +1,13 @@
 import React, { useState, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  mealActions,
+  recordAllMealSliceState,
+} from "../redux/services/MealSplice";
+import {
+  openTagRatings_section,
+  user_section,
+} from "../redux/services/MealSplice";
 import { postOrUpdateRatings } from "../callAPI/RatingsApi";
 import { updateRatedMeal } from "../callAPI/RatedMealsApi";
 
@@ -11,10 +20,15 @@ import "./card-week-order.css";
 import LogOrRegisterForm from "./register-login-form";
 
 const MiniCardWeeksOrders = ({ props }) => {
-  const {
+  /* const {
     state: { meals, openTagRatings, user, ratings, ratedMeals },
     handleOpenTagsRatings,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
+
+  const dispatch = useDispatch();
+
+  const openTagRatings = useSelector(openTagRatings_section);
+  const user = useSelector(user_section);
 
   const [recordUser, setRecordUser] = useState(false);
 
@@ -98,10 +112,16 @@ const MiniCardWeeksOrders = ({ props }) => {
           data-meal={props.meal._id}
           ref={mealRef}
         >
-          <p className="send_ratings" onClick={handleOpenTagsRatings}>
+          <p
+            className="send_ratings"
+            onClick={() => dispatch(mealActions.handleOpenTagsRatings(true))}
+          >
             Ratings
           </p>
-          <p className="send_feedback" onClick={handleOpenTagsRatings}>
+          <p
+            className="send_feedback"
+            onClick={() => dispatch(mealActions.handleOpenTagsRatings(true))}
+          >
             Feedback
           </p>
         </div>
@@ -143,7 +163,9 @@ const MiniCardWeeksOrders = ({ props }) => {
                     <button
                       type="button"
                       className="abort_submit"
-                      onClick={handleOpenTagsRatings}
+                      onClick={() =>
+                        dispatch(mealActions.handleOpenTagsRatings(false))
+                      }
                     >
                       Clear
                     </button>

@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { mealActions } from "../redux/services/MealSplice";
 import "./Events.css";
 
 {
@@ -8,6 +10,15 @@ import "./Events.css";
 }
 
 function Events() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("present navbar");
+    setTimeout(() => {
+      dispatch(mealActions.handleWelcome(false));
+    }, 3000);
+  }, []);
+
   return (
     <>
       <main className="welcome_events">

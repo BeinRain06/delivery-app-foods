@@ -1,26 +1,31 @@
 import React, { useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  templateActions,
+  recordAllTemplateSliceState,
+} from "../redux/services/TemplateSlice";
+import { dataTemplatesOrdersDay_section } from "../redux/services/TemplateSlice";
 
 import "./TemplateOrder.css";
 
-function TemplateOrder({
-  orderSpecsCurrent,
-  thisOrder,
-  ticketNumber,
-  hoursPrinted,
-  totalPrice,
-  timer,
-  payment,
-}) {
-  const {
+function TemplateOrder({ timer }) {
+  /*  const {
     state: { dataTemplatesOrdersDay },
     handleTemplateOrdersDay,
     useAsyncGenerator,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
+
+  const dispatch = useDispatch();
+
+  const dataTemplatesOrdersDay = useSelector(dataTemplatesOrdersDay_section);
+
   const nextBtnRef = useRef(null);
   const ticketTempRef = userRef(null);
   const ticketManualRef = useRef(null);
 
-  const templateState = useAsyncGenerator(createTemplateIterator);
+  const templateState = dispatch(
+    templateActions.useAsyncGenerator(createTemplateIterator)
+  );
 
   let templateVar = {
     orderSpecsCurrent: template.orderSpecsCurrent,

@@ -1,12 +1,29 @@
 import React, { useRef, useContext, useState } from "react";
+import { useDispatch, useSelector } from "react";
+import {
+  openTagRatings_section,
+  user_section,
+  ratings_section,
+} from "../redux/services/MealSplice";
+import {
+  mealActions,
+  recordAllMealSliceState,
+} from "../redux/services/MealSplice";
 import { getThisUserRatings } from "../callAPI/RatingsApi";
 import "./card-day-order.css";
+import { templateActions } from "../redux/services/TemplateSlice";
 
 function CardDayOrders({ props }) {
-  const {
+  /*  const {
     state: { openTagRatings, user, ratings },
     handleOpenTagsRatings,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
+
+  const dispatch = useDispatch();
+
+  const openTagRatings = useSelector(openTagRatings_section);
+  const user = useSelector(user_section);
+  const ratings = useSelector(ratings_section);
 
   const [recordUser, setRecordUser] = useState(false);
   const mealRef = useRef();
@@ -126,7 +143,11 @@ function CardDayOrders({ props }) {
                         <button
                           type="button"
                           className="abort_submit"
-                          onClick={handleOpenTagsRatings}
+                          onClick={() =>
+                            dispatch(
+                              templateActions.handleOpenTagsRatings(false)
+                            )
+                          }
                         >
                           Clear
                         </button>

@@ -1,14 +1,27 @@
 import React, { useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { recordAllMealSliceState } from "../redux/services/MealSplice";
+import {
+  templateActions,
+  recordAllTemplateSliceState,
+} from "../redux/services/TemplateSlice";
+
 import { MealContext } from "../context/MealsContext";
 import "./card-order.css";
 
 function CardOrder({ ...props }) {
-  const {
+  /*  const {
     state: { meals, orderSpecs },
     handleClear,
     handleDecrease,
     handleIncrease,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
+
+  const dispatch = useDispatch();
+  /* const { meals } = useSelector(recordAllMealSliceState);
+  const { orderSpecsCurrent } = useSelector(recordAllTemplateSliceState);
+ */
+  const mealId = props.id;
 
   return (
     <li className="keeping_table">
@@ -27,7 +40,7 @@ function CardOrder({ ...props }) {
               type="button"
               id="btn_clear"
               className=" btn_subCard btn_clear "
-              onClick={handleClear}
+              onClick={() => dispatch(templateActions.handleClear(mealId))}
             >
               clear
             </button>
@@ -37,7 +50,7 @@ function CardOrder({ ...props }) {
               type="button"
               id="remove_meal"
               className="btn_subCard remove_meal"
-              onClick={handleDecrease}
+              onClick={() => dispatch(templateActions.handleDecrease(mealId))}
             >
               <i className="fa-solid fa-minus"></i>
             </button>
@@ -45,7 +58,7 @@ function CardOrder({ ...props }) {
               type="button"
               id="add_meal"
               className="btn_subCard add_meal"
-              onClick={handleIncrease}
+              onClick={() => dispatch(templateActions.handleIncrease(mealId))}
             >
               <i className="fa-solid fa-plus"></i>
             </button>

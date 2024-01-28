@@ -1,17 +1,26 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
 import { TemplateContext } from "../context/TemplateContext";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  templateActions,
+  recordAllTemplateSliceState,
+} from "../redux/services/TemplateSlice";
 import "./button-shape.css";
 
 export const PreOrdered = ({ mealid, mealname, mealprice, buildOrderItem }) => {
-  const {
+  /* const {
     state: { orderSpecsCurrent },
     handleOrderSpecs,
-  } = useContext(TemplateContext);
+  } = useContext(TemplateContext); */
+
+  const dispatch = useDispatch();
+
+  const { orderSpecsCurrent } = useSelector(recordAllTemplateSliceState);
 
   useEffect(() => {
     const sendMyNewOrderSpecs = async () => {
       const orderItem = buildOrderItem();
-      await handleOrderSpecs(orderItem);
+      await dispatch(templateActions.handleOrderSpecs(orderItem));
     };
 
     setTimeout(async () => {
@@ -37,10 +46,14 @@ export const Ordered = ({
   isClicked,
   setIsCliked,
 }) => {
-  const {
+  /*  const {
     state: { orderSpecsCurrent },
     handleOrderSpecs,
-  } = useContext(TemplateContext);
+  } = useContext(TemplateContext); */
+
+  const dispatch = useDispatch();
+
+  const { orderSpecsCurrent } = useSelector(recordAllTemplateSliceState);
 
   const [waiting, setWaiting] = useState(true);
   const [item, setItem] = useState([]);
@@ -122,7 +135,7 @@ export const Ordered = ({
 
     setTimeout(() => {
       const sendOrderSpecs = async () => {
-        await handleOrderSpecs(orderItems);
+        await dispatch(templateActions.handleOrderSpecs(orderItems));
       };
 
       sendOrderSpecs();
@@ -165,10 +178,14 @@ export const Ordered = ({
 };
 
 export const Confirm = ({ isClicked, setIsCliked }) => {
-  const {
+  /*  const {
     state: { orderSpecsCurrent },
     handleOrderSpecs,
-  } = useContext(TemplateContext);
+  } = useContext(TemplateContext); */
+
+  /* const dispatch = useDispatch(); */
+
+  const { orderSpecsCurrent } = useSelector(recordAllTemplateSliceState);
 
   const [waiting, setWaiting] = useState(false);
 
@@ -198,10 +215,14 @@ export const Confirm = ({ isClicked, setIsCliked }) => {
 };
 
 export const Reject = ({ isClicked, setIsCliked }) => {
-  const {
+  /*  const {
     state: { orderSpecsCurrent },
     handleOrderSpecs,
-  } = useContext(TemplateContext);
+  } = useContext(TemplateContext); */
+
+  const dispatch = useDispatch();
+
+  const { orderSpecsCurrent } = useSelector(recordAllTemplateSliceState);
 
   const [waiting, setWaiting] = useState(false);
 
@@ -222,7 +243,7 @@ export const Reject = ({ isClicked, setIsCliked }) => {
     newOrderSpecs = orderSpecsCurrent.splice(lastIndex, 1);
 
     setTimeout(async () => {
-      await handleOrderSpecs(newOrderSpecs);
+      await dispatch(templateActions.handleOrderSpecs(newOrderSpecs));
       setIsCliked(false);
       console.log("order Rejected!");
       console.log("orderSpecsCurrent after reject :", orderSpecsCurrent);

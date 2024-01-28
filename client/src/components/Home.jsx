@@ -7,6 +7,16 @@ import mealSplice, {
   mealActions,
   recordAllMealSliceState,
 } from "../redux/services/MealSplice.jsx";
+import {
+  meals_section,
+  seaFoods_section,
+  meats_section,
+  desserts_section,
+  vegetarians_section,
+  welcome_section,
+} from "../redux/services/MealSplice.jsx";
+import { orderSpecsCurrent_section } from "../redux/services/TemplateSlice.jsx";
+
 import templateSlice, {
   templateActions,
   recordAllTemplateSliceState,
@@ -28,11 +38,14 @@ function Home() {
 
   const dispatch = useDispatch();
 
-  const { meals, meats, seaFoods, vegetarians, desserts } = useSelector(
-    recordAllMealSliceState
-  );
+  const meals = useSelector(meals_section);
+  const meats = useSelector(meats_section);
+  const seaFoods = useSelector(seaFoods_section);
+  const desserts = useSelector(desserts_section);
+  const vegetarians = useSelector(vegetarians_section);
+  const welcome = useSelector(welcome_section);
 
-  const { orderSpecsCurrent } = useSelector(recordAllTemplateSliceState);
+  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
 
   const [loading, setLoading] = useState(true);
 
@@ -50,6 +63,7 @@ function Home() {
 
       console.log("meals:", meals);
       console.log("orderSpecsurrent seen by home:", orderSpecsCurrent);
+      console.log("welcome", welcome);
 
       if (meals.length === 0) {
         removeLoading(6000);

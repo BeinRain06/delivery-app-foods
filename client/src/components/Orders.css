@@ -797,7 +797,7 @@ ul {
     overflow: hidden;
   }
 
-  .msg_grateful_order .messaging_customers {
+  .msg_grateful_order p {
     font-size: 0.8rem;
     text-decoration: underline;
   }
@@ -1558,7 +1558,7 @@ ul {
     text-align: center;
   }
 
-  .msg_grateful_order .messaging_customers {
+  .msg_grateful_order p {
     font-size: 0.9rem;
   }
 
@@ -1588,7 +1588,7 @@ ul {
   .msg_grateful_order .grateful_img {
     height: 210px;
   }
-  .msg_grateful_order .messaging_customers {
+  .msg_grateful_order p {
     width: 40%;
     font-size: 1.1rem;
     margin: 0 auto;

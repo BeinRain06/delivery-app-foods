@@ -1,4 +1,19 @@
 import React, { useContext, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  mealActions,
+  recordAllMealSliceState,
+} from "../redux/services/MealSplice";
+import {
+  templateActions,
+  recordAllTemplateSliceState,
+} from "../redux/services/TemplateSlice";
+import {
+  thisOrder_section,
+  totalPrice_section,
+  orderSpecsCurrent_section,
+} from "../redux/services/TemplateSlice";
+import { user_section } from "../redux/services/MealSplice";
 import { MealContext } from "../context/MealsContext";
 import { TemplateContext } from "../context/TemplateContext";
 import { userLogging, userRegistering } from "../callAPI/UsersApi";
@@ -7,21 +22,36 @@ import moment from "moment";
 import "./register-login-form.css";
 
 function LogOrRegisterForm() {
-  const {
+  /*  const {
     state: { user },
     handleRegisterForm,
     handleLoginForm,
     handleUser,
-  } = useContext(MealContext);
+  } = useContext(MealContext); */
 
-  const {
+  /* const {
     state: { orderSpecsCurrent, thisOrder, totalPrice },
     handleThisOrder,
     handleTotalPrice,
     handleTicketNumber,
     handleHoursPrint,
     handleFirstTimeOrder,
-  } = useContext(TemplateContext);
+  } = useContext(TemplateContext); */
+
+  const dispatch = useDispatch();
+
+  /* const { user } = useSelector(recordAllMealSliceState);
+
+  const { orderSpecsCurrent, thisOrder, totalPrice } = useSelector(
+    recordAllTemplateSliceState
+  ); */
+
+  const user = useSelector(user_section);
+
+  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+  const thisOrder = useSelector(thisOrder_section);
+  const totalPrice = useSelector(totalPrice_section);
+
   const loginRef = useRef();
   const [errMsgLogin, setErrMsgLogin] = useState(false);
   const [errMsgRegister, setErrMsgRegister] = useState(false);
@@ -67,36 +97,13 @@ function LogOrRegisterForm() {
     registeringData = { name, password, city, street, country, phone, email };
     console.log(registeringData);
 
-    handleUser(async () => await userRegistering(registeringData));
+    dispatch(
+      mealActions.handleUser(async () => await userRegistering(registeringData))
+    );
 
     const myOrder = initiateOrder();
 
-    setTimeout(() => {
-      const primarUpdation = async () => {
-        await handleTotalPrice(() => {
-          let total = myOrder.totalPrice;
-          let totalArr = Array.from(total);
-          let output = "";
-          totalArr.map((elt) => {
-            output += elt + " ";
-          });
-          console.log(output);
-          return output;
-        });
-        await handleHoursPrint(moment().format("hh:mm a"));
-      };
-
-      primarUpdation();
-    }, 5000);
-
-    setTimeout(() => {
-      const secondaryUpdation = async () => {
-        await handleTicketNumber((totalPrice - 3).toString(16));
-        await handleFirstTimeOrder(false);
-      };
-
-      secondaryUpdation();
-    }, 4000);
+    updateRegiSession(myOrder, firstStatus);
   };
 
   const handleLogin = (e) => {
@@ -116,21 +123,47 @@ function LogOrRegisterForm() {
     }
     loginData = { email, password };
 
+    updateLogSession(loginData, firstStatus);
+  };
+
+  const updateRegiSession = (myOrder, firstStatus) => {
     setTimeout(() => {
-      const primarUpdation = async () => {
-        console.log("loginData :", loginData);
-        await handleUser(() => userLogging(loginData));
-        await handleThisOrder(() => initiateOrder(user.id, orderSpecsCurrent));
-      };
-      primarUpdation();
-    }, 5000);
+      dispatch(
+        templateActions.handleTotalPrice(() => {
+          let total = myOrder.totalPrice;
+          let totalArr = Array.from(total);
+          let output = "";
+          totalArr.map((elt) => {
+            output += elt + " ";
+          });
+          console.log(output);
+          return output;
+        })
+      );
+    }, 3000);
+
+    dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
+    dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
+    dispatch(templateActions.handleFirstTimeOrder(firstStatus));
+  };
+
+  const updateLogSession = (loginData, firstStatus) => {
+    dispatch(mealActions.handleUser(() => userLogging(loginData)));
+
+    setTimeout(() => {
+      dispatch(
+        templateActions.handleThisOrder(() =>
+          initiateOrder(user.id, orderSpecsCurrent)
+        )
+      );
+    }, 3000);
 
     console.log("thisorder :", thisOrder);
     console.log("user:", user);
 
     setTimeout(() => {
-      const secondaryUpdation = async () => {
-        await handleTotalPrice(() => {
+      dispatch(
+        templateActions.handleTotalPrice(() => {
           let total = thisOrder.totalPrice;
           console.log("thisorder totalPrice :", total);
           let totalArr = Array.from(total);
@@ -140,19 +173,13 @@ function LogOrRegisterForm() {
           });
           console.log(output);
           return output;
-        });
-        await handleHoursPrint(moment().format("hh:mm a"));
-      };
-      secondaryUpdation();
-    }, 4300);
+        })
+      );
+    }, 3000);
 
-    setTimeout(() => {
-      const thirdlyUpdation = async () => {
-        await handleTicketNumber((totalPrice - 3).toString(16));
-        await handleFirstTimeOrder(false);
-      };
-      thirdlyUpdation();
-    }, 4000);
+    dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
+    dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
+    dispatch(templateActions.handleFirstTimeOrder(firstStatus));
   };
 
   return (

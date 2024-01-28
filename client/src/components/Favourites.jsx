@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { mealActions } from "../redux/services/MealSplice";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
 import "./Favourites.css";
 
 function Favourites() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("present navbar");
+    setTimeout(() => {
+      dispatch(mealActions.handleWelcome(false));
+    }, 3000);
+  }, []);
   return (
     <main className="welcome_favourites">
-      <div className="welcome_content">
+      <div className="welcome_cont">
         <p className="title_favourite">Favourites</p>
         <ul className="three_selected_dishes ">
           <li className="favourite row">

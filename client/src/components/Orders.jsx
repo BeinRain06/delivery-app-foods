@@ -12,6 +12,23 @@ import {
   templateActions,
   recordAllTemplateSliceState,
 } from "../redux/services/TemplateSlice";
+import {
+  orderSpecsCurrent_section,
+  thisOrder_section,
+  firstTimeOrder_section,
+  hoursPrinted_section,
+  totalPrice_section,
+  ticketNumber_section,
+  payment_section,
+  isNewLocation_section,
+  timer_section,
+} from "../redux/services/TemplateSlice";
+import {
+  meals_section,
+  user_section,
+  orders_section,
+  indexDayFormat_section,
+} from "../redux/services/MealSplice";
 
 import {
   initiateOrder,
@@ -70,7 +87,7 @@ function Orders() {
 
   const dispatch = useDispatch();
 
-  const {
+  /* const {
     orderSpecsCurrent,
     thisOrder,
     firstTimeOrder,
@@ -85,7 +102,36 @@ function Orders() {
 
   const { meals, orders, indexDayFormat, user } = useSelector(
     recordAllMealSliceState
-  );
+  ); */
+
+  /*  const {
+    orderSpecsCurrent,
+    thisOrder,
+    firstTimeOrder,
+    hoursPrinted,
+    totalPrice,
+    ticketNumber,
+    payment,
+    dataTemplatesOrdersDay,
+    isNewLocation,
+    timer,
+  } = recordAllTemplateSliceState((store) => store.orderPrime.initialState); */
+
+  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+
+  const thisOrder = useSelector(thisOrder_section);
+  const firstTimeOrder = useSelector(firstTimeOrder_section);
+  const hoursPrinted = useSelector(hoursPrinted_section);
+  const totalPrice = useSelector(totalPrice_section);
+  const ticketNumber = useSelector(ticketNumber_section);
+  const payment = useSelector(payment_section);
+  const isNewLocation = useSelector(isNewLocation_section);
+  const timer = useSelector(timer_section);
+
+  const meals = useSelector(meals_section);
+  const orders = useSelector(orders_section);
+  const user = useSelector(user_section);
+  const indexDayFormat = useSelector(indexDayFormat_section);
 
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
@@ -412,12 +458,19 @@ function Orders() {
   /* useEffect(() => {
     clearTimer(getDeadTime());
   }, []); */
+  useEffect(() => {
+    console.log("present navbar");
+    setTimeout(() => {
+      dispatch(mealActions.handleWelcome(false));
+    }, 3000);
+  }, []);
 
   useEffect(() => {}, [indexDayFormat]);
 
   useEffect(() => {
     const updateTotalPrice = async () => {
       let newChange;
+      console.log("orders specs right in time", orderSpecsCurrent);
       if (user.id !== undefined) {
         newChange = await updateThisTotalPriceOrder(
           thisOrder.id,
@@ -433,7 +486,7 @@ function Orders() {
     };
 
     updateTotalPrice();
-  }, [orderSpecsCurrent.length]);
+  }, [orderSpecsCurrent]);
 
   return (
     <main className="welcome_orders">
@@ -450,6 +503,7 @@ function Orders() {
                 return (
                   <CardOrder
                     key={mealItem._id}
+                    id={mealItem._id}
                     name={mealItem.name}
                     quantity={orderSpecItem.quantity}
                     origin={mealItem.origin}
@@ -470,7 +524,7 @@ function Orders() {
         </div>
       </div>
 
-      {dataTemplatesOrdersDay.length !== 0 ? (
+      {orderSpecsCurrent.length !== 0 ? (
         <TemplateOrder />
       ) : (
         orderSpecsCurrent.length !== 0 && (

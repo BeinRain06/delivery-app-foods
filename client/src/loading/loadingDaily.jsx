@@ -5,6 +5,11 @@ import {
   dailyActions,
   recordAllDailySliceState,
 } from "../redux/services/DailySplice";
+import {
+  lastActiveDay_section,
+  mondayMenu_section,
+  arrayDayWeeK_section,
+} from "../redux/services/DailySplice";
 import { useDispatch, useSelector } from "react-redux";
 import { getMeals } from "../callAPI/MealsApi";
 import HomeFetchingError from "../../errorBoundary/home_error_boundary";
@@ -24,9 +29,10 @@ function LoadingDaily() {
   } = useContext(DailyContext); */
 
   const dispatch = useDispatch();
-  const { lastActiveDay, arrayDayWeeK, mondayMenu } = useSelector(
-    recordAllDailySliceState
-  );
+
+  const lastActiveDay = useSelector(lastActiveDay_section);
+  const mondayMenu = useSelector(mondayMenu_section);
+  const arrayDayWeeK = useSelector(arrayDayWeeK_section);
 
   const [hasError, setHasError] = useState(false);
 

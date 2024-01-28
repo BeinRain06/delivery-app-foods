@@ -8,6 +8,14 @@ import {
   recordAllDailySliceState,
   dailyActions,
 } from "../redux/services/DailySplice";
+import {
+  selectMeats_section,
+  selectSeafoods_section,
+  selectVegetarians_section,
+  selectDesserts_section,
+  endThisVar_section,
+} from "../redux/services/DailySplice";
+import { mealActions } from "../redux/services/MealSplice";
 import LoadingDaily from "../loading/loadingDaily";
 import Button from "../button/button-shape";
 import "./FoodsDay.css";
@@ -33,13 +41,11 @@ function FoodsDay() {
   } = useContext(DailyContext); */
   const dispatch = useDispatch();
 
-  const {
-    selectMeats,
-    selectSeafoods,
-    selectVegetarians,
-    selectDesserts,
-    endThisVar,
-  } = useSelector(recordAllDailySliceState);
+  const selectMeats = useSelector(selectMeats_section);
+  const selectSeafoods = useSelector(selectSeafoods_section);
+  const selectVegetarians = useSelector(selectVegetarians_section);
+  const selectDesserts = useSelector(selectDesserts_section);
+  const endThisVar = useSelector(endThisVar_section);
 
   const [loading, setLoading] = useState(true);
 
@@ -203,8 +209,8 @@ function FoodsDay() {
 
       setTimeout(async () => {
         setLoading(false);
+        dispatch(mealActions.handleWelcome(false));
       }, 3000);
-      console.log("meals:", meals);
       console.log("selectMeats:", selectMeats);
     } catch (err) {
       console.log(err);

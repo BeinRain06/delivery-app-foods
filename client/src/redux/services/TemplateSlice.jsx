@@ -1,4 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
+import React, { useEffect, useState } from "react";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 
 const templateSlice = createSlice({
   name: "orderPrime",
@@ -45,6 +46,36 @@ const templateSlice = createSlice({
 
     handleOrderSpecs: (state, action) => {
       state.orderSpecsCurrent = action.payload;
+    },
+
+    handleIncrease: (state, action) => {
+      const mealId = action.payload;
+
+      state.orderSpecsCurrent.forEach((item) => {
+        if (item.meal === mealId) {
+          item.quantity += 1;
+        }
+      });
+    },
+    handleDecrease: (state, action) => {
+      const mealId = action.payload;
+
+      state.orderSpecsCurrent.forEach((item) => {
+        if (item.meal === mealId) {
+          item.quantity -= 1;
+        }
+      });
+    },
+
+    handleClear: (state, action) => {
+      const mealId = action.payload;
+      const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
+        if (item.meal === mealId) {
+          item.quantity = 0;
+        }
+      });
+
+      state.orderSpecsCurrent = newOrderSpecs;
     },
 
     handleUpstreamOrder: (state, action) => {
@@ -111,6 +142,63 @@ const templateSlice = createSlice({
       state.dataTemplatesOrdersDay = newArrTemplateOrders;
     },
     // JUST useAsyncGenerator Fn that Miss Here;
+    useAsyncGenerator: (state, action) => {
+      const generatorFn = action.payload;
+      const [primarState, setState] = useState({
+        loading: true,
+        refetch: () => {},
+      });
+
+      useEffect(() => {
+        //(iterator Fn <-- commit to *gnrtor*)
+        async function executeTemplate(gnrtor) {
+          try {
+            const { value, done } = await gnrtor.next(); //  push gnrtor to the next value
+            if (!done) {
+              //setState and either continue or not (if ... else)
+              setState((prevState) => ({
+                ...prevState,
+                loading: false,
+                data: value,
+              }));
+              executeTemplate(gnrtor);
+            } else {
+              setState((prevState) => ({
+                ...prevState,
+                loading: false,
+                data: value,
+              }));
+            }
+          } catch (err) {
+            console.log(err);
+            setState((prevState) => ({
+              ...prevState,
+              loading: false,
+              error,
+            }));
+          }
+        }
+
+        const refetch = () => {
+          setState((prevState) => ({
+            ...prevState,
+            loading: true,
+          }));
+          executeTemplate(generatorFn());
+        };
+
+        executeTemplate(generatorFn());
+
+        setState((prevState) => ({
+          ...prevState,
+          refetch,
+        }));
+
+        return primarState;
+      }, []);
+
+      return primarState;
+    },
   },
 });
 
@@ -118,7 +206,7 @@ const templateSlice = createSlice({
 export const templateActions = templateSlice.actions;
 
 //export function reporting all states
-export const recordAllTemplateSliceState = (state) => {
+/* export const recordAllTemplateSliceState = (state) => {
   const isNewLocation = state.orderPrime.isNewLocation;
   const firstTimeOrder = state.orderPrime.firstTimeOrder;
   const thisOrder = state.orderPrime.thisOrder;
@@ -144,7 +232,114 @@ export const recordAllTemplateSliceState = (state) => {
     countDownTimerArr,
     dataTemplatesOrdersDay,
   };
+}; */
+
+export const isNewLocation_section = (state) => {
+  return state.orderPrime.isNewLocation;
 };
+
+export const firstTimeOrder_section = (state) => {
+  return state.orderPrime.firstTimeOrder;
+};
+
+export const thisOrder_section = (state) => {
+  return state.orderPrime.thisOrder;
+};
+
+export const ticketNumber_section = (state) => {
+  return state.orderPrime.ticketNumber;
+};
+
+export const hoursPrinted_section = (state) => {
+  return state.orderPrime.hoursPrinted;
+};
+
+export const totalPrice_section = (state) => {
+  return state.orderPrime.totalPrice;
+};
+
+export const timer_section = (state) => {
+  return state.orderPrime.timer;
+};
+
+export const payment_section = (state) => {
+  return state.orderPrime.payment;
+};
+
+export const orderSpecsCurrent_section = (state) => {
+  console.log(
+    "current state orderSpecsCurrent",
+    state.orderPrime.orderSpecsCurrent
+  );
+  return state.orderPrime.orderSpecsCurrent;
+};
+
+export const countDownTimerArr_section = (state) => {
+  return state.orderPrime.countDownTimerArr;
+};
+
+export const dataTemplatesOrdersDay_section = (state) => {
+  return state.orderPrime.dataTemplatesOrdersDay;
+};
+
+/* export const recordAllTemplateSliceState = () => {
+  return {
+    isNewLocation,
+    firstTimeOrder,
+    thisOrder,
+    ticketNumber,
+    hoursPrinted,
+    totalPrice,
+    timer,
+    payment,
+    orderSpecsCurrent,
+    countDownTimerArr,
+    dataTemplatesOrdersDay,
+  };
+}; */
+
+export const recordAllTemplateSliceState = createSelector(
+  [
+    isNewLocation_section,
+    firstTimeOrder_section,
+    thisOrder_section,
+    ticketNumber_section,
+    hoursPrinted_section,
+    totalPrice_section,
+    timer_section,
+    payment_section,
+    orderSpecsCurrent_section,
+    countDownTimerArr_section,
+    dataTemplatesOrdersDay_section,
+  ],
+  (
+    isNewLocation_data,
+    firstTimeOrder_data,
+    thisOrder_data,
+    ticketNumber_data,
+    hoursPrinted_data,
+    totalPrice_data,
+    timer_data,
+    payment_data,
+    orderSpecsCurrent_data,
+    countDownTimerArr_data,
+    dataTemplatesOrdersDay_data
+  ) => {
+    return {
+      isNewLocation_data,
+      firstTimeOrder_data,
+      thisOrder_data,
+      ticketNumber_data,
+      hoursPrinted_data,
+      totalPrice_data,
+      timer_data,
+      payment_data,
+      orderSpecsCurrent_data,
+      countDownTimerArr_data,
+      dataTemplatesOrdersDay_data,
+    };
+  }
+);
 
 // export entire template
 export default templateSlice;

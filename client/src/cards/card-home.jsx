@@ -1,11 +1,5 @@
-import React, { useContext, useState, useReducer } from "react";
+import React from "react";
 
-import { MealContext } from "../context/MealsContext";
-import {
-  TemplateContext,
-  INITIAL_STATE_ONE,
-  reducer,
-} from "../context/TemplateContext";
 import Button from "../button/button-shape";
 import "./card-home.css";
 

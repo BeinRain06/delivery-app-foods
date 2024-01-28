@@ -9,4 +9,5 @@ export const store = configureStore({
     mealPrime: mealSplice.reducer,
     dailyPrime: dailySplice.reducer,
   },
+  middleware: () => [],
 });

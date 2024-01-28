@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 
 const dailySplice = createSlice({
   name: "dailyPrime",
@@ -84,17 +84,34 @@ const dailySplice = createSlice({
 //export actions changing state
 export const dailyActions = dailySplice.actions;
 
-//export Fn reporting entire state
-export const recordAllDailySliceState = (state) => {
-  const selectMeats = state.dailyPrime.selectMeats;
-  const selectSeafoods = state.dailyPrime.selectSeafoods;
-  const selectVegetarians = state.dailyPrime.selectVegetarians;
-  const selectDesserts = state.dailyPrime.selectDesserts;
-  const endThisVar = state.dailyPrime.endThisVar;
-  const mondayMenu = state.dailyPrime.mondayMenu;
-  const lastActiveDay = state.dailyPrime.lastActiveDay;
-  const arrayDayWeeK = state.dailyPrime.arrayDayWeeK;
+console.log("dailySplice:", dailySplice);
 
+export const selectMeats_section = (state) => {
+  return state.dailyPrime.selectMeats;
+};
+export const selectSeafoods_section = (state) => {
+  return state.dailyPrime.selectSeafoods;
+};
+export const selectVegetarians_section = (state) => {
+  return state.dailyPrime.selectVegetarians;
+};
+export const selectDesserts_section = (state) => {
+  return state.dailyPrime.selectDesserts;
+};
+export const endThisVar_section = (state) => {
+  return state.dailyPrime.endThisVar;
+};
+export const mondayMenu_section = (state) => {
+  return state.dailyPrime.mondayMenu;
+};
+export const lastActiveDay_section = (state) => {
+  return state.dailyPrime.lastActiveDay;
+};
+export const arrayDayWeeK_section = (state) => {
+  return state.dailyPrime.arrayDayWeeK;
+};
+
+/* export const recordAllDailySliceState = () => {
   return {
     selectMeats,
     selectSeafoods,
@@ -105,7 +122,54 @@ export const recordAllDailySliceState = (state) => {
     lastActiveDay,
     arrayDayWeeK,
   };
-};
+}; */
+
+/* export const recordAllDailySliceState = () => {
+  return {
+    selectMeats,
+    selectSeafoods,
+    selectVegetarians,
+    selectDesserts,
+    endThisVar,
+    mondayMenu,
+    lastActiveDay,
+    arrayDayWeeK,
+  };
+}; */
+
+export const recordAllDailySliceState = createSelector(
+  [
+    selectMeats_section,
+    selectSeafoods_section,
+    selectVegetarians_section,
+    selectDesserts_section,
+    endThisVar_section,
+    mondayMenu_section,
+    lastActiveDay_section,
+    arrayDayWeeK_section,
+  ],
+  (
+    selectMeats_data,
+    selectSeafoods_data,
+    selectVegetarians_data,
+    selectDesserts_data,
+    endThisVar_data,
+    mondayMenu_data,
+    lastActiveDay_data,
+    arrayDayWeeK_data
+  ) => {
+    return {
+      selectMeats_data,
+      selectSeafoods_data,
+      selectVegetarians_data,
+      selectDesserts_data,
+      endThisVar_data,
+      mondayMenu_data,
+      lastActiveDay_data,
+      arrayDayWeeK_data,
+    };
+  }
+);
 
 //export entire dailySplice
 export default dailySplice;
