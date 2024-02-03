@@ -1,17 +1,12 @@
 import React, { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  mealActions,
-  recordAllMealSliceState,
-} from "../redux/services/MealSplice";
+import { mealActions } from "../../services/redux/createslice/MealSplice";
 import {
   openTagRatings_section,
   user_section,
-} from "../redux/services/MealSplice";
-import { postOrUpdateRatings } from "../callAPI/RatingsApi";
-import { updateRatedMeal } from "../callAPI/RatedMealsApi";
-
-import { postRatedMeal } from "../callAPI/RatedMealsApi";
+} from "../../services/redux/createslice/MealSplice";
+import { postOrUpdateRatings } from "../../callAPI/RatingsApi";
+import { updateRatedMeal, postRatedMeal } from "../../callAPI/RatedMealsApi";
 
 import "./card-week-order.css";
 

@@ -1,12 +1,7 @@
 import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { recordAllMealSliceState } from "../redux/services/MealSplice";
-import {
-  templateActions,
-  recordAllTemplateSliceState,
-} from "../redux/services/TemplateSlice";
+import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 
-import { MealContext } from "../context/MealsContext";
 import "./card-order.css";
 
 function CardOrder({ ...props }) {

@@ -1,25 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
-import { MealContext } from "../context/MealsContext.jsx";
-import { DailyContext } from "../context/DailyContext.jsx";
-import {
-  mealActions,
-  recordAllMealSliceState,
-} from "../redux/services/MealSplice.jsx";
+
+import { mealActions } from "../../services/redux/createslice/MealSplice.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { getMeals } from "../callAPI/MealsApi.jsx";
-import HomeFetchingError from "../../errorBoundary/home_error_boundary.jsx";
+import { getMeals } from "../../callAPI/MealsApi.jsx";
+import HomeFetchingError from "../../services/errorBoundary/home_error_boundary.jsx";
 import "./loading.css";
 
 function Loading() {
-  /* const {
-    handleMeals,
-    handleMeats,
-    handleSeaFoods,
-    handleVegetarians,
-    handleDesserts,
-    handleWelcome,
-  } = useContext(MealContext); */
-
   const dispatch = useDispatch();
 
   const [hasError, setHasError] = useState(false);

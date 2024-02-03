@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { mealActions } from "../redux/services/MealSplice";
+import { mealActions } from "../../services/redux/createslice/MealSplice";
 import "./Events.css";
 
 {

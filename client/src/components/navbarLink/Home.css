@@ -52,10 +52,10 @@
 
   .welcome {
     width: 100vw;
-    height: 150px;
+    height: 80px;
     display: grid;
-    background-image: url("../assets/images/maria-teneva-unsplash.jpg");
-    background-position: top 0px right 50%;
+    background-image: url("../../assets/images/maria-teneva-unsplash.jpg");
+    background-position: top 5px right 50%;
     background-repeat: no-repeat;
     background-size: cover;
     grid-auto-flow: column;

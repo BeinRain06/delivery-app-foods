@@ -474,7 +474,7 @@ ul {
     height: auto;
     font-size: 14px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   table tr * {
@@ -800,6 +800,49 @@ ul {
   .msg_grateful_order p {
     font-size: 0.8rem;
     text-decoration: underline;
+  }
+
+  /* template slider */
+  .template_slider_wrapper {
+    position: relative;
+    width: 100%;
+    height: 820px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    z-index: 25;
+    /*  padding: 1rem; */
+  }
+
+  /*Slider component refactoring */
+
+  .slick-prev {
+    left: 0px !important;
+    z-index: 5;
+  }
+  .slick-next {
+    right: 0 !important;
+    z-index: 5;
+  }
+
+  .slick-prev,
+  .slick-next {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50%;
+    background-color: #695369 !important;
+  }
+
+  .slick-dots {
+    bottom: 3px !important;
+    z-index: 5;
+  }
+
+  .slick-prev::before,
+  .slick-next::before {
+    font-size: 22px !important;
+    line-height: 1;
+    opacity: 0.75;
   }
 
   /* orderings of the day */
@@ -1433,6 +1476,27 @@ ul {
     height: 140px;
   }
 
+  /*Slider component style*/
+
+  .slick-prev,
+  .slick-next {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50%;
+    background-color: #695369 !important;
+  }
+
+  .slick-prev::before,
+  .slick-next::before {
+    font-size: 28px !important;
+    line-height: 1;
+    opacity: 0.75;
+  }
+
+  .slick-dots li button::before {
+    font-size: 8px !important;
+  }
+
   /*order day*/
   .template_day {
     grid-auto-columns: auto;
@@ -1503,9 +1567,18 @@ ul {
     width: 35%;
   }
 
+  .type_sample > p {
+    font-size: 0.98rem;
+  }
+
+  .type_sample > p + p {
+    font-size: 0.92rem;
+  }
+
   .sample_ticket {
-    width: 60vw;
+    width: 78vw;
     margin: 1rem auto;
+    font-size: 1rem;
     box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.3) yellow;
   }
 
@@ -1525,6 +1598,10 @@ ul {
 
   .spec_details_orders {
     font-size: 0.875rem;
+  }
+
+  table tr {
+    font-size: 16px;
   }
 
   .order_track_time {

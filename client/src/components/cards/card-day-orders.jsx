@@ -4,21 +4,12 @@ import {
   openTagRatings_section,
   user_section,
   ratings_section,
-} from "../redux/services/MealSplice";
-import {
-  mealActions,
-  recordAllMealSliceState,
-} from "../redux/services/MealSplice";
-import { getThisUserRatings } from "../callAPI/RatingsApi";
+} from "../../services/redux/createslice/MealSplice";
+import { getThisUserRatings } from "../../callAPI/RatingsApi";
+import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 import "./card-day-order.css";
-import { templateActions } from "../redux/services/TemplateSlice";
 
 function CardDayOrders({ props }) {
-  /*  const {
-    state: { openTagRatings, user, ratings },
-    handleOpenTagsRatings,
-  } = useContext(MealContext); */
-
   const dispatch = useDispatch();
 
   const openTagRatings = useSelector(openTagRatings_section);

@@ -1,11 +1,7 @@
-import { obtainUser, ratingsChange } from "../context/MealsContext";
 import axios from "axios";
 
 //ratings : {} , ratedMeals : []  (GET METHOD)
 export async function getThisUserRatings(mealId) {
-  const { user, handleUser } = obtainUser();
-  const { ratings, handleRatings } = ratingsChange();
-
   const userId = user.id;
 
   let api_url = "http://localhost:5000/api/delivery/ratings";
@@ -14,11 +10,8 @@ export async function getThisUserRatings(mealId) {
     let ratings = {};
     const res = await axios.get(`${api_url}/${userId}/${mealId}`);
     ratings = res.data.data; //res.data(axios res) - .data (structured data response in backend)
-    let ratedMeals = ratings.ratedMeals;
 
-    handleRatings(ratings);
-
-    handleRatedMeals(ratedMeals);
+    return ratings;
   } catch (err) {
     console.log(err);
   }

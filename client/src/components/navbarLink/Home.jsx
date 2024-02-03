@@ -1,12 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 
-import { MealContext } from "../context/MealsContext.jsx";
-import { TemplateContext } from "../context/TemplateContext.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import mealSplice, {
-  mealActions,
-  recordAllMealSliceState,
-} from "../redux/services/MealSplice.jsx";
+
+/* import { getMeals } from "../../callAPI/MealsApi.jsx"; */
+
 import {
   meals_section,
   seaFoods_section,
@@ -14,13 +11,10 @@ import {
   desserts_section,
   vegetarians_section,
   welcome_section,
-} from "../redux/services/MealSplice.jsx";
-import { orderSpecsCurrent_section } from "../redux/services/TemplateSlice.jsx";
+} from "../../services/redux/createslice/MealSplice.jsx";
 
-import templateSlice, {
-  templateActions,
-  recordAllTemplateSliceState,
-} from "../redux/services/TemplateSlice.jsx";
+import { orderSpecsCurrent_section } from "../../services/redux/createslice/TemplateSlice.jsx";
+
 import CardHome from "../cards/card-home.jsx";
 import Loading from "../loading/loading.jsx";
 

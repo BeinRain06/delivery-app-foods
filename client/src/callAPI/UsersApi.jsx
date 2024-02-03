@@ -1,4 +1,3 @@
-import { obtainUser } from "../context/MealsContext";
 import axios from "axios";
 
 export async function userRegistering(
@@ -74,8 +73,6 @@ export async function userLogging(email, password) {
 
 export async function updatingRegistering(email) {
   try {
-    const { user, handleUser } = obtainUser();
-
     let userIdentity;
 
     let api_url = "http://localhost:5000/api/delivery/users/register";
@@ -95,7 +92,7 @@ export async function updatingRegistering(email) {
     userIdentity = res.data.data;
     console.log(userIdentity);
 
-    handleUser(userIdentity);
+    return userIdentity;
   } catch (err) {
     console.log(err);
   }

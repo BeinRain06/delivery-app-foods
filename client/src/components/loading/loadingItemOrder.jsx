@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { TemplateContext } from "../context/TemplateContext";
 import "./loading.css";
-import { templateActions } from "../redux/services/TemplateSlice";
+import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 
 function LoadingItemOrder() {
   /*  const { handleUpstreamOrder } = useContext(TemplateContext); */

@@ -1,23 +1,15 @@
 import React, { useContext, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  mealActions,
-  recordAllMealSliceState,
-} from "../redux/services/MealSplice";
-import {
-  templateActions,
-  recordAllTemplateSliceState,
-} from "../redux/services/TemplateSlice";
+import { mealActions } from "../../services/redux/createslice/MealSplice";
+import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 import {
   thisOrder_section,
   totalPrice_section,
   orderSpecsCurrent_section,
-} from "../redux/services/TemplateSlice";
-import { user_section } from "../redux/services/MealSplice";
-import { MealContext } from "../context/MealsContext";
-import { TemplateContext } from "../context/TemplateContext";
-import { userLogging, userRegistering } from "../callAPI/UsersApi";
-import { initiateOrder } from "../callAPI/OrdersApi";
+} from "../../services/redux/createslice/TemplateSlice";
+import { user_section } from "../../services/redux/createslice/MealSplice";
+import { userLogging, userRegistering } from "../../callAPI/UsersApi";
+import { initiateOrder } from "../../callAPI/OrdersApi";
 import moment from "moment";
 import "./register-login-form.css";
 

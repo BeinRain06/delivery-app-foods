@@ -1,21 +1,23 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { MealContext } from "../context/MealsContext";
-import { DailyContext } from "../context/DailyContext";
 import moment from "moment";
 import Loading from "../loading/loading";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   recordAllDailySliceState,
   dailyActions,
-} from "../redux/services/DailySplice";
+} from "../../services/redux/createslice/DailySplice";
+
 import {
   selectMeats_section,
   selectSeafoods_section,
   selectVegetarians_section,
   selectDesserts_section,
   endThisVar_section,
-} from "../redux/services/DailySplice";
-import { mealActions } from "../redux/services/MealSplice";
+} from "../../services/redux/createslice/DailySplice";
+
+import { mealActions } from "../../services/redux/createslice/MealSplice";
+
 import LoadingDaily from "../loading/loadingDaily";
 import Button from "../button/button-shape";
 import "./FoodsDay.css";

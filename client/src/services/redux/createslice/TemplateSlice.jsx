@@ -141,64 +141,6 @@ const templateSlice = createSlice({
       ];
       state.dataTemplatesOrdersDay = newArrTemplateOrders;
     },
-    // JUST useAsyncGenerator Fn that Miss Here;
-    useAsyncGenerator: (state, action) => {
-      const generatorFn = action.payload;
-      const [primarState, setState] = useState({
-        loading: true,
-        refetch: () => {},
-      });
-
-      useEffect(() => {
-        //(iterator Fn <-- commit to *gnrtor*)
-        async function executeTemplate(gnrtor) {
-          try {
-            const { value, done } = await gnrtor.next(); //  push gnrtor to the next value
-            if (!done) {
-              //setState and either continue or not (if ... else)
-              setState((prevState) => ({
-                ...prevState,
-                loading: false,
-                data: value,
-              }));
-              executeTemplate(gnrtor);
-            } else {
-              setState((prevState) => ({
-                ...prevState,
-                loading: false,
-                data: value,
-              }));
-            }
-          } catch (err) {
-            console.log(err);
-            setState((prevState) => ({
-              ...prevState,
-              loading: false,
-              error,
-            }));
-          }
-        }
-
-        const refetch = () => {
-          setState((prevState) => ({
-            ...prevState,
-            loading: true,
-          }));
-          executeTemplate(generatorFn());
-        };
-
-        executeTemplate(generatorFn());
-
-        setState((prevState) => ({
-          ...prevState,
-          refetch,
-        }));
-
-        return primarState;
-      }, []);
-
-      return primarState;
-    },
   },
 });
 
@@ -283,7 +225,7 @@ export const dataTemplatesOrdersDay_section = (state) => {
 };
 
 /* export const recordAllTemplateSliceState = () => {
-  return {
+  return {s
     isNewLocation,
     firstTimeOrder,
     thisOrder,

@@ -1,33 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
-import { MealContext } from "../context/MealsContext";
-import { DailyContext } from "../context/DailyContext";
-import {
-  dailyActions,
-  recordAllDailySliceState,
-} from "../redux/services/DailySplice";
+
+import { dailyActions } from "../../services/redux/createslice/DailySplice";
+
 import {
   lastActiveDay_section,
   mondayMenu_section,
   arrayDayWeeK_section,
-} from "../redux/services/DailySplice";
+} from "../../services/redux/createslice/DailySplice";
 import { useDispatch, useSelector } from "react-redux";
-import { getMeals } from "../callAPI/MealsApi";
-import HomeFetchingError from "../../errorBoundary/home_error_boundary";
+import { getMeals } from "../../callAPI/MealsApi";
+import HomeFetchingError from "../../services/errorBoundary/home_error_boundary";
 import moment from "moment";
 import "./loading.css";
 
 function LoadingDaily() {
-  /*  const {
-    state: { lastActiveDay, arrayDayWeeK, mondayMenu },
-    handleSelectedMeats,
-    handleSelectedSeafoods,
-    handleSelectedDesserts,
-    handleSelectedVegetarians,
-    handleLastActiveDay,
-    handleActiveDayWeek,
-    handleMondayMenu,
-  } = useContext(DailyContext); */
-
   const dispatch = useDispatch();
 
   const lastActiveDay = useSelector(lastActiveDay_section);

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { mealActions } from "../redux/services/MealSplice";
-import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
+import { mealActions } from "../../services/redux/createslice/MealSplice";
+import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
 import "./Favourites.css";
 
 function Favourites() {

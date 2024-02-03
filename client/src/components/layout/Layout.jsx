@@ -1,7 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Outlet, NavLink } from "react-router-dom";
-import { MealContext } from "../context/MealsContext";
-import { welcome_section } from "../redux/services/MealSplice";
+import { welcome_section } from "../../services/redux/createslice/MealSplice";
 import { useSelector } from "react-redux";
 import "./Layout.css";
 

@@ -1,17 +1,8 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import moment from "moment";
-import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../assets/images";
-import { MealContext } from "../context/MealsContext";
-import { TemplateContext } from "../context/TemplateContext";
+import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  mealActions,
-  recordAllMealSliceState,
-} from "../redux/services/MealSplice";
-import {
-  templateActions,
-  recordAllTemplateSliceState,
-} from "../redux/services/TemplateSlice";
+import { recordAllTemplateSliceState } from "../../services/redux/createslice/TemplateSlice";
 import {
   orderSpecsCurrent_section,
   thisOrder_section,
@@ -22,29 +13,36 @@ import {
   payment_section,
   isNewLocation_section,
   timer_section,
-} from "../redux/services/TemplateSlice";
+} from "../../services/redux/createslice/TemplateSlice";
+
 import {
+  mealActions,
   meals_section,
   user_section,
   orders_section,
   indexDayFormat_section,
-} from "../redux/services/MealSplice";
+} from "../../services/redux/createslice/MealSplice";
 
 import {
   initiateOrder,
   updateThisLocationOrder,
   updateThisTotalPriceOrder,
-} from "../callAPI/OrdersApi";
+} from "../../callAPI/OrdersApi";
 
-import { postPayment } from "../callAPI/PaymentApi";
-import { userLogging } from "../callAPI/UsersApi";
-import CardOrder from "../cards/card-order";
-import CardWeek from "../cards/card-week";
-import CardWeekOrders from "../cards/card-week-orders";
-import TemplateOrder from "../template/TemplateOrder";
-import LogOrRegisterForm from "../cards/register-login-form";
-import CardDayOrders from "../cards/card-day-orders";
+import { postPayment } from "../../callAPI/PaymentApi";
+
+import { userLogging } from "../../callAPI/UsersApi";
+import CardOrder from "../cards/card-order.jsx";
+import CardWeek from "../cards/card-week.jsx";
+import CardWeekOrders from "../cards/card-week-orders.jsx";
+import TemplateOrder from "../templateTicket/TemplateOrder.jsx";
+import LogOrRegisterForm from "../cards/register-login-form.jsx";
+import CardDayOrders from "../cards/card-day-orders.jsx";
 import "./Orders.css";
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
 
 {
   /* <i className="fa-solid fa-plus"></i>;
@@ -53,85 +51,53 @@ import "./Orders.css";
 }
 
 function Orders() {
-  /* const {
-    state: {
-      orderSpecsCurrent,
-      thisOrder,
-      firstTimeOrder,
-      hoursPrinted,
-      totalPrice,
-      ticketNumber,
-      payment,
-      dataTemplatesOrdersDay,
-      isNewLocation,
-      timer,
-    },
-    handleFirstTimeOrder,
-    handleTicketNumber,
-    handleHoursPrint,
-    handleTotalPrice,
-    handleThisOrder,
-    handlePayment,
-    handleTimer,
-    handleNewLocation,
-    handleOrderSpecs,
-    handleTemplateOrdersDay,
-    wholeCountDownTimersDay,
-  } = useContext(TemplateContext); */
-
-  /* const {
-    state: { meals, orders, indexDayFormat, user },
-    handleRatings,
-    handleDayShift,
-  } = useContext(MealContext); */
-
   const dispatch = useDispatch();
 
-  /* const {
-    orderSpecsCurrent,
-    thisOrder,
-    firstTimeOrder,
-    hoursPrinted,
-    totalPrice,
-    ticketNumber,
-    payment,
-    dataTemplatesOrdersDay,
-    isNewLocation,
-    timer,
-  } = useSelector(recordAllTemplateSliceState);
+  /* const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
 
-  const { meals, orders, indexDayFormat, user } = useSelector(
-    recordAllMealSliceState
-  ); */
+  // branching your data to Local Storage
+  const appState = JSON.parse(localStorage.getItem("appState"));
 
-  /*  const {
-    orderSpecsCurrent,
-    thisOrder,
-    firstTimeOrder,
-    hoursPrinted,
-    totalPrice,
-    ticketNumber,
-    payment,
-    dataTemplatesOrdersDay,
-    isNewLocation,
-    timer,
-  } = recordAllTemplateSliceState((store) => store.orderPrime.initialState); */
+  const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
+  /*  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
 
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+  /* const thisOrder = useSelector(thisOrder_section); */
+  const thisOrder = appState.orderPrime.thisOrder;
 
-  const thisOrder = useSelector(thisOrder_section);
-  const firstTimeOrder = useSelector(firstTimeOrder_section);
-  const hoursPrinted = useSelector(hoursPrinted_section);
-  const totalPrice = useSelector(totalPrice_section);
-  const ticketNumber = useSelector(ticketNumber_section);
-  const payment = useSelector(payment_section);
-  const isNewLocation = useSelector(isNewLocation_section);
-  const timer = useSelector(timer_section);
+  /* const firstTimeOrder = useSelector(firstTimeOrder_section); */
+  const firstTimeOrder = appState.orderPrime.firstTimeOrder;
 
-  const meals = useSelector(meals_section);
-  const orders = useSelector(orders_section);
-  const user = useSelector(user_section);
-  const indexDayFormat = useSelector(indexDayFormat_section);
+  /* const hoursPrinted = useSelector(hoursPrinted_section); */
+  const hoursPrinted = appState.orderPrime.hoursPrinted;
+
+  /* const totalPrice = useSelector(totalPrice_section); */
+  const totalPrice = appState.orderPrime.totalPrice;
+
+  /* const ticketNumber = useSelector(ticketNumber_section); */
+  const ticketNumber = appState.orderPrime.ticketNumber;
+
+  /* const payment = useSelector(payment_section); */
+  const payment = appState.orderPrime.payment;
+
+  /* const isNewLocation = useSelector(isNewLocation_section); */
+  const isNewLocation = appState.orderPrime.isNewLocation;
+
+  /* const timer = useSelector(timer_section); */
+  const timer = appState.orderPrime.timer;
+
+  /* const orders = useSelector(orders_section); */
+  const orders = appState.mealPrime.orders;
+
+  /* const meals = useSelector(meals_section); */
+  const meals = appState.mealPrime.meals;
+
+  const dataTemplatesOrdersDay = appState.orderPrime.dataTemplatesOrdersDay;
+
+  /* const indexDayFormat = useSelector(indexDayFormat_section); */
+  const indexDayFormat = appState.mealPrime.indexDayFormat;
+
+  /* const user = useSelector(user_section); */
+  const user = appState.mealPrime.user;
 
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
@@ -151,6 +117,7 @@ function Orders() {
   const applyOrderRef = useRef(null);
   const totalRef = useRef(null);
   const validateRef = useRef(null);
+  const sliderTemplateRef = useRef(null);
 
   const orderOftheDay =
     user.id === undefined
@@ -302,6 +269,10 @@ function Orders() {
     // store element templateOrder in the specified Template in Context API
 
     /* handleTemplateOrdersDay(templateOrderVar); */
+    if (dataTemplatesOrdersDay.length === 3) {
+      alert("You can't send more than 3 orders");
+      return;
+    }
 
     dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
 
@@ -453,6 +424,14 @@ function Orders() {
     clearTimer(getDeadTime());
   };
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
   // if you want it to be triggered while rendering - have  a try !
 
   /* useEffect(() => {
@@ -524,8 +503,20 @@ function Orders() {
         </div>
       </div>
 
-      {orderSpecsCurrent.length !== 0 ? (
-        <TemplateOrder />
+      {dataTemplatesOrdersDay.length !== 0 ? (
+        <div className="template_slider_wrapper">
+          <Slider {...settings}>
+            {dataTemplatesOrdersDay.map((orderOfDay, orderIndex) => {
+              return (
+                <TemplateOrder
+                  key={orderIndex}
+                  id={orderIndex}
+                  dataTemplate={orderOfDay.name}
+                />
+              );
+            })}
+          </Slider>
+        </div>
       ) : (
         orderSpecsCurrent.length !== 0 && (
           <div className="available_ticket">
@@ -578,7 +569,6 @@ function Orders() {
                         <th>ToTal</th>
                       </tr>
                     </thead>
-                    {}
                     {orderSpecsCurrent.map((order, i) => {
                       const mealId = order.meal;
                       const meal = meals.find((item) => item._id === mealId);

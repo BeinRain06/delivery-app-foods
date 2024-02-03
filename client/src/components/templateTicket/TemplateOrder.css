@@ -51,6 +51,45 @@
     width: 80%;
   }
 
+  /*template slider*/
+
+  .template_slider_boundary {
+    position: relative;
+    width: calc(96%);
+    height: 820px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  /* template content */
+
+  .template_slider_content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem 0.25rem;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    overflow-x: hidden;
+    animation: playVisibility 2.5s ease-in-out forwards;
+  }
+
+  .template_slider_content.bring_snaps_inline {
+    scroll-snap-type: inline mandatory;
+    scroll-padding-inline: 0.25rem;
+  }
+
+  .template_slider_content > * {
+    scroll-snap-align: start;
+  }
+
   .entitled .title_order {
     padding: 8px 18px;
     border: 1px solid #222;
@@ -80,7 +119,7 @@
     border: 1px solid #d3e05c;
   }
 
-  .available_ticket_content {
+  .template_slider_content .available_ticket_content {
     max-width: 100%;
     height: auto;
     margin: 0 auto;
@@ -99,11 +138,12 @@
     margin-top: 5px;
   }
 
-  .sample_ticket {
+  .template_slider_content .sample_ticket {
     width: minmax(180px, 42rem);
     height: auto;
     padding: 0.5rem;
-    background-color: #fff;
+    /* background-color: #fff; */
+    /* background-color: #6b4d21; */
     font-size: 0.8rem;
   }
 
@@ -684,6 +724,10 @@
   .msg_grateful_order .messaging_customers {
     font-size: 0.9rem;
   }
+
+  .template_slider_content .sample_ticket {
+    font-size: 1rem;
+  }
 }
 
 @media (min-width: 960px) {
@@ -698,5 +742,27 @@
     width: 40%;
     font-size: 1.1rem;
     margin: 0 auto;
+  }
+
+  /*  .template_slider_boundary {
+    position: relative;
+    width: calc(96%);
+    height: 820px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: auto;
+  } */
+}
+
+@keyframes playVisibility {
+  0% {
+    opacity: 0.6;
+    background-color: blue;
+  }
+  100% {
+    opacity: 1;
+    background-color: #fff;
   }
 }
