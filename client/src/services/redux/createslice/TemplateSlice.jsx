@@ -60,22 +60,30 @@ const templateSlice = createSlice({
     handleDecrease: (state, action) => {
       const mealId = action.payload;
 
-      state.orderSpecsCurrent.forEach((item) => {
-        if (item.meal === mealId) {
-          item.quantity -= 1;
-        }
-      });
+      const mealItem = state.orderSpecsCurrent.find(
+        (item) => item.meal === mealId
+      );
+      const mealItemIndex = state.orderSpecsCurrent.findIndex(
+        (item) => item.meal === mealId
+      );
+
+      if (mealItem.quantity === 1) {
+        state.orderSpecsCurrent.splice(mealItemIndex, 1);
+      } else {
+        state.orderSpecsCurrent.forEach((item) => {
+          if (item.meal === mealId) {
+            item.quantity -= 1;
+          }
+        });
+      }
     },
 
     handleClear: (state, action) => {
       const mealId = action.payload;
-      const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
-        if (item.meal === mealId) {
-          item.quantity = 0;
-        }
-      });
-
-      state.orderSpecsCurrent = newOrderSpecs;
+      const mealItemIndex = state.orderSpecsCurrent.findIndex(
+        (item) => item.meal === mealId
+      );
+      state.orderSpecsCurrent.splice(mealItemIndex, 1);
     },
 
     handleUpstreamOrder: (state, action) => {

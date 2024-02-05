@@ -14,35 +14,7 @@ import moment from "moment";
 import "./register-login-form.css";
 
 function LogOrRegisterForm() {
-  /*  const {
-    state: { user },
-    handleRegisterForm,
-    handleLoginForm,
-    handleUser,
-  } = useContext(MealContext); */
-
-  /* const {
-    state: { orderSpecsCurrent, thisOrder, totalPrice },
-    handleThisOrder,
-    handleTotalPrice,
-    handleTicketNumber,
-    handleHoursPrint,
-    handleFirstTimeOrder,
-  } = useContext(TemplateContext); */
-
   const dispatch = useDispatch();
-
-  /* const { user } = useSelector(recordAllMealSliceState);
-
-  const { orderSpecsCurrent, thisOrder, totalPrice } = useSelector(
-    recordAllTemplateSliceState
-  ); */
-
-  const user = useSelector(user_section);
-
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
-  const thisOrder = useSelector(thisOrder_section);
-  const totalPrice = useSelector(totalPrice_section);
 
   const loginRef = useRef();
   const [errMsgLogin, setErrMsgLogin] = useState(false);
@@ -50,6 +22,16 @@ function LogOrRegisterForm() {
 
   const [ticketNumber, setTicketNumber] = useState("_ _ _ _ _ _");
   const [hoursPrinted, setHoursPrinted] = useState("time");
+
+  // branching your data to Local Storage
+  const appState = JSON.parse(localStorage.getItem("appState"));
+
+  const user = appState.mealPrime.user;
+  /* const user = useSelector(user_section); */
+
+  const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
+  const thisOrder = appState.orderPrime.thisOrder;
+  const totalPrice = appState.orderPrime.totalPrice;
 
   const handleRegistering = (e) => {
     e.preventDefault();
@@ -95,7 +77,7 @@ function LogOrRegisterForm() {
 
     const myOrder = initiateOrder();
 
-    updateRegiSession(myOrder, firstStatus);
+    updateRegiSession(myOrder, false);
   };
 
   const handleLogin = (e) => {
@@ -113,9 +95,10 @@ function LogOrRegisterForm() {
       password === "";
       return;
     }
+    //right data
     loginData = { email, password };
 
-    updateLogSession(loginData, firstStatus);
+    updateLogSession({ email, password }, false);
   };
 
   const updateRegiSession = (myOrder, firstStatus) => {
@@ -139,38 +122,67 @@ function LogOrRegisterForm() {
     dispatch(templateActions.handleFirstTimeOrder(firstStatus));
   };
 
-  const updateLogSession = (loginData, firstStatus) => {
-    dispatch(mealActions.handleUser(() => userLogging(loginData)));
+  const sendLoggingData = async ({ email, password }) => {
+    const res = await userLogging({ email, password });
 
-    setTimeout(() => {
-      dispatch(
-        templateActions.handleThisOrder(() =>
-          initiateOrder(user.id, orderSpecsCurrent)
-        )
-      );
+    return res;
+  };
+
+  const updateLogSession = async ({ email, password }, firstStatus) => {
+    const goToUser = await sendLoggingData({ email, password });
+
+    dispatch(mealActions.handleUser(goToUser));
+
+    const isEmptyObject = (specUser) => {
+      return JSON.stringify(specUser);
+    };
+
+    const userObj = isEmptyObject(user);
+
+    const userData =
+      userObj !== "{}"
+        ? { user: user.id, type: "id" }
+        : { user: email, type: "email" };
+
+    console.log("user data", userData);
+
+    setTimeout(async () => {
+      const initThatOrder = async () => {
+        const res = await initiateOrder(userData, orderSpecsCurrent);
+        return res;
+      };
+
+      let result = await initThatOrder();
+
+      dispatch(templateActions.handleThisOrder(result));
     }, 3000);
 
     console.log("thisorder :", thisOrder);
     console.log("user:", user);
 
     setTimeout(() => {
-      dispatch(
-        templateActions.handleTotalPrice(() => {
-          let total = thisOrder.totalPrice;
-          console.log("thisorder totalPrice :", total);
-          let totalArr = Array.from(total);
-          let output = "";
-          totalArr.map((elt) => {
-            output += elt + " ";
-          });
-          console.log(output);
-          return output;
-        })
-      );
+      const catchTotalPrice = () => {
+        let total = thisOrder;
+        console.log("thisorder here :", total);
+        let totalArr = Array.from(total);
+        let output = "";
+        totalArr.map((elt) => {
+          output += elt + " ";
+        });
+        console.log(output);
+        return output;
+      };
+      let totalPriceIn = catchTotalPrice();
+
+      dispatch(templateActions.handleTotalPrice(totalPriceIn));
     }, 3000);
 
-    dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
-    dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
+    let currentTime = moment().format("hh:mm a");
+    dispatch(templateActions.handleHoursPrint(currentTime));
+
+    let codePayment = (totalPrice - 3).toString(16);
+    dispatch(templateActions.handleTicketNumber(codePayment));
+
     dispatch(templateActions.handleFirstTimeOrder(firstStatus));
   };
 
@@ -203,7 +215,6 @@ function LogOrRegisterForm() {
               {errMsgLogin && (
                 <li className="warning_msg_wrap">
                   <span className="warning_msg">
-                    {" "}
                     Please Fill all the Fields !
                   </span>
                 </li>

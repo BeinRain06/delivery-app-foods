@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export async function initiateOrder(userId, orderSpecsCurrent) {
+export async function initiateOrder(userData, orderSpecsCurrent) {
   try {
     let api_url = "http://localhost:5000/api/delivery/orders";
 
@@ -8,7 +8,7 @@ export async function initiateOrder(userId, orderSpecsCurrent) {
       `${api_url}/order`,
       {
         ordersSpecs: orderSpecsCurrent,
-        user: userId,
+        user: userData,
       },
       {
         headers: {

@@ -2,7 +2,7 @@ import React, { useState, useRef, useContext, useEffect } from "react";
 import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
 import { useDispatch, useSelector } from "react-redux";
-import { recordAllTemplateSliceState } from "../../services/redux/createslice/TemplateSlice";
+import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 import {
   orderSpecsCurrent_section,
   thisOrder_section,
@@ -52,6 +52,12 @@ import Slider from "react-slick";
 
 function Orders() {
   const dispatch = useDispatch();
+
+  const orderSpecsCurrentFromTemplateSlice = useSelector(
+    orderSpecsCurrent_section
+  );
+
+  const firstTimeOrderFromTemplateSlice = useSelector(firstTimeOrder_section);
 
   /* const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
 
@@ -327,7 +333,7 @@ function Orders() {
         setTimeout(() => {
           /* handleFirstTimeOrder(true); */
           dispatch(templateActions.handleFirstTimeOrder(true));
-        }, 3000);
+        }, 1000);
         return;
       } else {
         /*  await handleFirstTimeOrder(false); */
@@ -447,6 +453,10 @@ function Orders() {
   useEffect(() => {}, [indexDayFormat]);
 
   useEffect(() => {
+    console.log("this place redirect to login or register form!");
+  }, [firstTimeOrderFromTemplateSlice]);
+
+  useEffect(() => {
     const updateTotalPrice = async () => {
       let newChange;
       console.log("orders specs right in time", orderSpecsCurrent);
@@ -465,7 +475,13 @@ function Orders() {
     };
 
     updateTotalPrice();
-  }, [orderSpecsCurrent]);
+  }, [user, totalPrice]);
+
+  useEffect(() => {
+    console.log(
+      "This have to Update The quantity and mini Total Price Template Ticket!"
+    );
+  }, [orderSpecsCurrentFromTemplateSlice, dataTemplatesOrdersDay]);
 
   return (
     <main className="welcome_orders">
@@ -484,7 +500,7 @@ function Orders() {
                     key={mealItem._id}
                     id={mealItem._id}
                     name={mealItem.name}
-                    quantity={orderSpecItem.quantity}
+                    /* quantity={orderSpecItem.quantity} */
                     origin={mealItem.origin}
                     ratings={mealItem.ratings}
                     price={mealItem.price}
@@ -503,7 +519,7 @@ function Orders() {
         </div>
       </div>
 
-      {dataTemplatesOrdersDay.length !== 0 ? (
+      {dataTemplatesOrdersDay.length >= 2 ? (
         <div className="template_slider_wrapper">
           <Slider {...settings}>
             {dataTemplatesOrdersDay.map((orderOfDay, orderIndex) => {
@@ -518,7 +534,8 @@ function Orders() {
           </Slider>
         </div>
       ) : (
-        orderSpecsCurrent.length !== 0 && (
+        (orderSpecsCurrent.length !== 0 ||
+          dataTemplatesOrdersDay.length === 1) && (
           <div className="available_ticket">
             <div
               className="available_book_content"
@@ -951,7 +968,12 @@ function Orders() {
                     let dateOrderedFormat = item.dateOrdered.format("MMM D");
 
                     if (dateOrderedFormat === indexDayFormat) {
-                      return <CardWeekOrders ordersSpecs={item.ordersSpecs} />;
+                      return (
+                        <CardWeekOrders
+                          key={i}
+                          ordersSpecs={item.ordersSpecs}
+                        />
+                      );
                     } else {
                       return (
                         <div className="wrapper_no_items">

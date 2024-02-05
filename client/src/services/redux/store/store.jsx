@@ -27,3 +27,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(localStorageMiddleware),
 });
+
+/* getDefaultMiddleware({
+  serializableCheck: false,
+}).concat(localStorageMiddleware); */
