@@ -28,7 +28,7 @@ export async function userRegistering(
       },
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       }
     );
@@ -42,11 +42,13 @@ export async function userRegistering(
   }
 }
 
-export async function userLogging(email, password) {
+export async function userLogging({ email, password }) {
   try {
     let userIdentity;
 
     let api_url = "http://localhost:5000/api/delivery/users/login";
+
+    console.log(`API-- this email: ${email}, this password:${password}`);
 
     const res = await axios.post(
       api_url,
@@ -63,7 +65,7 @@ export async function userLogging(email, password) {
 
     userIdentity = res.data.data;
 
-    console.log(userIdentity);
+    console.log("userIdentity return after logging", userIdentity);
 
     return userIdentity;
   } catch (err) {

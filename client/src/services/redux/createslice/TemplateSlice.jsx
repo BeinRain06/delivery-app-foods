@@ -111,10 +111,13 @@ const templateSlice = createSlice({
         if (indexItem) {
           let orderItem = state.orderSpecsCurrent[indexItem];
 
-          orderItems = {
+          orderItems = [
             ...state.orderSpecsCurrent,
-            [indexItem]: { ...orderItem, quantity: orderItem.quantity + 1 },
-          };
+            (state.orderSpecsCurrent[indexItem] = {
+              ...orderItem,
+              quantity: orderItem.quantity + 1,
+            }),
+          ];
         } else {
           qty += 1;
           orderItems.push({

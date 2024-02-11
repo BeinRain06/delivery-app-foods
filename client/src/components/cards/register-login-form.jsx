@@ -123,6 +123,7 @@ function LogOrRegisterForm() {
   };
 
   const sendLoggingData = async ({ email, password }) => {
+    console.log(`that email: ${email}, that password:  ${password}`);
     const res = await userLogging({ email, password });
 
     return res;

@@ -73,12 +73,10 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
     if (orderSpecsCurrent.length === 0) {
       qty += 1;
 
-      orderItems.push({
-        meal: mealID,
-        name: mealName,
-        quantity: qty,
-        price: mealPrice,
-      });
+      orderItems = [
+        ...orderItems,
+        { meal: mealID, name: mealName, quantity: qty, price: mealPrice },
+      ];
     } else {
       indexItem = orderSpecsCurrent.findIndex((item) => item.meal === mealID);
 
@@ -184,7 +182,7 @@ function Button({ mealid, mealname, mealprice }) {
     setTimeout(async () => {
       await setIsCliked(true);
       console.log(" isClicked set true");
-    }, 1500);
+    }, 1000);
   };
 
   return (
