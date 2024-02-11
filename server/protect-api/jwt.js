@@ -36,7 +36,7 @@ function requireAuthJwt() {
       `${api}/ratedmeals`,
       `${api}/ratings`,
 
-      /*  `${api}/orders`, */
+      `${api}/orders/order`,
     ],
   });
 }

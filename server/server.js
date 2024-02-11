@@ -25,6 +25,7 @@ const app = express();
 
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 
 const cors = require("cors");
 
@@ -115,6 +116,7 @@ app.use(`${api}/ratedmeals`, ratedMealRouter);
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+/* app.use(bodyParser.json()); */
 app.use(requireAuthJwt());
 app.use(errorHandler);
 

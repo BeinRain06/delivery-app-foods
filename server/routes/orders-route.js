@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const cors = require("cors");
 
 const Order = require("../models/order");
 
@@ -9,9 +10,22 @@ const User = require("../models/user");
 
 // middleware that is specific to this router
 router.use(express.urlencoded({ extended: false }));
+router.use(express.json());
+
+router.use(
+  cors({
+    origin: [
+      "http://localhost:5000",
+      "http://localhost:3000",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 
 //Emit Order
 router.post("/order", async (req, res) => {
+  console.log("orders-routes orderSpecsCurrent :", req.body);
   try {
     const orderSpecIds = Promise.all(
       req.body.ordersSpecs.map(async (orderSpec) => {
@@ -26,10 +40,11 @@ router.post("/order", async (req, res) => {
       })
     );
 
-    //await to return Promise in an array
+    //await to return values of the Promise in one array (using Promise.all)
     const orderSpecIdsResolved = await orderSpecIds;
 
-    const totalPrices = Promise.all(
+    // shorthand using "await" to return straight at the end the value of Promise
+    const totalPrices = await Promise.all(
       orderSpecIdsResolved.map(async (orderSpecId) => {
         const orderSpec = await OrderSpecs.findById(orderSpecId).populate(
           "meal",
@@ -44,7 +59,7 @@ router.post("/order", async (req, res) => {
 
     const totalPrice = totalPrices.reduce((acc, elt) => acc + elt, 0);
 
-    const ordersItems = Promise.all(
+    const ordersItems = await Promise.all(
       orderSpecIdsResolved.map(async (orderSpecId) => {
         const orderSpec = await OrderSpecs.findById(orderSpecId).populate(
           "meal",
@@ -55,29 +70,43 @@ router.post("/order", async (req, res) => {
     );
 
     const userHomeLocation = async () => {
-      const userId = req.body.user;
-      let city, street;
+      const userData = req.body.user;
+      let currentUser;
+      let city, street, userId;
 
       if (req.body.city === "home" || req.body.street === "home") {
-        const currentUser = await User.findById(userId);
+        if (userData.type === "id") {
+          currentUser = await User.findById(userData.user);
+        } else {
+          currentUser = await User.findOne({ email: userData.user });
+        }
+        console.log("currentUser:", currentUser);
         city = currentUser.city;
         street = currentUser.street;
-        return { city, street };
+        userId = currentUser._id;
+
+        return { city, street, userId };
       } else {
+        console.log("currentUser:", currentUser);
         city = req.body.city;
         street = req.body.street;
-        return { city, street };
+        userId = currentUser._id;
+        return { city, street, userId };
       }
     };
 
-    const { city, street } = userHomeLocation();
+    const homeInfo = await userHomeLocation();
+
+    const { city, street, userId } = homeInfo;
+
+    console.log("orders-route user-id", userId);
 
     let order = new Order({
       ordersSpecs: ordersItems,
       city: city,
       street: street,
       totalPrice: totalPrice,
-      user: req.body.user, // frontend pass id of user login or created (retrieve the id user after user is authenticated)
+      user: userId,
       phone: req.body.phone,
       codePayment: totalPrice.toString(16),
       status: req.body.status,
@@ -92,6 +121,11 @@ router.post("/order", async (req, res) => {
     // ...be continued, add user in order and phone user in order but first finish categories-routes code implementation
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      error:
+        "Error: check your process something went wrong can't post this order",
+    });
   }
 });
 

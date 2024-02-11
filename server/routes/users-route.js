@@ -86,6 +86,13 @@ router.post("/register", async (req, res) => {
       isAdmin: req.body.isAdmin,
     });
 
+    //check if user email already exist
+    const userExist = await User.findOne({ email: user.email });
+
+    if (userExist) {
+      throw new Error("This email Already Exist. Cannot create User !");
+    }
+
     user = await user.save();
     const userId = user.id;
 
@@ -110,7 +117,11 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     //find user by email
-    console.log("req :", req.body);
+    // console.log("req :", req.body);
+    console.log(
+      `in the users-route -> this email: ${req.body.email}, along with this password: ${req.body.password}`
+    );
+
     const user = await User.findOne({ email: req.body.email });
 
     console.log("this User:", user);
@@ -126,8 +137,10 @@ router.post("/login", async (req, res) => {
     //compare password enter with the existing one in data using bcrypt
     if (user && bcrypt.compareSync(req.body.password, user.passwordHash)) {
       const maxAge = 3 * 1000 * 60 * 60 * 24; // 3days in ms
+
       //jwt signing
-      const token = createToken(user.id, user.isAdmin);
+      const userId = user._id;
+      const token = createToken(user._id, user.isAdmin);
       res.cookie("jwt", { token }, { httpOnly: true, maxAge: maxAge });
       res.cookie("userId", { userId }, { httpOnly: true, maxAge: maxAge });
 
