@@ -109,6 +109,17 @@ form {
     align-items: center;
     border: 2px solid #ebe0e0;
   }
+
+  .loading_login_wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #c9c2c2;
+    z-index: 10;
+  }
 }
 
 @media (min-width: 600px) {

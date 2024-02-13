@@ -142,12 +142,12 @@ router.post("/login", async (req, res) => {
       const userId = user._id;
       const token = createToken(user._id, user.isAdmin);
       res.cookie("jwt", { token }, { httpOnly: true, maxAge: maxAge });
-      res.cookie("userId", { userId }, { httpOnly: true, maxAge: maxAge });
+      res.cookie("userId", { userId }, { httpOnly: false, maxAge: maxAge });
 
       return res.status(200).json({
         success: true,
         message: `User ${user.name} Authenticated!`,
-        data: {},
+        data: { userName: user.name, userEmail: user.email },
       });
     } else {
       return res.status(400).json({

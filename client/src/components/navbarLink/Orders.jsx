@@ -67,7 +67,8 @@ function Orders() {
   const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
   /*  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
 
-  /* const thisOrder = useSelector(thisOrder_section); */
+  const thisOrderSplice = useSelector(thisOrder_section);
+
   const thisOrder = appState.orderPrime.thisOrder;
 
   /* const firstTimeOrder = useSelector(firstTimeOrder_section); */
@@ -325,11 +326,23 @@ function Orders() {
     }
   };
 
+  function getCookies() {
+    let cookies = document.cookie.split(";").reduce((cookies, cookie) => {
+      const [name, val] = cookie.split("=").map((c) => c.trim());
+      cookies[name] = val;
+      return cookies;
+    }, {});
+    return cookies;
+  }
+
   const handleControlRadio = async (e) => {
     console.log(e.target);
 
     if (e.target.id === "reg_price_2") {
-      if (user.id === undefined) {
+      const cookies = getCookies();
+      const userId = cookies.userId;
+
+      if (userId === undefined) {
         setTimeout(() => {
           /* handleFirstTimeOrder(true); */
           dispatch(templateActions.handleFirstTimeOrder(true));
@@ -443,6 +456,7 @@ function Orders() {
   /* useEffect(() => {
     clearTimer(getDeadTime());
   }, []); */
+
   useEffect(() => {
     console.log("present navbar");
     setTimeout(() => {
@@ -456,7 +470,7 @@ function Orders() {
     console.log("this place redirect to login or register form!");
   }, [firstTimeOrderFromTemplateSlice]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     const updateTotalPrice = async () => {
       let newChange;
       console.log("orders specs right in time", orderSpecsCurrent);
@@ -465,7 +479,7 @@ function Orders() {
           thisOrder.id,
           orderSpecsCurrent
         );
-        /* await handleThisOrder(newChange); */
+        // await handleThisOrder(newChange);
 
         await dispatch(templateActions.handleThisOrder(newChange));
       }
@@ -475,7 +489,7 @@ function Orders() {
     };
 
     updateTotalPrice();
-  }, [user, totalPrice]);
+  }, [user, totalPrice]); */
 
   useEffect(() => {
     console.log(
@@ -564,7 +578,7 @@ function Orders() {
                     </div>
                   </div>
                   <div className="current_day_time">
-                    <h4>{hoursPrinted}</h4>{" "}
+                    <h4>{hoursPrinted}</h4>
                     {/* change with ok button last step */}
                   </div>
                   <div className="statement_to_client">
@@ -593,7 +607,7 @@ function Orders() {
                       const minTotal = (meal.price * qty).toFixed(2);
                       return (
                         <>
-                          <tbody>
+                          <tbody key={i}>
                             <tr>
                               <td>{meal.name}</td>
                               <td>{qty}</td>
@@ -734,7 +748,7 @@ function Orders() {
                               </ul>
 
                               <ul className="spread_new_button">
-                                <li>
+                                <li id="spread_reject">
                                   <button
                                     type="button"
                                     className="btn_on_new btn_loc_one"
@@ -743,7 +757,7 @@ function Orders() {
                                     Reject
                                   </button>
                                 </li>
-                                <li>
+                                <li id="spread_ok">
                                   <button
                                     type="submit"
                                     className="btn_on_new btn_loc_two"

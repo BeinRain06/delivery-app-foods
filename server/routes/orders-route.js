@@ -70,15 +70,23 @@ router.post("/order", async (req, res) => {
     );
 
     const userHomeLocation = async () => {
-      const userData = req.body.user;
+      const userEmail = req.body.user;
       let currentUser;
       let city, street, userId;
 
       if (req.body.city === "home" || req.body.street === "home") {
-        if (userData.type === "id") {
+        /*  if (userData.type === "id") {
           currentUser = await User.findById(userData.user);
         } else {
           currentUser = await User.findOne({ email: userData.user });
+        } */
+
+        if (req.cookies.userId !== undefined) {
+          console.log("userId: ", req.cookies.userId);
+          currentUser = await User.findById(req.cookies.userId);
+        } else {
+          console.log("userEmail:", userEmail);
+          currentUser = await User.findOne({ email: userEmail });
         }
         console.log("currentUser:", currentUser);
         city = currentUser.city;

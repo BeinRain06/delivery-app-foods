@@ -1,14 +1,13 @@
 import axios from "axios";
 
-export async function userRegistering(
-  name,
+export async function userRegistering({
   password,
   city,
   street,
   country,
   phone,
-  email
-) {
+  email,
+}) {
   try {
     let userIdentity;
 
@@ -18,7 +17,6 @@ export async function userRegistering(
       api_url,
 
       {
-        name: name,
         password: password,
         city: city,
         street: street,

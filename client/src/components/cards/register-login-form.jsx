@@ -1,4 +1,5 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
+import LoadingLogSession from "../loading/loadingLogSession";
 import { useDispatch, useSelector } from "react-redux";
 import { mealActions } from "../../services/redux/createslice/MealSplice";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
@@ -19,6 +20,8 @@ function LogOrRegisterForm() {
   const loginRef = useRef();
   const [errMsgLogin, setErrMsgLogin] = useState(false);
   const [errMsgRegister, setErrMsgRegister] = useState(false);
+  const [isloggingDataSession, setIsLoggingDataSession] = useState(false);
+  const [loginData, setLoginData] = useState({});
 
   const [ticketNumber, setTicketNumber] = useState("_ _ _ _ _ _");
   const [hoursPrinted, setHoursPrinted] = useState("time");
@@ -33,10 +36,11 @@ function LogOrRegisterForm() {
   const thisOrder = appState.orderPrime.thisOrder;
   const totalPrice = appState.orderPrime.totalPrice;
 
+  const thisOrderSplice = useSelector(thisOrder_section);
+
   const handleRegistering = (e) => {
     e.preventDefault();
     let registeringData;
-    let name = e.target.elements.name.value;
     let password = e.target.elements.password.value;
     let city = e.target.elements.city.value;
     let street = e.target.elements.street.value;
@@ -44,7 +48,6 @@ function LogOrRegisterForm() {
     let phone = e.target.elements.phone.value;
     let email = e.target.elements.email.value;
     if (
-      name === "" ||
       password === "" ||
       city === "" ||
       street === "" ||
@@ -58,7 +61,6 @@ function LogOrRegisterForm() {
         setErrMsgRegister(false);
       }, 3000);
 
-      name === "";
       password === "";
       city === "";
       street === "";
@@ -68,21 +70,18 @@ function LogOrRegisterForm() {
       return;
     }
 
-    registeringData = { name, password, city, street, country, phone, email };
+    // right data
+    registeringData = { password, city, street, country, phone, email };
+
     console.log(registeringData);
 
-    dispatch(
-      mealActions.handleUser(async () => await userRegistering(registeringData))
-    );
+    // updateRegiSession(myOrder, false);
 
-    const myOrder = initiateOrder();
-
-    updateRegiSession(myOrder, false);
+    updateRegiSession({ password, city, street, country, phone, email }, false);
   };
 
   const handleLogin = (e) => {
     e.preventDefault();
-    let loginData;
     const email = e.target.elements.email.value;
     const password = e.target.elements.password.value;
 
@@ -96,47 +95,89 @@ function LogOrRegisterForm() {
       return;
     }
     //right data
-    loginData = { email, password };
-
-    updateLogSession({ email, password }, false);
-  };
-
-  const updateRegiSession = (myOrder, firstStatus) => {
+    setLoginData(() => {
+      return { email, password };
+    });
     setTimeout(() => {
-      dispatch(
-        templateActions.handleTotalPrice(() => {
-          let total = myOrder.totalPrice;
-          let totalArr = Array.from(total);
-          let output = "";
-          totalArr.map((elt) => {
-            output += elt + " ";
-          });
-          console.log(output);
-          return output;
-        })
-      );
+      setIsLoggingDataSession(true);
     }, 3000);
-
-    dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
-    dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
-    dispatch(templateActions.handleFirstTimeOrder(firstStatus));
   };
 
-  const sendLoggingData = async ({ email, password }) => {
+  const updateRegiSession = async (
+    { password, city, street, country, phone, email },
+    firstStatus
+  ) => {
+    const goToUser = await sendRegisteringData(
+      password,
+      city,
+      street,
+      country,
+      phone,
+      email
+    );
+
+    updateUserandInitOrder(goToUser);
+
+    console.log("thisorder when registering  :", thisOrder);
+    console.log("user when registerings :", user);
+
+    updatefieldTemplate(firstStatus);
+  };
+
+  /* const sendLoggingData = async ({ email, password }) => {
     console.log(`that email: ${email}, that password:  ${password}`);
     const res = await userLogging({ email, password });
 
     return res;
+  }; */
+
+  const sendRegisteringData = async ({
+    password,
+    city,
+    street,
+    country,
+    phone,
+    email,
+  }) => {
+    console.log(
+      `that email: ${email}, that password:  ${password} , that street: ${street}, ...and so many else`
+    );
+    const res = await userRegistering({
+      password,
+      city,
+      street,
+      country,
+      phone,
+      email,
+    });
+
+    return res;
   };
 
-  const updateLogSession = async ({ email, password }, firstStatus) => {
+  const catchTotalPrice = (myOrder) => {
+    let total = myOrder;
+    console.log("thisorder here :", total);
+    let totalArr = Array.from(total);
+    let output = "";
+    totalArr.map((elt) => {
+      output += elt + " ";
+    });
+    console.log(output);
+    return output;
+  };
+
+  /*  const updateLogSession = async ({ email, password }) => {
     const goToUser = await sendLoggingData({ email, password });
 
-    dispatch(mealActions.handleUser(goToUser));
+    const myOrder = await updateUserandInitOrder(goToUser, email);
 
-    const isEmptyObject = (specUser) => {
-      return JSON.stringify(specUser);
-    };
+    return myOrder;
+  }; */
+
+  const updateUserandInitOrder = async (goToUser, email) => {
+    await dispatch(mealActions.handleUser(goToUser));
+
+    let myOrderIn;
 
     const userObj = isEmptyObject(user);
 
@@ -152,31 +193,32 @@ function LogOrRegisterForm() {
         const res = await initiateOrder(userData, orderSpecsCurrent);
         return res;
       };
+      myOrderIn = await initThatOrder();
+      await dispatch(templateActions.handleThisOrder(myOrderIn));
 
-      let result = await initThatOrder();
-
-      dispatch(templateActions.handleThisOrder(result));
-    }, 3000);
-
-    console.log("thisorder :", thisOrder);
-    console.log("user:", user);
+      console.log("that result here:", myOrderIn);
+    }, 5000);
 
     setTimeout(() => {
-      const catchTotalPrice = () => {
-        let total = thisOrder;
-        console.log("thisorder here :", total);
-        let totalArr = Array.from(total);
-        let output = "";
-        totalArr.map((elt) => {
-          output += elt + " ";
-        });
-        console.log(output);
-        return output;
-      };
-      let totalPriceIn = catchTotalPrice();
+      console.log("update thisOrder data");
+      /* setIsUpdate(true) */
+    }, 3000);
+
+    return myOrder;
+  };
+
+  const updatefieldTemplate = (firstStatus, myOrder) => {
+    setTimeout(() => {
+      console.log("this order in templateSlice :", thisOrderSplice);
+
+      console.log("this order in appState:", thisOrder);
+
+      let totalPriceIn = catchTotalPrice(myOrder);
 
       dispatch(templateActions.handleTotalPrice(totalPriceIn));
     }, 3000);
+
+    console.log("total price in login:", totalPrice);
 
     let currentTime = moment().format("hh:mm a");
     dispatch(templateActions.handleHoursPrint(currentTime));
@@ -185,7 +227,18 @@ function LogOrRegisterForm() {
     dispatch(templateActions.handleTicketNumber(codePayment));
 
     dispatch(templateActions.handleFirstTimeOrder(firstStatus));
+
+    setTimeout(() => {
+      console.log("updation ended");
+      /*  setIsUpdate(false); */
+    }, 3000);
   };
+
+  /* useEffect(() => {
+    console.log(
+      "This means to update data Order for our template ticket after login or registering"
+    );
+  }, [isUpdate]); */
 
   return (
     <div className="registration_wrapper">
@@ -230,6 +283,14 @@ function LogOrRegisterForm() {
                 </button>
               </li>
             </ul>
+            {isloggingDataSession && (
+              <div className="loading_login_wrapper">
+                <LoadingLogSession
+                  loginData={loginData}
+                  setIsLoggingDataSession={setIsLoggingDataSession}
+                />
+              </div>
+            )}
           </form>
         </div>
         <div className="registering_face">

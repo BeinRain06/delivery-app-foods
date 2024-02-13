@@ -1,0 +1,50 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.load_log_wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: auto;
+}
+
+.load_log_content {
+  position: relative;
+  width: 50%;
+  height: 50%;
+  padding: 1rem;
+  margin: 0 auto;
+  border-radius: 50%;
+  border-left: 3px solid #224470;
+  font-size: clamp(0.65rem, 0.72rem, 0.89rem);
+  animation: all 3s ease-in-out backwards infinite;
+  z-index: 10;
+}
+
+.load_log_content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  border: 3px solid #645f5f;
+  z-index: 5;
+}
+
+@keyframes anim_log_session {
+  0% {
+    opacity: 0.4;
+    transform: rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(360deg);
+  }
+}

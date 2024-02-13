@@ -1,16 +1,18 @@
 import axios from "axios";
 import qs from "qs";
 
-export async function initiateOrder(userData, orderSpecsCurrent) {
+export async function initiateOrder(userEmail, orderSpecsCurrent) {
   try {
     let api_url = "http://localhost:5000/api/delivery/orders/order";
 
     console.log("API-orderSpecsCurrent :", orderSpecsCurrent);
     const ordersSpecs = orderSpecsCurrent;
 
+    console.log("orders - API -userEmail :", userEmail);
+
     const params = {
       ordersSpecs: orderSpecsCurrent,
-      user: userData,
+      user: userEmail,
       city: "home",
       street: "home",
     };
@@ -24,18 +26,12 @@ export async function initiateOrder(userData, orderSpecsCurrent) {
       },
     })
       .then((response) => response.json())
-      .then((data) => console.log("data posted:", data))
+      .then((res) => res.data)
       .catch((error) => {
         console.error("Error:", error);
       });
 
-    /* return await response.json(); */
-
-    /*  const order = await response.data.data;
-
-    console.log("order inititated:", order);
-
-    return order; */
+    return response;
   } catch (err) {
     console.log(err);
   }
