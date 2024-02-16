@@ -237,6 +237,10 @@ button {
   } */
 
   .brief_over_meal .dish_order_img {
+    position: relative;
+    top: 3px;
+    left: 4px;
+    width: calc(16vw - 4px);
     backdrop-filter: invert(200%);
   }
 

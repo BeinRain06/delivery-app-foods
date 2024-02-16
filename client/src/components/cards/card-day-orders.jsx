@@ -1,4 +1,6 @@
 import React, { useRef, useContext, useState } from "react";
+import { MealContext } from "../../services/context/MealsContext";
+import { TemplateContext } from "../../services/context/TemplateContext";
 import { useDispatch, useSelector } from "react";
 import {
   openTagRatings_section,
@@ -10,11 +12,12 @@ import { templateActions } from "../../services/redux/createslice/TemplateSlice"
 import "./card-day-order.css";
 
 function CardDayOrders({ props }) {
-  const dispatch = useDispatch();
-
+  /*  const dispatch = useDispatch();
   const openTagRatings = useSelector(openTagRatings_section);
   const user = useSelector(user_section);
-  const ratings = useSelector(ratings_section);
+  const ratings = useSelector(ratings_section); */
+
+  const { state: user, ratings, openTagRatings } = useContext(MealContext);
 
   const [recordUser, setRecordUser] = useState(false);
   const mealRef = useRef();

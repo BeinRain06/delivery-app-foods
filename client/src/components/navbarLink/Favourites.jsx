@@ -1,16 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { mealActions } from "../../services/redux/createslice/MealSplice";
+import { MealContext } from "../../services/context/MealsContext";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
 import "./Favourites.css";
 
 function Favourites() {
-  const dispatch = useDispatch();
-
+  /* const dispatch = useDispatch(); */
+  const { handleWelcome } = useContext(MealContext);
   useEffect(() => {
     console.log("present navbar");
     setTimeout(() => {
-      dispatch(mealActions.handleWelcome(false));
+      handleWelcome(false);
+      /*  dispatch(mealActions.handleWelcome(false)); */
     }, 3000);
   }, []);
   return (

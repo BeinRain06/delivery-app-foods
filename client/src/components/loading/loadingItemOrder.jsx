@@ -2,20 +2,8 @@ import React, { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { TemplateContext } from "../context/TemplateContext";
 import "./loading.css";
-import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 
 function LoadingItemOrder() {
-  /*  const { handleUpstreamOrder } = useContext(TemplateContext); */
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const streamOrder = async (e) => {
-      await dispatch(templateActions.handleUpstreamOrder(e));
-    };
-    streamOrder();
-  }, []);
-
   return (
     <div className="loading_wrapper">
       <ul className="loading_content">

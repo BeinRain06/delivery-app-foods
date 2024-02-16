@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { MealContext } from "../../services/context/MealsContext";
 import { mealActions } from "../../services/redux/createslice/MealSplice";
 import "./Events.css";
 
@@ -10,12 +11,15 @@ import "./Events.css";
 }
 
 function Events() {
-  const dispatch = useDispatch();
+  /*  const dispatch = useDispatch(); */
+
+  const { handleWelcome } = useContext(MealContext);
 
   useEffect(() => {
     console.log("present navbar");
     setTimeout(() => {
-      dispatch(mealActions.handleWelcome(false));
+      /*  dispatch(mealActions.handleWelcome(false)); */
+      handleWelcome(false);
     }, 3000);
   }, []);
 

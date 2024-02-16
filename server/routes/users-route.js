@@ -141,8 +141,11 @@ router.post("/login", async (req, res) => {
       //jwt signing
       const userId = user._id;
       const token = createToken(user._id, user.isAdmin);
-      res.cookie("jwt", { token }, { httpOnly: true, maxAge: maxAge });
-      res.cookie("userId", { userId }, { httpOnly: false, maxAge: maxAge });
+      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge });
+      res.cookie("userId", userId, { httpOnly: false, maxAge: maxAge });
+
+      console.log("token send:", token);
+      console.log(`User ${user.name} Authenticated!`);
 
       return res.status(200).json({
         success: true,

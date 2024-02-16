@@ -1,6 +1,8 @@
 import axios from "axios";
 import qs from "qs";
 
+axios.defaults.withCredentials = true;
+
 export async function initiateOrder(userEmail, orderSpecsCurrent) {
   try {
     let api_url = "http://localhost:5000/api/delivery/orders/order";
@@ -21,6 +23,7 @@ export async function initiateOrder(userEmail, orderSpecsCurrent) {
       method: "POST",
       body: JSON.stringify(params),
       mode: "cors",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -71,6 +74,9 @@ export async function updateThisTotalPriceOrder(orderId, orderSpecsCurrent) {
   try {
     let api_url = "http://localhost:5000/api/delivery/orders/order";
 
+    console.log("orderId -API-PUT METHOD:", orderId);
+    console.log("orderSpecsCurrent -API-PUT METHOD:", orderSpecsCurrent);
+
     const res = await axios.put(
       `${api_url}/${orderId}`,
       {
@@ -86,7 +92,31 @@ export async function updateThisTotalPriceOrder(orderId, orderSpecsCurrent) {
 
     const order = res.data.data;
 
+    console.log("order when updated:", order);
+
     return order;
+
+    // with Fetch Method
+
+    /*  const data = {
+      ordersSpecs: orderSpecsCurrent,
+    };
+    const response = await fetch(`${api_url}/${orderId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+      mode: "cors",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const res = await response.json();
+
+    // let decoder = new TextDecoder("utf-16");
+    // let rateData = JSON.parse(decoder.decode(res));
+
+    console.log("res PUT METHOD:", res);
+    return res.data; */
   } catch (err) {
     console.log(err);
   }

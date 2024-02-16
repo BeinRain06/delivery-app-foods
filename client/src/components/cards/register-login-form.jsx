@@ -1,5 +1,7 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import LoadingLogSession from "../loading/loadingLogSession";
+import { MealContext } from "../../services/context/MealsContext";
+import { TemplateContext } from "../../services/context/TemplateContext";
 import { useDispatch, useSelector } from "react-redux";
 import { mealActions } from "../../services/redux/createslice/MealSplice";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
@@ -15,7 +17,16 @@ import moment from "moment";
 import "./register-login-form.css";
 
 function LogOrRegisterForm() {
-  const dispatch = useDispatch();
+  /*  const dispatch = useDispatch(); */
+
+  const {
+    state: { user },
+    handleUser,
+  } = useContext(MealContext);
+
+  const {
+    state: { thisOrder, totalPrice, orderSpecsCurrent },
+  } = useContext(TemplateContext);
 
   const loginRef = useRef();
   const [errMsgLogin, setErrMsgLogin] = useState(false);
@@ -27,17 +38,16 @@ function LogOrRegisterForm() {
   const [hoursPrinted, setHoursPrinted] = useState("time");
 
   // branching your data to Local Storage
-  const appState = JSON.parse(localStorage.getItem("appState"));
+  /*   const appState = JSON.parse(localStorage.getItem("appState"));
 
-  const user = appState.mealPrime.user;
-  /* const user = useSelector(user_section); */
+   const user = appState.mealPrime.user;
+  const user = useSelector(user_section);
 
-  const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
+   const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
   const thisOrder = appState.orderPrime.thisOrder;
   const totalPrice = appState.orderPrime.totalPrice;
-
   const thisOrderSplice = useSelector(thisOrder_section);
-
+ */
   const handleRegistering = (e) => {
     e.preventDefault();
     let registeringData;
@@ -175,7 +185,7 @@ function LogOrRegisterForm() {
   }; */
 
   const updateUserandInitOrder = async (goToUser, email) => {
-    await dispatch(mealActions.handleUser(goToUser));
+    await handleUser(goToUser);
 
     let myOrderIn;
 
@@ -188,23 +198,27 @@ function LogOrRegisterForm() {
 
     console.log("user data", userData);
 
-    setTimeout(async () => {
-      const initThatOrder = async () => {
-        const res = await initiateOrder(userData, orderSpecsCurrent);
-        return res;
-      };
-      myOrderIn = await initThatOrder();
-      await dispatch(templateActions.handleThisOrder(myOrderIn));
+    const initThatOrder = async () => {
+      return await new Promise((resolve) => {
+        const res = initiateOrder(userData, orderSpecsCurrent);
 
-      console.log("that result here:", myOrderIn);
-    }, 5000);
+        setTimeout(() => {
+          resolve(res);
+        }, 2400);
+      });
+    };
+    myOrderIn = await initThatOrder();
+
+    await handleThisOrder(myOrderIn);
+
+    console.log("that result here:", myOrderIn);
 
     setTimeout(() => {
       console.log("update thisOrder data");
       /* setIsUpdate(true) */
     }, 3000);
 
-    return myOrder;
+    return myOrderIn;
   };
 
   const updatefieldTemplate = (firstStatus, myOrder) => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Outlet, NavLink } from "react-router-dom";
+import { MealContext } from "../../services/context/MealsContext";
 import { welcome_section } from "../../services/redux/createslice/MealSplice";
 import { useSelector } from "react-redux";
 import "./Layout.css";
@@ -7,7 +8,9 @@ import "./Layout.css";
 /* this Layout component is mainly created to apply general css style  for to each link : day, favourites, order, events ... , it represents the div box of each NavLInk located in  Navigation.jsx*/
 
 function Layout() {
-  const welcome = useSelector(welcome_section);
+  const {
+    state: { welcome },
+  } = useContext(MealContext);
 
   const styleNavLink = ({ isActive }) => {
     const styleOne = {

@@ -12,8 +12,10 @@ import {
   vegetarians_section,
   welcome_section,
 } from "../../services/redux/createslice/MealSplice.jsx";
+import { MealContext } from "../../services/context/MealsContext.jsx";
 
 import { orderSpecsCurrent_section } from "../../services/redux/createslice/TemplateSlice.jsx";
+import { TemplateContext } from "../../services/context/TemplateContext.jsx";
 
 import CardHome from "../cards/card-home.jsx";
 import Loading from "../loading/loading.jsx";
@@ -30,7 +32,7 @@ function Home() {
     useAsyncGenerator,
   } = useContext(TemplateContext); */
 
-  const dispatch = useDispatch();
+  /*  const dispatch = useDispatch();
 
   const meals = useSelector(meals_section);
   const meats = useSelector(meats_section);
@@ -39,8 +41,14 @@ function Home() {
   const vegetarians = useSelector(vegetarians_section);
   const welcome = useSelector(welcome_section);
 
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
 
+  const {
+    state: { meals, meats, seaFoods, desserts, vegetarians, welcome },
+  } = useContext(MealContext);
+  const {
+    state: { orderSpecsCurrent },
+  } = useContext(TemplateContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

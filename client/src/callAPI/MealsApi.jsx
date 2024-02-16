@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { MealContext } from "../context/MealsContext";
+import { MealContext } from "../services/context/MealsContext";
 import axios from "axios";
 
 export async function getMeals() {

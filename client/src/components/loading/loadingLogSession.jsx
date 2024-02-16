@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { MealContext } from "../../services/context/MealsContext";
+import { TemplateContext } from "../../services/context/TemplateContext";
 import { useDispatch, useSelector } from "react-redux";
-import { templateActions } from "../../services/redux/createslice/TemplateSlice";
+import {
+  templateActions,
+  ticketNumber_section,
+} from "../../services/redux/createslice/TemplateSlice";
 import { mealActions } from "../../services/redux/createslice/MealSplice";
 import { userLogging } from "../../callAPI/UsersApi";
 import { initiateOrder } from "../../callAPI/OrdersApi";
@@ -8,16 +13,30 @@ import moment from "moment";
 import "./loadingLogSession.css";
 
 function LoadingLogSession({ loginData, setIsLoggingDataSession }) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
+
   // branching your data to Local Storage
-  const appState = JSON.parse(localStorage.getItem("appState"));
+  // const appState = JSON.parse(localStorage.getItem("appState"));
 
-  const user = appState.mealPrime.user;
-  /* const user = useSelector(user_section); */
-
+  /* const user = appState.mealPrime.user;
   const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
   const thisOrder = appState.orderPrime.thisOrder;
   const totalPrice = appState.orderPrime.totalPrice;
+  const ticketNumberSplice = useSelector(ticketNumber_section); */
+
+  const {
+    state: { user },
+    handleUser,
+  } = useContext(MealContext);
+
+  const {
+    state: { thisOrder, totalPrice, orderSpecsCurrent, ticketNumber },
+    handleFirstTimeOrder,
+    handleTicketNumber,
+    handleHoursPrint,
+    handleTotalPrice,
+    handleThisOrder,
+  } = useContext(TemplateContext);
 
   const updateLogSession = async () => {
     const userInfo = await updateUserData();
@@ -51,19 +70,25 @@ function LoadingLogSession({ loginData, setIsLoggingDataSession }) {
   };
 
   const updateUserandInitOrder = async (userInfo) => {
-    await dispatch(mealActions.handleUser(userInfo));
+    await handleUser(userInfo);
 
     const userEmail = userInfo.userEmail;
 
     console.log("user email Log session", userEmail);
 
     let myOrderIn;
+
     const initThatOrder = async () => {
-      const res = await initiateOrder(userEmail, orderSpecsCurrent);
-      return res;
+      return await new Promise((resolve) => {
+        const res = initiateOrder(userEmail, orderSpecsCurrent);
+        setTimeout(() => {
+          resolve(res);
+        }, 2400);
+      });
     };
-    myOrderIn = await initThatOrder();
-    await dispatch(templateActions.handleThisOrder(myOrderIn));
+    myOrderIn = initThatOrder();
+
+    handleThisOrder(myOrderIn);
 
     console.log("that result here:", myOrderIn);
     myOrderIn;
@@ -72,39 +97,42 @@ function LoadingLogSession({ loginData, setIsLoggingDataSession }) {
 
   const updatefieldTemplate = (myOrder) => {
     setTimeout(async () => {
-      /*  console.log("this order in templateSlice :", thisOrderSplice); */
-
-      console.log("this order in appState:", thisOrder);
+      console.log("this order in context:", thisOrder);
 
       let totalPriceIn = catchTotalPrice(myOrder);
 
-      await dispatch(templateActions.handleTotalPrice(totalPriceIn));
+      await handleTotalPrice(totalPriceIn);
 
       let currentTime = moment().format("hh:mm a");
-      await dispatch(templateActions.handleHoursPrint(currentTime));
+      await handleHoursPrint(currentTime);
     }, 3500);
 
-    setTimeout(async () => {
-      let codePayment = (totalPrice - 3).toString(16);
-      await dispatch(templateActions.handleTicketNumber(codePayment));
+    setDataEndLoading(myOrder);
+  };
+
+  const setDataEndLoading = async (myOrder) => {
+    return await new Promise((resolve) => {
+      let codePayment = (myOrder.totalPrice - 3).toString(16);
+      handleTicketNumber(codePayment);
 
       setIsLoggingDataSession(false);
 
-      await dispatch(templateActions.handleFirstTimeOrder(false));
+      handleFirstTimeOrder(false);
 
-      console.log("updation ended");
-    }, 3000);
+      setTimeout(() => {
+        resolve("updation ended");
+      }, 2500);
+    });
   };
 
   const catchTotalPrice = (myOrder) => {
-    let total = myOrder;
-    console.log("thisorder here :", total);
-    let totalArr = Array.from(total);
+    let total = myOrder.totalPrice.toString();
+    console.log("thisorder total price here :", total);
+    let totalArr = total.split(" ");
     let output = "";
     totalArr.map((elt) => {
       output += elt + " ";
     });
-    console.log(output);
     return output;
   };
 

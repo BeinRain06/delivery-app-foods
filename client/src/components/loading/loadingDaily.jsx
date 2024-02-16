@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
+import { DailyContext } from "../../services/context/DailyContext";
 
 import { dailyActions } from "../../services/redux/createslice/DailySplice";
 
@@ -14,11 +15,22 @@ import moment from "moment";
 import "./loading.css";
 
 function LoadingDaily() {
-  const dispatch = useDispatch();
+  /*  const dispatch = useDispatch();
 
   const lastActiveDay = useSelector(lastActiveDay_section);
   const mondayMenu = useSelector(mondayMenu_section);
-  const arrayDayWeeK = useSelector(arrayDayWeeK_section);
+  const arrayDayWeeK = useSelector(arrayDayWeeK_section); */
+
+  const {
+    state: { lastActiveDay, mondayMenu, arrayDayWeeK },
+    handleLastActiveDay,
+    handleActiveDayWeek,
+    handleMondayMenu,
+    handleSelectedDesserts,
+    handleSelectedMeats,
+    handleSelectedSeafoods,
+    handleSelectedVegetarians,
+  } = useContext(DailyContext);
 
   const [hasError, setHasError] = useState(false);
 
@@ -56,6 +68,10 @@ function LoadingDaily() {
   };
 
   const matchSelectMeals = async (callback) => {
+    if (callback === null) {
+      return;
+    }
+
     let { meatsData, seaData, vegData, desData, indexChange } = await callback;
 
     let mySet = new Set();
@@ -105,30 +121,30 @@ function LoadingDaily() {
 
         tmpArr = tmpArr1.concat(tmpArr2);
 
-        /*  item === "Meats" && (await handleSelectedMeats(tmpArr));
+        item === "Meats" && (await handleSelectedMeats(tmpArr));
         item === "Seafoods" && (await handleSelectedSeafoods(tmpArr));
 
-         item === "Vegetarians" && (await handleSelectedVegetarians(tmpArr)); */
-
-        /*  item === "Meats" &&
-           indexChange === 3 &&
-           handleMondayMenu((prev) => {
-             return { ...prev, meats: tmpArr };
-           });
-
-         item === "Seafoods" &&
-           indexChange === 3 &&
-           handleMondayMenu((prev) => {
-             return { ...prev, seafoods: tmpArr };
-           });
-
-         item === "Vegetarians" &&
-           indexChange === 3 &&
-           handleMondayMenu((prev) => {
-             return { ...prev, vegetarians: tmpArr };
-           }); */
+        item === "Vegetarians" && (await handleSelectedVegetarians(tmpArr));
 
         item === "Meats" &&
+          indexChange === 3 &&
+          handleMondayMenu((prev) => {
+            return { ...prev, meats: tmpArr };
+          });
+
+        item === "Seafoods" &&
+          indexChange === 3 &&
+          handleMondayMenu((prev) => {
+            return { ...prev, seafoods: tmpArr };
+          });
+
+        item === "Vegetarians" &&
+          indexChange === 3 &&
+          handleMondayMenu((prev) => {
+            return { ...prev, vegetarians: tmpArr };
+          });
+
+        /* item === "Meats" &&
           (await dispatch(dailyActions.handleSelectedMeats(tmpArr)));
 
         item === "Meats" &&
@@ -145,7 +161,7 @@ function LoadingDaily() {
             })
           );
 
-        item === "Seafoods" &&
+        */ item === "Seafoods" &&
           indexChange === 3 &&
           dispatch(
             dailyActions.handleMondayMenu((prev) => {
@@ -160,6 +176,7 @@ function LoadingDaily() {
               return { ...prev, vegetarians: tmpArr };
             })
           );
+
         /* console.log("tmpArr1: 121", tmpArr1);
         console.log("tmpArr2: 122", tmpArr2);
         console.log("tmpArr: 123", tmpArr);
@@ -200,15 +217,15 @@ function LoadingDaily() {
 
         tmpArr = tmpArr1.concat(tmpArr2);
 
-        /* item === "Desserts" && (await handleSelectedDesserts(tmpArr));
+        item === "Desserts" && (await handleSelectedDesserts(tmpArr));
 
         item === "Desserts" &&
           indexChange === 3 &&
           handleMondayMenu((prev) => {
             return { ...prev, desserts: tmpArr };
-          }); */
+          });
 
-        item === "Desserts" &&
+        /* item === "Desserts" &&
           (await dispatch(dailyActions.handleSelectedDesserts(tmpArr)));
 
         item === "Desserts" &&
@@ -217,7 +234,7 @@ function LoadingDaily() {
             dailyActions.handleMondayMenu((prev) => {
               return { ...prev, desserts: tmpArr };
             })
-          );
+          ); */
 
         /*    console.log("tmpArr1: 121", tmpArr1);
         console.log("tmpArr2: 122", tmpArr2);
@@ -251,11 +268,11 @@ function LoadingDaily() {
           [nextIndex]: { ...arrayDayWeeK[nextIndex], isActive: true },
         };
 
-        /*  handleLastActiveDay(newActiveDay);
-        handleActiveDayWeek(newChange); */
+        handleLastActiveDay(newActiveDay);
+        handleActiveDayWeek(newChange);
 
-        dispatch(dailyActions.handleLastActiveDay(newActiveDay));
-        dispatch(dailyActions.handleActiveDayWeek(newChange));
+        /* dispatch(dailyActions.handleLastActiveDay(newActiveDay));
+        dispatch(dailyActions.handleActiveDayWeek(newChange)); */
       }
     });
   };
@@ -272,14 +289,12 @@ function LoadingDaily() {
 
         return result;
       } else {
-        /*  setTimeout(async () => {
-          await handleSelectedMeats(mondayMenu.meats);
-          await handleSelectedSeafoods(mondayMenu.seafoods);
-          await handleSelectedVegetarians(mondayMenu.vegetarians);
-          await handleSelectedDesserts(mondayMenu.desserts);
-        }, 3000); */
+        await selectMyMealsMenu();
 
-        setTimeout(async () => {
+        const result = null; // already set menu
+        return result;
+
+        /*  setTimeout(async () => {
           await dispatch(dailyActions.handleSelectedMeats(mondayMenu.meats));
           await dispatch(
             dailyActions.handleSelectedSeafoods(mondayMenu.seafoods)
@@ -290,7 +305,7 @@ function LoadingDaily() {
           await dispatch(
             dailyActions.handleSelectedDesserts(mondayMenu.desserts)
           );
-        }, 3000);
+        }, 3000); */
       }
     } else if (lastActiveDay.day !== moment().format("ddd")) {
       let indexChange = lastActiveDay.index;
@@ -303,16 +318,28 @@ function LoadingDaily() {
     }
   };
 
+  const selectMyMealsMenu = async () => {
+    return await new Promise((resolve) => {
+      handleSelectedMeats(mondayMenu.meats);
+      handleSelectedSeafoods(mondayMenu.seafoods);
+      handleSelectedVegetarians(mondayMenu.vegetarians);
+      handleSelectedDesserts(mondayMenu.desserts);
+      setTimeout(resolve, 2000);
+    });
+  };
+
+  const resolveSelectedMeals = useCallback(async () => {
+    const grabbed = await grabAllTypesMeals();
+    return await new Promise((resolve) => {
+      matchSelectMeals(grabbed);
+      console.log("Successfully Meals Selections... !");
+      setTimeout(resolve, 3000);
+    });
+  }, []);
+
   useEffect(() => {
     try {
-      const resolveSelectedMeals = async () => {
-        await matchSelectMeals(grabAllTypesMeals());
-        console.log("Successfully Meals Selections... !");
-      };
-
-      setTimeout(() => {
-        resolveSelectedMeals();
-      }, 3000);
+      resolveSelectedMeals();
     } catch (err) {
       console.log(err);
       setHasError(true);

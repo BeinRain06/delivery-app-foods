@@ -2,17 +2,23 @@ import React, { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 import { dataTemplatesOrdersDay_section } from "../../services/redux/createslice/TemplateSlice";
+import { TemplateContext } from "../../services/context/TemplateContext";
 import { MTN, ORANGE } from "../../assets/images";
 
 import "./TemplateOrder.css";
 
 function TemplateOrder({ id, dataTemplate }) {
-  const dispatch = useDispatch();
-
+  /* const dispatch = useDispatch();
   const appState = JSON.parse(localStorage.getItem("appState"));
-
   const isNewLocation = appState.orderPrime.orderSpecsCurrent;
-  const firstTimeOrder = appState.orderPrime.firstTimeOrder;
+  const firstTimeOrder = appState.orderPrime.firstTimeOrder; */
+
+  const {
+    state: { isNewLocation, firstTimeOrder },
+    handleFirstTimeOrder,
+    handleTotalPrice,
+    handleNewLocation,
+  } = useContext(TemplateContext);
 
   const ticketTempRef = useRef(null);
   const ticketManualRef = useRef(null);
@@ -52,33 +58,33 @@ function TemplateOrder({ id, dataTemplate }) {
     if (e.target.id === "reg_price_2") {
       if (user.id === undefined) {
         setTimeout(() => {
-          /* handleFirstTimeOrder(true); */
-          dispatch(templateActions.handleFirstTimeOrder(true));
+          handleFirstTimeOrder(true);
+          /* dispatch(templateActions.handleFirstTimeOrder(true)); */
         }, 3000);
         return;
       } else {
-        /*  await handleFirstTimeOrder(false); */
-        await dispatch(templateActions.handleFirstTimeOrder(false));
+        handleFirstTimeOrder(false);
+        /* await dispatch(templateActions.handleFirstTimeOrder(false)); */
 
         const newThisOrder = await initiateOrder(user.id, orderSpecsCurrent);
 
-        /* handleTotalPrice(async () => await newThisOrder.totalPrice); */
-
+        handleTotalPrice(newThisOrder.totalPrice);
+        /* 
         await dispatch(
           templateActions.handleTotalPrice(newThisOrder.totalPrice)
-        );
+        ); */
       }
 
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
     } else if (e.target.id === "reg_price_1") {
-      /*  handleTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_"); */
+      handleTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_");
 
-      dispatch(
+      /* dispatch(
         templateActions.handleTotalPrice(
           "_" + " " + "_" + " " + "_" + " " + "_"
         )
-      );
+      ); */
       applyOrderRef.current.classList.remove("addShowBtn");
       totalRef.current.classList.add("anim_height");
     }
@@ -90,8 +96,8 @@ function TemplateOrder({ id, dataTemplate }) {
       let phone = e.target.elements.newNum;
       if (phone.value === "") {
         alert("Please Enter a phone number");
-        /*  handleNewLocation(false); */
-        dispatch(templateActions.handleNewLocation(false));
+        handleNewLocation(false);
+        /* dispatch(templateActions.handleNewLocation(false)); */
         return;
       }
 
@@ -107,8 +113,8 @@ function TemplateOrder({ id, dataTemplate }) {
       setDataNewLocation(newLocation);
 
       //close new location
-      /*  handleNewLocation(false); */
-      dispatch(templateActions.handleNewLocation(false));
+      handleNewLocation(false);
+      // dispatch(templateActions.handleNewLocation(false));
       phone.value = "";
 
       //move to one more step
@@ -120,8 +126,8 @@ function TemplateOrder({ id, dataTemplate }) {
 
       if (phone.value === "" || city.value === "" || street.value === "") {
         alert("Please Enter All the field");
-        /* handleNewLocation(false); */
-        dispatch(templateActions.handleNewLocation(false));
+        handleNewLocation(false);
+        /*  dispatch(templateActions.handleNewLocation(false)); */
         return;
       }
       let newlocation = {
@@ -132,8 +138,8 @@ function TemplateOrder({ id, dataTemplate }) {
       setDataNewLocation(newlocation);
 
       //close new location box
-      /* handleNewLocation(false); */
-      dispatch(templateActions.handleNewLocation(false));
+      handleNewLocation(false);
+      /* dispatch(templateActions.handleNewLocation(false)); */
 
       phone.value === "";
       city.value === "";
@@ -145,14 +151,14 @@ function TemplateOrder({ id, dataTemplate }) {
   };
 
   const closeFromNewLocation = () => {
-    /* handleNewLocation(false); */
-    dispatch(templateActions.handleNewLocation(false));
+    handleNewLocation(false);
+    /* dispatch(templateActions.handleNewLocation(false)); */
   };
 
   const handleStepBackLoc = () => {
     oneMoreStepRef.current.style.visibility = "hidden";
-    /* handleNewLocation(true); */
-    dispatch(templateActions.handleNewLocation(true));
+    handleNewLocation(true);
+    /*  dispatch(templateActions.handleNewLocation(true)); */
     validateRef.current.style.classList.remove("impact_more_step");
   };
 
@@ -167,17 +173,15 @@ function TemplateOrder({ id, dataTemplate }) {
       thisOrder.id
     );
 
-    /* handleThisOrder(newPartLocation);
-     handleTimer(timerOn);
-    wholeCountDownTimersDay(callTimer()); */
-
-    dispatch(templateActions.handleThisOrder(newPartLocation));
-
+    /* dispatch(templateActions.handleThisOrder(newPartLocation));
     let timerOn = callTimer();
-
     dispatch(templateActions.handleTimer(timerOn));
+    dispatch(templateActions.wholeCountDownTimersDay(callTimer())); */
 
-    dispatch(templateActions.wholeCountDownTimersDay(callTimer()));
+    handleThisOrder(newPartLocation);
+    let timerOn = callTimer();
+    handleTimer(timerOn);
+    wholeCountDownTimersDay(callTimer());
 
     //post to collection payment
     postPayment(thisOrder._id, "mtn-money", thisOrder.codePayment);
@@ -194,9 +198,9 @@ function TemplateOrder({ id, dataTemplate }) {
 
     // store element templateOrder in the specified Template in Context API
 
-    /* handleTemplateOrdersDay(templateOrderVar); */
+    handleTemplateOrdersDay(templateOrderVar);
 
-    dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
+    /* dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar)); */
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
@@ -211,19 +215,19 @@ function TemplateOrder({ id, dataTemplate }) {
     oneMoreStepRef.current.style.visibility = "hidden";
     validateRef.current.style.classList.add("impact_more_step");
 
-    /* handleTicketNumber((totalPrice - 3).toString(16));
+    handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00"); */
+    handleTimer("02:00:00");
 
-    dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
+    /* dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
     dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
-    dispatch(templateActions.handleTimer("02:00:00"));
+    dispatch(templateActions.handleTimer("02:00:00")); */
   };
 
   const openToNewLocation = () => {
     if (minimizeOrApplyRef.current.textContent === "Apply") {
-      /*  handleNewLocation(true); */
-      dispatch(templateActions.handleNewLocation(true));
+      handleNewLocation(true);
+      /*  dispatch(templateActions.handleNewLocation(true)); */
     } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
       ticketTempRef.current.style.classList.add("anim_hide_template");
 

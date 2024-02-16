@@ -15,15 +15,13 @@ import "./card-week-order.css";
 import LogOrRegisterForm from "./register-login-form";
 
 const MiniCardWeeksOrders = ({ props }) => {
-  /* const {
-    state: { meals, openTagRatings, user, ratings, ratedMeals },
-    handleOpenTagsRatings,
-  } = useContext(MealContext); */
+  const {
+    state: { openTagRatings, user },
+  } = useContext(MealContext);
 
-  const dispatch = useDispatch();
-
+  /* const dispatch = useDispatch();
   const openTagRatings = useSelector(openTagRatings_section);
-  const user = useSelector(user_section);
+  const user = useSelector(user_section); */
 
   const [recordUser, setRecordUser] = useState(false);
 

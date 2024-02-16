@@ -164,7 +164,8 @@ router.put("/order/newlocation:orderId", async (req, res) => {
 // UPDATING ORDER TOTAL PRICE
 router.put("/order:orderId", async (req, res) => {
   try {
-    const ordersItems = Promise.all(
+    console.log("params orderId:", req.params.orderId);
+    const ordersItems = await Promise.all(
       req.body.orderSpecs.map(async (item) => {
         let orderSpecId = item._id;
 
@@ -174,7 +175,6 @@ router.put("/order:orderId", async (req, res) => {
             quantity: item.quantity,
           });
           newOrderSpec = await newOrderSpec.save();
-
           orderSpecId = newOrderSpec._id;
         }
 
@@ -186,7 +186,7 @@ router.put("/order:orderId", async (req, res) => {
       })
     );
 
-    const totalPrices = Promise.all(
+    const totalPrices = await Promise.all(
       ordersItems.map(async (orderItem) => {
         const orderSpec = await OrderSpecs.findById(orderItem._id).populate(
           "meal",
@@ -200,6 +200,8 @@ router.put("/order:orderId", async (req, res) => {
     );
 
     const totalPrice = totalPrices.reduce((acc, elt) => acc + elt, 0);
+
+    console.log("params orderId:", req.params.orderId);
 
     const updateOrder = await Order.findByIdAndUpdate(
       req.params.orderId,
@@ -216,7 +218,7 @@ router.put("/order:orderId", async (req, res) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      error: "Error: something went wrong can't create rated-meal",
+      error: "Error: something went wrong can't create updated the order",
     });
     console.log(err);
   }

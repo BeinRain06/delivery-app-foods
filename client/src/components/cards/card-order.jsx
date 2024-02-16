@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { TemplateContext } from "../../services/context/TemplateContext";
 import { useDispatch, useSelector } from "react-redux";
 import {
   templateActions,
@@ -8,26 +9,26 @@ import {
 import "./card-order.css";
 
 function CardOrder({ ...props }) {
-  /*  const {
-    state: { meals, orderSpecs },
+  const {
+    state: { meals, orderSpecsCurrent },
     handleClear,
     handleDecrease,
     handleIncrease,
-  } = useContext(MealContext); */
+  } = useContext(TemplateContext);
 
-  const dispatch = useDispatch();
+  /*  const dispatch = useDispatch();
   const orderSpecsCurrentFromTemplateSlice = useSelector(
     orderSpecsCurrent_section
-  );
-  const [newQty, setNewQty] = useState(0);
+  ); */
+  const [newQty, setNewQty] = useState(1);
 
   // branching your data to Local Storage
-  const appState = JSON.parse(localStorage.getItem("appState"));
-  const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
+  /* const appState = JSON.parse(localStorage.getItem("appState"));
+  const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent; */
 
   const mealId = props.id;
 
-  const removeMeal = (id) => {
+  /* const removeMeal = (id) => {
     dispatch(templateActions.handleDecrease(id));
   };
 
@@ -38,18 +39,34 @@ function CardOrder({ ...props }) {
   const clearMeal = (id) => {
     dispatch(templateActions.handleClear(id));
   };
+ */
+  const removeMeal = (id, mySpecsOrder) => {
+    handleDecrease(id, mySpecsOrder);
+    updateQty();
+  };
 
-  useEffect(() => {
+  const addMeal = (id, mySpecsOrder) => {
+    handleIncrease(id, mySpecsOrder);
+    updateQty();
+  };
+
+  const clearMeal = (id, mySpecsOrder) => {
+    handleClear(id, mySpecsOrder);
+  };
+
+  const updateQty = () => {
     const newQuantity = orderSpecsCurrent.map((item, i) => {
       if (item.meal === props.id) {
         return item.quantity;
       }
     });
     setNewQty(() => newQuantity);
-  }, [orderSpecsCurrentFromTemplateSlice]);
+  };
+
+  useEffect(() => {}, []);
 
   return (
-    <li className="keeping_table">
+    <li id={props.id} className="keeping_table">
       <div className="dish_table">
         <div className="dish_topic">
           <p className="dish_current_name">{props.name}</p>
@@ -65,7 +82,7 @@ function CardOrder({ ...props }) {
               type="button"
               id="btn_clear"
               className=" btn_subCard btn_clear "
-              onClick={() => clearMeal(mealId)}
+              onClick={() => clearMeal(mealId, orderSpecsCurrent)}
             >
               clear
             </button>
@@ -75,7 +92,7 @@ function CardOrder({ ...props }) {
               type="button"
               id="remove_meal"
               className="btn_subCard remove_meal"
-              onClick={() => removeMeal(mealId)}
+              onClick={() => removeMeal(mealId, orderSpecsCurrent)}
             >
               <i className="fa-solid fa-minus"></i>
             </button>
@@ -83,7 +100,7 @@ function CardOrder({ ...props }) {
               type="button"
               id="add_meal"
               className="btn_subCard add_meal"
-              onClick={() => addMeal(mealId)}
+              onClick={() => addMeal(mealId, orderSpecsCurrent)}
             >
               <i className="fa-solid fa-plus"></i>
             </button>

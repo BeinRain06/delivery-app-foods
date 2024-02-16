@@ -8,6 +8,8 @@ import {
   dailyActions,
 } from "../../services/redux/createslice/DailySplice";
 
+import { DailyContext } from "../../services/context/DailyContext";
+
 import {
   selectMeats_section,
   selectSeafoods_section,
@@ -18,21 +20,21 @@ import {
 
 import { mealActions } from "../../services/redux/createslice/MealSplice";
 
+import { MealContext } from "../../services/context/MealsContext";
+
 import LoadingDaily from "../loading/loadingDaily";
 import Button from "../button/button-shape";
 import "./FoodsDay.css";
 
 function FoodsDay() {
-  /*  const {
+  const {
     state: { meals, meats, seaFoods, vegetarians, desserts, welcome },
     handleUpstreamOrder,
     handleWelcome,
-  } = useContext(MealContext); */
+  } = useContext(MealContext);
 
-  /* const {
+  const {
     state: {
-      lastActiveDay,
-      arrayDayWeeK,
       selectMeats,
       selectSeafoods,
       selectVegetarians,
@@ -40,14 +42,15 @@ function FoodsDay() {
       endThisVar,
     },
     handleEndThisVar,
-  } = useContext(DailyContext); */
-  const dispatch = useDispatch();
+  } = useContext(DailyContext);
+
+  /* const dispatch = useDispatch();
 
   const selectMeats = useSelector(selectMeats_section);
   const selectSeafoods = useSelector(selectSeafoods_section);
   const selectVegetarians = useSelector(selectVegetarians_section);
   const selectDesserts = useSelector(selectDesserts_section);
-  const endThisVar = useSelector(endThisVar_section);
+  const endThisVar = useSelector(endThisVar_section); */
 
   const [loading, setLoading] = useState(true);
 
@@ -96,7 +99,9 @@ function FoodsDay() {
       }, 3000); */
     }
 
-    dispatch(dailyActions.handleEndThisVar({ mealCategory }));
+    handleEndThisVar({ mealCategory });
+
+    // dispatch(dailyActions.handleEndThisVar({ mealCategory }));
 
     console.log("meal meal cate", mealCategory);
 
@@ -211,7 +216,8 @@ function FoodsDay() {
 
       setTimeout(async () => {
         setLoading(false);
-        dispatch(mealActions.handleWelcome(false));
+        handleWelcome(false);
+        /* dispatch(mealActions.handleWelcome(false)); */
       }, 3000);
       console.log("selectMeats:", selectMeats);
     } catch (err) {

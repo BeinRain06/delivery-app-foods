@@ -1,18 +1,25 @@
 import React, { useState, useEffect, useContext } from "react";
+import { TemplateContext } from "../../services/context/TemplateContext";
 import { useDispatch, useSelector } from "react-redux";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 import { orderSpecsCurrent_section } from "../../services/redux/createslice/TemplateSlice";
 import "./button-shape.css";
 
 export const PreOrdered = ({ buildOrderItem }) => {
-  const dispatch = useDispatch();
+  /*  const dispatch = useDispatch();
 
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
+
+  const {
+    state: { orderSpecsCurrent },
+    handleOrderSpecs,
+  } = useContext(TemplateContext);
 
   useEffect(() => {
     const sendMyNewOrderSpecs = async () => {
       const orderItem = buildOrderItem();
-      await dispatch(templateActions.handleOrderSpecs(orderItem));
+      handleOrderSpecs();
+      /* await dispatch(templateActions.handleOrderSpecs(orderItem)); */
     };
 
     setTimeout(async () => {
@@ -58,8 +65,13 @@ export const Ordered = ({ mealid, mealname, mealprice, setIsCliked }) => {
 };
 
 export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
-  const dispatch = useDispatch();
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+  /* const dispatch = useDispatch();
+  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
+
+  const {
+    state: { orderSpecsCurrent },
+    handleOrderSpecs,
+  } = useContext(TemplateContext);
 
   const buildOrderItem = () => {
     const mealID = mealid;
@@ -109,7 +121,8 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
 
     setTimeout(() => {
       const sendOrderSpecs = async () => {
-        await dispatch(templateActions.handleOrderSpecs(orderItems));
+        handleOrderSpecs(orderItems);
+        /* await dispatch(templateActions.handleOrderSpecs(orderItems)); */
       };
 
       sendOrderSpecs();
@@ -137,7 +150,11 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
 };
 
 export const Reject = ({ setIsCliked }) => {
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+  /* const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
+
+  const {
+    state: { orderSpecsCurrent },
+  } = useContext(TemplateContext);
 
   const rejectOrder = () => {
     setTimeout(() => {

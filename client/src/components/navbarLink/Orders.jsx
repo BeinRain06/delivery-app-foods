@@ -3,6 +3,7 @@ import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
 import { useDispatch, useSelector } from "react-redux";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
+import { TemplateContext } from "../../services/context/TemplateContext";
 import {
   orderSpecsCurrent_section,
   thisOrder_section,
@@ -22,6 +23,7 @@ import {
   orders_section,
   indexDayFormat_section,
 } from "../../services/redux/createslice/MealSplice";
+import { MealContext } from "../../services/context/MealsContext";
 
 import {
   initiateOrder,
@@ -51,60 +53,67 @@ import Slider from "react-slick";
 }
 
 function Orders() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const orderSpecsCurrentFromTemplateSlice = useSelector(
-    orderSpecsCurrent_section
-  );
+  const {
+    state: { meals, user, indexDayFormat, orders },
+    handleWelcome,
+  } = useContext(MealContext);
 
-  const firstTimeOrderFromTemplateSlice = useSelector(firstTimeOrder_section);
+  const {
+    state: {
+      firstTimeOrder,
+      orderSpecsCurrent,
+      thisOrder,
+      dataTemplatesOrdersDay,
+      timer,
+      isNewLocation,
+      payment,
+      ticketNumber,
+      totalPrice,
+      hoursPrinted,
+    },
+    handleNewLocation,
+    handleFirstTimeOrder,
+    handleThisOrder,
+    handleTotalPrice,
+  } = useContext(TemplateContext);
+
+  const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
+  const [saveMyOrder, setSaveMyOrder] = useState({});
 
   /* const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
 
   // branching your data to Local Storage
-  const appState = JSON.parse(localStorage.getItem("appState"));
+  // const appState = JSON.parse(localStorage.getItem("appState"));
 
-  const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
-  /*  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
-
-  const thisOrderSplice = useSelector(thisOrder_section);
-
-  const thisOrder = appState.orderPrime.thisOrder;
-
-  /* const firstTimeOrder = useSelector(firstTimeOrder_section); */
-  const firstTimeOrder = appState.orderPrime.firstTimeOrder;
-
-  /* const hoursPrinted = useSelector(hoursPrinted_section); */
-  const hoursPrinted = appState.orderPrime.hoursPrinted;
-
-  /* const totalPrice = useSelector(totalPrice_section); */
-  const totalPrice = appState.orderPrime.totalPrice;
-
-  /* const ticketNumber = useSelector(ticketNumber_section); */
-  const ticketNumber = appState.orderPrime.ticketNumber;
-
-  /* const payment = useSelector(payment_section); */
-  const payment = appState.orderPrime.payment;
-
-  /* const isNewLocation = useSelector(isNewLocation_section); */
-  const isNewLocation = appState.orderPrime.isNewLocation;
-
-  /* const timer = useSelector(timer_section); */
-  const timer = appState.orderPrime.timer;
-
-  /* const orders = useSelector(orders_section); */
-  const orders = appState.mealPrime.orders;
-
-  /* const meals = useSelector(meals_section); */
-  const meals = appState.mealPrime.meals;
-
-  const dataTemplatesOrdersDay = appState.orderPrime.dataTemplatesOrdersDay;
-
-  /* const indexDayFormat = useSelector(indexDayFormat_section); */
-  const indexDayFormat = appState.mealPrime.indexDayFormat;
-
-  /* const user = useSelector(user_section); */
-  const user = appState.mealPrime.user;
+  // const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
+  //  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
+  // const thisOrderSplice = useSelector(thisOrder_section);
+  // const thisOrder = appState.orderPrime.thisOrder;
+  // const firstTimeOrder = useSelector(firstTimeOrder_section);
+  // const firstTimeOrder = appState.orderPrime.firstTimeOrder;
+  // const hoursPrinted = useSelector(hoursPrinted_section);
+  // const hoursPrinted = appState.orderPrime.hoursPrinted;
+  // const totalPrice = useSelector(totalPrice_section);
+  // const totalPrice = appState.orderPrime.totalPrice;
+  // const ticketNumber = useSelector(ticketNumber_section);
+  // const ticketNumber = appState.orderPrime.ticketNumber;
+  // const payment = useSelector(payment_section);
+  // const payment = appState.orderPrime.payment;
+  // const isNewLocation = useSelector(isNewLocation_section);
+  // const isNewLocation = appState.orderPrime.isNewLocation;
+  // const timer = useSelector(timer_section);
+  // const timer = appState.orderPrime.timer;
+  // const orders = useSelector(orders_section);
+  // const orders = appState.mealPrime.orders;
+  // const meals = useSelector(meals_section);
+  // const meals = appState.mealPrime.meals;
+  // const dataTemplatesOrdersDay = appState.orderPrime.dataTemplatesOrdersDay;
+  // const indexDayFormat = useSelector(indexDayFormat_section);
+  // const indexDayFormat = appState.mealPrime.indexDayFormat;
+  // const user = useSelector(user_section);
+  // const user = appState.mealPrime.user;
 
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
@@ -135,8 +144,8 @@ function Orders() {
 
   const openToNewLocation = () => {
     if (minimizeOrApplyRef.current.textContent === "Apply") {
-      /*  handleNewLocation(true); */
-      dispatch(templateActions.handleNewLocation(true));
+      handleNewLocation(true);
+      /*  dispatch(templateActions.handleNewLocation(true)); */
     } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
       ticketTempRef.current.style.classList.add("anim_hide_template");
 
@@ -153,14 +162,14 @@ function Orders() {
   };
 
   const closeFromNewLocation = () => {
-    /* handleNewLocation(false); */
-    dispatch(templateActions.handleNewLocation(false));
+    handleNewLocation(false);
+    // dispatch(templateActions.handleNewLocation(false));
   };
 
   const handleStepBackLoc = () => {
     oneMoreStepRef.current.style.visibility = "hidden";
-    /* handleNewLocation(true); */
-    dispatch(templateActions.handleNewLocation(true));
+    handleNewLocation(true);
+    // dispatch(templateActions.handleNewLocation(true));
     validateRef.current.style.classList.remove("impact_more_step");
   };
 
@@ -168,13 +177,13 @@ function Orders() {
     oneMoreStepRef.current.style.visibility = "hidden";
     validateRef.current.style.classList.add("impact_more_step");
 
-    /* handleTicketNumber((totalPrice - 3).toString(16));
+    handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00"); */
+    handleTimer("02:00:00");
 
-    dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
+    /*  dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
     dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
-    dispatch(templateActions.handleTimer("02:00:00"));
+    dispatch(templateActions.handleTimer("02:00:00")); */
   };
 
   const handleFirstStepLoc = (e) => {
@@ -183,8 +192,8 @@ function Orders() {
       let phone = e.target.elements.newNum;
       if (phone.value === "") {
         alert("Please Enter a phone number");
-        /*  handleNewLocation(false); */
-        dispatch(templateActions.handleNewLocation(false));
+        handleNewLocation(false);
+        // dispatch(templateActions.handleNewLocation(false));
         return;
       }
 
@@ -200,8 +209,8 @@ function Orders() {
       setDataNewLocation(newLocation);
 
       //close new location
-      /*  handleNewLocation(false); */
-      dispatch(templateActions.handleNewLocation(false));
+      handleNewLocation(false);
+      // dispatch(templateActions.handleNewLocation(false));
       phone.value = "";
 
       //move to one more step
@@ -213,8 +222,8 @@ function Orders() {
 
       if (phone.value === "" || city.value === "" || street.value === "") {
         alert("Please Enter All the field");
-        /* handleNewLocation(false); */
-        dispatch(templateActions.handleNewLocation(false));
+        handleNewLocation(false);
+        /* dispatch(templateActions.handleNewLocation(false)); */
         return;
       }
       let newlocation = {
@@ -225,8 +234,8 @@ function Orders() {
       setDataNewLocation(newlocation);
 
       //close new location box
-      /* handleNewLocation(false); */
-      dispatch(templateActions.handleNewLocation(false));
+      handleNewLocation(false);
+      // dispatch(templateActions.handleNewLocation(false));
 
       phone.value === "";
       city.value === "";
@@ -248,17 +257,15 @@ function Orders() {
       thisOrder.id
     );
 
-    /* handleThisOrder(newPartLocation);
-     handleTimer(timerOn);
-    wholeCountDownTimersDay(callTimer()); */
-
-    dispatch(templateActions.handleThisOrder(newPartLocation));
-
+    /* dispatch(templateActions.handleThisOrder(newPartLocation));
     let timerOn = callTimer();
-
     dispatch(templateActions.handleTimer(timerOn));
+    dispatch(templateActions.wholeCountDownTimersDay(callTimer())); */
 
-    dispatch(templateActions.wholeCountDownTimersDay(callTimer()));
+    handleThisOrder(newPartLocation);
+    let timerOn = callTimer();
+    handleTimer(timerOn);
+    wholeCountDownTimersDay(callTimer());
 
     //post to collection payment
     postPayment(thisOrder._id, "mtn-money", thisOrder.codePayment);
@@ -275,19 +282,18 @@ function Orders() {
 
     // store element templateOrder in the specified Template in Context API
 
-    /* handleTemplateOrdersDay(templateOrderVar); */
     if (dataTemplatesOrdersDay.length === 3) {
       alert("You can't send more than 3 orders");
       return;
     }
-
-    dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
+    handleTemplateOrdersDay(templateOrderVar);
+    // dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
   };
 
-  /*  const resetDataHoldingTemplate = () => {
+  const resetDataHoldingTemplate = () => {
     handleTicketNumber("_ _ _ _ _ _");
     handleHoursPrint("time");
     handleTotalPrice("_ _ _ _");
@@ -295,9 +301,9 @@ function Orders() {
     handlePayment({});
     handleClearOrderSpecs([]);
     handleTimer("00:00:00");
-  }; */
+  };
 
-  const resetDataHoldingTemplate = () => {
+  /*  const resetDataHoldingTemplate = () => {
     handleTicketNumber("_ _ _ _ _ _");
     handleHoursPrint("time");
     handleTotalPrice("_ _ _ _");
@@ -312,7 +318,7 @@ function Orders() {
     dispatch(templateActions.handlePayment([]));
     dispatch(templateActions.handleClearOrderSpecs([]));
     dispatch(templateActions.handleTimer("00:00:00"));
-  };
+  }; */
 
   const handleNewRadioInput = (e) => {
     if (e.target.id === "name_area_one") {
@@ -341,36 +347,73 @@ function Orders() {
     if (e.target.id === "reg_price_2") {
       const cookies = getCookies();
       const userId = cookies.userId;
+      console.log("cookies userId:", userId);
 
       if (userId === undefined) {
         setTimeout(() => {
-          /* handleFirstTimeOrder(true); */
-          dispatch(templateActions.handleFirstTimeOrder(true));
+          handleFirstTimeOrder(true);
+          // dispatch(templateActions.handleFirstTimeOrder(true));
         }, 1000);
+        totalRef.current.classList.add("anim_height");
         return;
       } else {
-        /*  await handleFirstTimeOrder(false); */
-        await dispatch(templateActions.handleFirstTimeOrder(false));
+        handleFirstTimeOrder(false);
+        if (thisOrder._id !== undefined) {
+          /*  await dispatch(templateActions.handleFirstTimeOrder(false)); */
+          console.log("saved and updated my order (thisOrder):", thisOrder);
 
-        const newThisOrder = await initiateOrder(user.id, orderSpecsCurrent);
+          const newChange = await updateThisTotalPriceOrder(
+            thisOrder._id,
+            orderSpecsCurrent
+          );
 
-        /* handleTotalPrice(async () => await newThisOrder.totalPrice); */
+          const renewTheOrder = handleThisOrder(newChange);
 
-        await dispatch(
-          templateActions.handleTotalPrice(newThisOrder.totalPrice)
-        );
+          /* const renewTheOrder = await templateActions.handleThisOrder(newChange); */
+
+          setShowTotalPrice(renewTheOrder.totalPrice);
+
+          setTimeout(() => {
+            console.log("new this order send back:", renewTheOrder);
+          }, 2500);
+          handleTotalPrice(renewTheOrder.totalPrice);
+
+          /* await dispatch(
+          templateActions.handleTotalPrice(renewTheOrder.totalPrice)
+        ); */
+        } else if (thisOrder._id === undefined) {
+          console.log("user data saved:", user);
+          const newTakenOrder = await initiateOrder(
+            user.userEmail,
+            orderSpecsCurrent
+          );
+
+          handleThisOrder(newTakenOrder);
+
+          /* const newThisOrder = await templateActions.handleThisOrder(newChange); */
+
+          setShowTotalPrice(newTakenOrder.totalPrice);
+
+          setTimeout(() => {
+            console.log("new taken order command:", newTakenOrder);
+          }, 2500);
+          handleTotalPrice(newTakenOrder.totalPrice);
+        }
       }
 
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
     } else if (e.target.id === "reg_price_1") {
-      /*  handleTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_"); */
-
-      dispatch(
+      /*  dispatch(
         templateActions.handleTotalPrice(
           "_" + " " + "_" + " " + "_" + " " + "_"
         )
-      );
+      ); */
+      setShowTotalPrice("_" + " " + "_" + " " + "_" + " " + "_");
+      setTimeout(() => {
+        console.log("update showTotalPrice");
+      }, 2500);
+
       applyOrderRef.current.classList.remove("addShowBtn");
       totalRef.current.classList.add("anim_height");
     }
@@ -400,15 +443,15 @@ function Orders() {
     let { diff, hrs, min, sec } = getRemainingTime(cb);
 
     if (diff >= 0) {
-      /*  handleTimer(
+      handleTimer(
         (hrs > 9 ? hrs : "0" + hrs) +
           ": " +
           (min > 9 ? min : "0" + min) +
           ":" +
           (sec > 9 ? sec : "0" + sec)
-      ); */
+      );
 
-      dispatch(
+      /*  dispatch(
         templateActions.handleTimer(
           (hrs > 9 ? hrs : "0" + hrs) +
             ": " +
@@ -416,13 +459,14 @@ function Orders() {
             ":" +
             (sec > 9 ? sec : "0" + sec)
         )
-      );
+      ); */
     }
   };
 
   const clearTimer = (cb) => {
-    /*  handleTimer("02:00:00"); */
-    dispatch(templateActions.handleTimer("02:00:00"));
+    handleTimer("02:00:00");
+    // dispatch(templateActions.handleTimer("02:00:00"));
+
     //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
     if (interval.current) clearInterval(interval.current);
 
@@ -460,7 +504,8 @@ function Orders() {
   useEffect(() => {
     console.log("present navbar");
     setTimeout(() => {
-      dispatch(mealActions.handleWelcome(false));
+      handleWelcome(false);
+      /* dispatch(mealActions.handleWelcome(false)); */
     }, 3000);
   }, []);
 
@@ -468,7 +513,7 @@ function Orders() {
 
   useEffect(() => {
     console.log("this place redirect to login or register form!");
-  }, [firstTimeOrderFromTemplateSlice]);
+  }, [firstTimeOrder]);
 
   /* useEffect(() => {
     const updateTotalPrice = async () => {
@@ -482,10 +527,15 @@ function Orders() {
         // await handleThisOrder(newChange);
 
         await dispatch(templateActions.handleThisOrder(newChange));
+
+        setTimeout(() => {
+          console.log("update Total Price:", newChange);
+        }, 3000);
+      } else {
+        setTimeout(() => {
+          console.log("update Total Price First Time:", newChange);
+        }, 3000);
       }
-      setTimeout(() => {
-        console.log("update Total Price:", newChange);
-      }, 3000);
     };
 
     updateTotalPrice();
@@ -495,7 +545,8 @@ function Orders() {
     console.log(
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
-  }, [orderSpecsCurrentFromTemplateSlice, dataTemplatesOrdersDay]);
+    console.log("orderSpecsCurrent await :", orderSpecsCurrent);
+  }, [dataTemplatesOrdersDay]);
 
   return (
     <main className="welcome_orders">
@@ -668,7 +719,7 @@ function Orders() {
                       </li>
                     </ul>
                     <span className="total_bill" ref={totalRef}>
-                      $ {totalPrice}
+                      $ {showTotalPrice}
                     </span>
                     <div className="submit_container" ref={applyOrderRef}>
                       {/*   <button
@@ -978,7 +1029,7 @@ function Orders() {
             <div className="days_week_order">
               <ul className="days_dish_recap">
                 {orders.length !== 0 &&
-                  orders.map((item, i) => {
+                  orders?.map((item, i) => {
                     let dateOrderedFormat = item.dateOrdered.format("MMM D");
 
                     if (dateOrderedFormat === indexDayFormat) {
