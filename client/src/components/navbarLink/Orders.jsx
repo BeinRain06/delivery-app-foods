@@ -4,25 +4,6 @@ import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
 import { useDispatch, useSelector } from "react-redux";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 import { TemplateContext } from "../../services/context/TemplateContext";
-import {
-  orderSpecsCurrent_section,
-  thisOrder_section,
-  firstTimeOrder_section,
-  hoursPrinted_section,
-  totalPrice_section,
-  ticketNumber_section,
-  payment_section,
-  isNewLocation_section,
-  timer_section,
-} from "../../services/redux/createslice/TemplateSlice";
-
-import {
-  mealActions,
-  meals_section,
-  user_section,
-  orders_section,
-  indexDayFormat_section,
-} from "../../services/redux/createslice/MealSplice";
 import { MealContext } from "../../services/context/MealsContext";
 
 import {
@@ -30,16 +11,19 @@ import {
   updateThisLocationOrder,
   updateThisTotalPriceOrder,
 } from "../../callAPI/OrdersApi";
-
 import { postPayment } from "../../callAPI/PaymentApi";
-
 import { userLogging } from "../../callAPI/UsersApi";
+
 import CardOrder from "../cards/card-order.jsx";
 import CardWeek from "../cards/card-week.jsx";
 import CardWeekOrders from "../cards/card-week-orders.jsx";
 import TemplateOrder from "../templateTicket/TemplateOrder.jsx";
 import LogOrRegisterForm from "../cards/register-login-form.jsx";
 import CardDayOrders from "../cards/card-day-orders.jsx";
+import ValidateOrder from "../process_validation/styledComponents/ValidateOrder";
+import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
+import OneMoreStep from "../process_validation/styledComponents/OneMoreStep";
+import ButtonApply from "../process_validation/styledComponents/ButtonApply";
 import "./Orders.css";
 
 import "slick-carousel/slick/slick.css";
@@ -80,48 +64,16 @@ function Orders() {
   } = useContext(TemplateContext);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
-  const [saveMyOrder, setSaveMyOrder] = useState({});
-
-  /* const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
-
-  // branching your data to Local Storage
-  // const appState = JSON.parse(localStorage.getItem("appState"));
-
-  // const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
-  //  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section);
-  // const thisOrderSplice = useSelector(thisOrder_section);
-  // const thisOrder = appState.orderPrime.thisOrder;
-  // const firstTimeOrder = useSelector(firstTimeOrder_section);
-  // const firstTimeOrder = appState.orderPrime.firstTimeOrder;
-  // const hoursPrinted = useSelector(hoursPrinted_section);
-  // const hoursPrinted = appState.orderPrime.hoursPrinted;
-  // const totalPrice = useSelector(totalPrice_section);
-  // const totalPrice = appState.orderPrime.totalPrice;
-  // const ticketNumber = useSelector(ticketNumber_section);
-  // const ticketNumber = appState.orderPrime.ticketNumber;
-  // const payment = useSelector(payment_section);
-  // const payment = appState.orderPrime.payment;
-  // const isNewLocation = useSelector(isNewLocation_section);
-  // const isNewLocation = appState.orderPrime.isNewLocation;
-  // const timer = useSelector(timer_section);
-  // const timer = appState.orderPrime.timer;
-  // const orders = useSelector(orders_section);
-  // const orders = appState.mealPrime.orders;
-  // const meals = useSelector(meals_section);
-  // const meals = appState.mealPrime.meals;
-  // const dataTemplatesOrdersDay = appState.orderPrime.dataTemplatesOrdersDay;
-  // const indexDayFormat = useSelector(indexDayFormat_section);
-  // const indexDayFormat = appState.mealPrime.indexDayFormat;
-  // const user = useSelector(user_section);
-  // const user = appState.mealPrime.user;
-
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
-
   const [dataNewLocation, setDataNewLocation] = useState({});
+
+  //process validation Hook
+  const [openFinalValidation, setOpenFinalValidation] = useState(false);
+  const [isOneMoreStep, setIsMoreOneStep] = useState(false);
+
   const newLocationRef = useRef(null);
   const newCityRef = useRef(null);
   const newStreetRef = useRef(null);
-  const oneMoreStepRef = useRef(null);
   const minimizeOrApplyRef = useRef(null);
   const ticketTempRef = useRef(null);
   const ticketManualRef = useRef(null);
@@ -142,107 +94,17 @@ function Orders() {
           (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
         );
 
-  const openToNewLocation = () => {
-    if (minimizeOrApplyRef.current.textContent === "Apply") {
-      handleNewLocation(true);
-      /*  dispatch(templateActions.handleNewLocation(true)); */
-    } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
-      ticketTempRef.current.style.classList.add("anim_hide_template");
+  const hideOrShowBookManual = (currentPlay) => {
+    if (currentPlay === "show") {
+      // show anim show bookOrder
+      ticketManualRef?.current.style.classList.add("anim_show_book");
 
-      // add anim show bookOrder
-      ticketManualRef.current.style.classList.add("anim_show_book");
-    }
-  };
+      ticketTempRef?.current.style.classList.remove("anim_hide_template");
+    } else {
+      // hide anim show bookOrder
+      ticketManualRef?.current.style.classList.remove("anim_show_book");
 
-  const hideBookManual = () => {
-    // hide anim show bookOrder
-    ticketManualRef.current.style.classList.add("anim_show_book");
-
-    ticketTempRef.current.style.classList.remove("anim_hide_template");
-  };
-
-  const closeFromNewLocation = () => {
-    handleNewLocation(false);
-    // dispatch(templateActions.handleNewLocation(false));
-  };
-
-  const handleStepBackLoc = () => {
-    oneMoreStepRef.current.style.visibility = "hidden";
-    handleNewLocation(true);
-    // dispatch(templateActions.handleNewLocation(true));
-    validateRef.current.style.classList.remove("impact_more_step");
-  };
-
-  const handleMoveToValidation = () => {
-    oneMoreStepRef.current.style.visibility = "hidden";
-    validateRef.current.style.classList.add("impact_more_step");
-
-    handleTicketNumber((totalPrice - 3).toString(16));
-    handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00");
-
-    /*  dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
-    dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
-    dispatch(templateActions.handleTimer("02:00:00")); */
-  };
-
-  const handleFirstStepLoc = (e) => {
-    e.preventDefault();
-    if (newRadioRefOne.current.checked) {
-      let phone = e.target.elements.newNum;
-      if (phone.value === "") {
-        alert("Please Enter a phone number");
-        handleNewLocation(false);
-        // dispatch(templateActions.handleNewLocation(false));
-        return;
-      }
-
-      let city = "home";
-      let street = "home";
-
-      let newLocation = {
-        phone: phone.value,
-        city: city,
-        street: street,
-      };
-
-      setDataNewLocation(newLocation);
-
-      //close new location
-      handleNewLocation(false);
-      // dispatch(templateActions.handleNewLocation(false));
-      phone.value = "";
-
-      //move to one more step
-      oneMoreStepRef.current.style.visibility = "visible";
-    } else if (newRadioRefTwo.current.checked) {
-      let phone = e.target.elements.newNum;
-      let city = e.target.elements.newCity;
-      let street = e.target.elements.newStreet;
-
-      if (phone.value === "" || city.value === "" || street.value === "") {
-        alert("Please Enter All the field");
-        handleNewLocation(false);
-        /* dispatch(templateActions.handleNewLocation(false)); */
-        return;
-      }
-      let newlocation = {
-        phone: phone.value,
-        city: city.value,
-        street: street.value,
-      };
-      setDataNewLocation(newlocation);
-
-      //close new location box
-      handleNewLocation(false);
-      // dispatch(templateActions.handleNewLocation(false));
-
-      phone.value === "";
-      city.value === "";
-      street.value === "";
-
-      //move to one more step
-      oneMoreStepRef.current.style.visibility = "visible";
+      ticketTempRef?.current.style.classList.add("anim_hide_template");
     }
   };
 
@@ -367,16 +229,16 @@ function Orders() {
             orderSpecsCurrent
           );
 
-          const renewTheOrder = handleThisOrder(newChange);
+          handleThisOrder(newChange);
 
           /* const renewTheOrder = await templateActions.handleThisOrder(newChange); */
 
-          setShowTotalPrice(renewTheOrder.totalPrice);
-
           setTimeout(() => {
-            console.log("new this order send back:", renewTheOrder);
+            console.log("new this order send back:", newChange);
           }, 2500);
-          handleTotalPrice(renewTheOrder.totalPrice);
+
+          setShowTotalPrice(newChange.totalPrice);
+          handleTotalPrice(newChange.totalPrice);
 
           /* await dispatch(
           templateActions.handleTotalPrice(renewTheOrder.totalPrice)
@@ -605,7 +467,7 @@ function Orders() {
             <div
               className="available_book_content"
               ref={ticketManualRef}
-              onClick={hideBookManual}
+              onClick={() => hideOrShowBookManual("show")}
             >
               <div className="available_book_order">
                 <div className="entitled">
@@ -614,9 +476,16 @@ function Orders() {
                 <div className="logo_restaurant">
                   <span className="label_restaurant">TDS</span>
                 </div>
+                <button
+                  className="view_template"
+                  onClick={() => hideOrShowBookManual("hide")}
+                >
+                  template
+                </button>
               </div>
             </div>
             <div className="available_ticket_content" ref={ticketTempRef}>
+              <button className="minimize_template">minimize</button>
               <h4 className="title_order">Sample</h4>
               <hr className="breakpoint_ticket"></hr>
               <div className="sample_ticket">
@@ -722,155 +591,7 @@ function Orders() {
                       $ {showTotalPrice}
                     </span>
                     <div className="submit_container" ref={applyOrderRef}>
-                      {/*   <button
-                  type="button"
-                  className="btn_apply_order"
-                  onClick={callTimer}
-                >
-                  Apply
-                </button> */}
-                      {isNewLocation && (
-                        <div className="wrapping_new_location">
-                          <span className="title_hold">Location</span>
-                          <ul
-                            className="figure_area"
-                            onChange={handleNewRadioInput}
-                          >
-                            <li>
-                              <input
-                                type="radio"
-                                name="location"
-                                id="name_area_one"
-                                className="name_area area_expected_one"
-                                ref={newRadioRefOne}
-                              />
-                              <label htmlFor="home">home</label>
-                            </li>
-                            <li>
-                              <input
-                                type="radio"
-                                name="location"
-                                id="name_area_two"
-                                className="name_area area_expected_two"
-                                ref={newRadioRefTwo}
-                              />
-                              <label htmlFor="home">new Location</label>
-                            </li>
-                          </ul>
-                          <div className="add_more_info">
-                            <form
-                              className="control_in_new_direction"
-                              onSubmit={handleFirstStepLoc}
-                            >
-                              <ul
-                                className="list_appearance"
-                                ref={newLocationRef}
-                              >
-                                <li className="adding_phone">
-                                  <label htmlFor="phone"> add a number</label>
-                                  <input
-                                    type="number"
-                                    name="newNum"
-                                    id="number_add"
-                                    className="number_add"
-                                  />
-                                </li>
-                                <li className="adding_city" ref={newCityRef}>
-                                  <label htmlFor="city">city</label>
-                                  <input
-                                    type="text"
-                                    name="newCity"
-                                    id="city_add"
-                                    className="city_add"
-                                  />
-                                </li>
-                                <li
-                                  className="adding_street"
-                                  ref={newStreetRef}
-                                >
-                                  <label htmlFor="street">street</label>
-                                  <input
-                                    type="text"
-                                    name="newStreet"
-                                    id="street_add"
-                                    className="street_add"
-                                  />
-                                </li>
-                              </ul>
-
-                              <ul className="spread_new_button">
-                                <li id="spread_reject">
-                                  <button
-                                    type="button"
-                                    className="btn_on_new btn_loc_one"
-                                    onClick={closeFromNewLocation}
-                                  >
-                                    Reject
-                                  </button>
-                                </li>
-                                <li id="spread_ok">
-                                  <button
-                                    type="submit"
-                                    className="btn_on_new btn_loc_two"
-                                    onClick={handleFirstStepLoc}
-                                  >
-                                    OK
-                                  </button>
-                                </li>
-                              </ul>
-                            </form>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="one_more_step">
-                        <div className="one_more_content" ref={oneMoreStepRef}>
-                          <div className="first_my_word">
-                            <span className="remind_next">One more step:</span>
-                            <p className="small_task">
-                              click on the Button
-                              <span className="remind_validation">
-                                validate
-                              </span>
-                              Please, to terminate the process of sending your
-                              <strong>order</strong>
-                            </p>
-                          </div>
-                          <ul className="process_decision">
-                            <li className="back_my_need">
-                              <span className="drop_">
-                                <i className="fa-solid fa-chevron-left fa-2x"></i>
-                                <i className="fa-solid fa-chevron-left fa-2x"></i>
-                              </span>
-                              <button
-                                type="button"
-                                className="no_mind"
-                                onClick={handleStepBackLoc}
-                              >
-                                Back
-                              </button>
-                            </li>
-                            <li className="agree_your_proposal">
-                              <button
-                                type="button"
-                                className="yes_sure"
-                                onClick={handleMoveToValidation}
-                              >
-                                OK
-                              </button>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="btn_apply_order"
-                        onClick={openToNewLocation}
-                        ref={minimizeOrApplyRef}
-                      >
-                        Apply
-                      </button>
+                      <ButtonApply />
                     </div>
                   </form>
                 </div>
@@ -895,11 +616,14 @@ function Orders() {
                       <li className="time_left">{timer}</li>
                     </ul>
                   </div>
+                  {isOneMoreStep && (
+                    <OneMoreStep setIsMoreOneStep={setIsMoreOneStep} />
+                  )}
                 </div>
 
                 <div className="address_customers">
                   <div className="address_side">
-                    <p>Location : Titi Garage</p>
+                    <p>Location : ${thisOrder.street} </p>
                     <p className="grateful_words">
                       Thanks you Trusting TDs Services
                     </p>
@@ -922,6 +646,12 @@ function Orders() {
                     >
                       Fourth Meal Game
                     </button>
+
+                    {openFinalValidation && (
+                      <ValidateOrder
+                        setOpenFinalValidation={setOpenFinalValidation}
+                      />
+                    )}
                   </div>
 
                   <div className="noti_payment">
@@ -938,13 +668,13 @@ function Orders() {
                       {/* visibility set true when button payment is hitted */}
                       <div className="payment_methods">
                         <ul>
-                          <li>
+                          <li id="paypal_method">
                             {/* <span>use</span> */}
                             <span>
                               <i className="fa-brands fa-cc-paypal"></i>
                             </span>
                           </li>
-                          <li>
+                          <li id="mtn_method">
                             {/* <span>use</span> */}
                             <span>
                               <img
@@ -954,7 +684,7 @@ function Orders() {
                               />
                             </span>
                           </li>
-                          <li>
+                          <li id="orange_method">
                             {/* <span>use</span> */}
                             <span>
                               <img
@@ -968,6 +698,12 @@ function Orders() {
                       </div>
                     </div>
                   </div>
+                  {isNewLocation && (
+                    <NewLocationOrder
+                      setIsMoreOneStep={setIsMoreOneStep}
+                      setDataNewLocation={setDataNewLocation}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -998,7 +734,10 @@ function Orders() {
           <div className="template_day_orders">
             <ul className="template_day snaps_inline">
               {orderOftheDay.length !== 0 ? (
-                <CardDayOrders ordersSpecs={ordersSpecs} />
+                <CardDayOrders
+                  key={orderOftheDay.length}
+                  ordersSpecs={ordersSpecs}
+                />
               ) : (
                 <div className="wrapper_no_items">
                   <div className="content_no">

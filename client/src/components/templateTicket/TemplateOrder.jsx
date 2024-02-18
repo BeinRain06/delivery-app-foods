@@ -5,14 +5,13 @@ import { dataTemplatesOrdersDay_section } from "../../services/redux/createslice
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { MTN, ORANGE } from "../../assets/images";
 
+import ValidateOrder from "../process_validation/styledComponents/ValidateOrder";
+import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
+import OneMoreStep from "../process_validation/styledComponents/OneMoreStep";
+import ButtonApply from "../process_validation/styledComponents/ButtonApply";
 import "./TemplateOrder.css";
 
 function TemplateOrder({ id, dataTemplate }) {
-  /* const dispatch = useDispatch();
-  const appState = JSON.parse(localStorage.getItem("appState"));
-  const isNewLocation = appState.orderPrime.orderSpecsCurrent;
-  const firstTimeOrder = appState.orderPrime.firstTimeOrder; */
-
   const {
     state: { isNewLocation, firstTimeOrder },
     handleFirstTimeOrder,
@@ -32,6 +31,10 @@ function TemplateOrder({ id, dataTemplate }) {
   const oneMoreStepRef = useRef(null);
   const minimizeOrApplyRef = useRef(null);
   const validateRef = useRef(null);
+
+  //process validation Hook
+  const [openFinalValidation, setOpenFinalValidation] = useState(false);
+  const [isOneMoreStep, setIsMoreOneStep] = useState(false);
 
   const hideBookManual = () => {
     // hide anim show bookOrder
@@ -80,11 +83,6 @@ function TemplateOrder({ id, dataTemplate }) {
     } else if (e.target.id === "reg_price_1") {
       handleTotalPrice(() => "_" + " " + "_" + " " + "_" + " " + "_");
 
-      /* dispatch(
-        templateActions.handleTotalPrice(
-          "_" + " " + "_" + " " + "_" + " " + "_"
-        )
-      ); */
       applyOrderRef.current.classList.remove("addShowBtn");
       totalRef.current.classList.add("anim_height");
     }
@@ -97,7 +95,6 @@ function TemplateOrder({ id, dataTemplate }) {
       if (phone.value === "") {
         alert("Please Enter a phone number");
         handleNewLocation(false);
-        /* dispatch(templateActions.handleNewLocation(false)); */
         return;
       }
 
@@ -114,7 +111,6 @@ function TemplateOrder({ id, dataTemplate }) {
 
       //close new location
       handleNewLocation(false);
-      // dispatch(templateActions.handleNewLocation(false));
       phone.value = "";
 
       //move to one more step
@@ -127,7 +123,6 @@ function TemplateOrder({ id, dataTemplate }) {
       if (phone.value === "" || city.value === "" || street.value === "") {
         alert("Please Enter All the field");
         handleNewLocation(false);
-        /*  dispatch(templateActions.handleNewLocation(false)); */
         return;
       }
       let newlocation = {
@@ -173,11 +168,6 @@ function TemplateOrder({ id, dataTemplate }) {
       thisOrder.id
     );
 
-    /* dispatch(templateActions.handleThisOrder(newPartLocation));
-    let timerOn = callTimer();
-    dispatch(templateActions.handleTimer(timerOn));
-    dispatch(templateActions.wholeCountDownTimersDay(callTimer())); */
-
     handleThisOrder(newPartLocation);
     let timerOn = callTimer();
     handleTimer(timerOn);
@@ -200,8 +190,6 @@ function TemplateOrder({ id, dataTemplate }) {
 
     handleTemplateOrdersDay(templateOrderVar);
 
-    /* dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar)); */
-
     //reset variable involved in template_order
     resetDataHoldingTemplate();
   };
@@ -218,16 +206,11 @@ function TemplateOrder({ id, dataTemplate }) {
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
     handleTimer("02:00:00");
-
-    /* dispatch(templateActions.handleTicketNumber((totalPrice - 3).toString(16)));
-    dispatch(templateActions.handleHoursPrint(moment().format("hh:mm a")));
-    dispatch(templateActions.handleTimer("02:00:00")); */
   };
 
   const openToNewLocation = () => {
     if (minimizeOrApplyRef.current.textContent === "Apply") {
       handleNewLocation(true);
-      /*  dispatch(templateActions.handleNewLocation(true)); */
     } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
       ticketTempRef.current.style.classList.add("anim_hide_template");
 
@@ -255,7 +238,7 @@ function TemplateOrder({ id, dataTemplate }) {
             </div>
           </div>
           <div className="available_ticket_content" ref={ticketTempRef}>
-            <h4 className="title_order">Sample {name}</h4>
+            <h4 className="title_order">Sample </h4>
             <hr className="breakpoint_ticket"></hr>
             <div className="sample_ticket">
               <div className="header_sample">
@@ -359,150 +342,7 @@ function TemplateOrder({ id, dataTemplate }) {
                     ${dataTemplate.value.totalPrice}
                   </span>
                   <div className="submit_container" ref={applyOrderRef}>
-                    {/*   <button
-                  type="button"
-                  className="btn_apply_order"
-                  onClick={callTimer}
-                >
-                  Apply
-                </button> */}
-                    {isNewLocation && (
-                      <div className="wrapping_new_location">
-                        <span className="title_hold">Location</span>
-                        <ul
-                          className="figure_area"
-                          onChange={handleNewRadioInput}
-                        >
-                          <li>
-                            <input
-                              type="radio"
-                              name="location"
-                              id="name_area_one"
-                              className="name_area area_expected_one"
-                              ref={newRadioRefOne}
-                            />
-                            <label htmlFor="home">home</label>
-                          </li>
-                          <li>
-                            <input
-                              type="radio"
-                              name="location"
-                              id="name_area_two"
-                              className="name_area area_expected_two"
-                              ref={newRadioRefTwo}
-                            />
-                            <label htmlFor="home">new Location</label>
-                          </li>
-                        </ul>
-                        <div className="add_more_info">
-                          <form
-                            className="control_in_new_direction"
-                            onSubmit={handleFirstStepLoc}
-                          >
-                            <ul
-                              className="list_appearance"
-                              ref={newLocationRef}
-                            >
-                              <li className="adding_phone">
-                                <label htmlFor="phone"> add a number</label>
-                                <input
-                                  type="number"
-                                  name="newNum"
-                                  id="number_add"
-                                  className="number_add"
-                                />
-                              </li>
-                              <li className="adding_city" ref={newCityRef}>
-                                <label htmlFor="city">city</label>
-                                <input
-                                  type="text"
-                                  name="newCity"
-                                  id="city_add"
-                                  className="city_add"
-                                />
-                              </li>
-                              <li className="adding_street" ref={newStreetRef}>
-                                <label htmlFor="street">street</label>
-                                <input
-                                  type="text"
-                                  name="newStreet"
-                                  id="street_add"
-                                  className="street_add"
-                                />
-                              </li>
-                            </ul>
-
-                            <ul className="spread_new_button">
-                              <li>
-                                <button
-                                  type="button"
-                                  className="btn_on_new btn_loc_one"
-                                  onClick={closeFromNewLocation}
-                                >
-                                  Reject
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  type="submit"
-                                  className="btn_on_new btn_loc_two"
-                                  onClick={handleFirstStepLoc}
-                                >
-                                  OK
-                                </button>
-                              </li>
-                            </ul>
-                          </form>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="one_more_step">
-                      <div className="one_more_content" ref={oneMoreStepRef}>
-                        <div className="first_my_word">
-                          <span className="remind_next">One more step:</span>
-                          <p className="small_task">
-                            click on the Button
-                            <span className="remind_validation">validate</span>
-                            Please, to terminate the process of sending your
-                            <strong>order</strong>
-                          </p>
-                        </div>
-                        <ul className="process_decision">
-                          <li className="back_my_need">
-                            <span className="drop_">
-                              <i className="fa-solid fa-chevron-left fa-2x"></i>
-                              <i className="fa-solid fa-chevron-left fa-2x"></i>
-                            </span>
-                            <button
-                              type="button"
-                              className="no_mind"
-                              onClick={handleStepBackLoc}
-                            >
-                              Back
-                            </button>
-                          </li>
-                          <li className="agree_your_proposal">
-                            <button
-                              type="button"
-                              className="yes_sure"
-                              onClick={handleMoveToValidation}
-                            >
-                              OK
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="btn_apply_order"
-                      onClick={openToNewLocation}
-                      ref={minimizeOrApplyRef}
-                    >
-                      Apply
-                    </button>
+                    <ButtonApply />
                   </div>
                 </div>
               </div>
@@ -528,6 +368,9 @@ function TemplateOrder({ id, dataTemplate }) {
 
                     <li className="time_left">01:45:32</li>
                   </ul>
+                  {isOneMoreStep && (
+                    <OneMoreStep setIsMoreOneStep={setIsMoreOneStep} />
+                  )}
                 </div>
               </div>
 
@@ -556,6 +399,12 @@ function TemplateOrder({ id, dataTemplate }) {
                   >
                     Fourth Meal Game
                   </button>
+
+                  {openFinalValidation && (
+                    <ValidateOrder
+                      setOpenFinalValidation={setOpenFinalValidation}
+                    />
+                  )}
                 </div>
 
                 <div className="noti_payment">
@@ -601,17 +450,8 @@ function TemplateOrder({ id, dataTemplate }) {
                     </div>
                   </div>
                 </div>
-
-                <div className="next_more_order">
-                  {/* <button
-                type="button"
-                className="btn_next_template"
-                ref={nextBtnRef}
-                onClick={dat.refetch}
-              >
-                Next
-              </button> */}
-                </div>
+                <p> ORDER {num} </p>
+                {isNewLocation && <NewLocationOrder />}
               </div>
             </div>
           </div>

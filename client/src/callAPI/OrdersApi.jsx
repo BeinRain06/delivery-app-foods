@@ -72,7 +72,7 @@ export async function updateThisLocationOrder(dataNewLocation, orderId) {
 
 export async function updateThisTotalPriceOrder(orderId, orderSpecsCurrent) {
   try {
-    let api_url = "http://localhost:5000/api/delivery/orders/order";
+    let api_url = "http://localhost:5000/api/delivery/orders/order/updateprice";
 
     console.log("orderId -API-PUT METHOD:", orderId);
     console.log("orderSpecsCurrent -API-PUT METHOD:", orderSpecsCurrent);
@@ -85,7 +85,8 @@ export async function updateThisTotalPriceOrder(orderId, orderSpecsCurrent) {
 
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          /* "Content-Type": "application/x-www-form-urlencoded", */
+          "Content-Type": "application/json",
         },
       }
     );

@@ -113,7 +113,7 @@ router.post("/order", async (req, res) => {
       ordersSpecs: ordersItems,
       city: city,
       street: street,
-      totalPrice: totalPrice,
+      totalPrice: totalPrice.toFixed(2),
       user: userId,
       phone: req.body.phone,
       codePayment: totalPrice.toString(16),
@@ -138,7 +138,7 @@ router.post("/order", async (req, res) => {
 });
 
 // UPDATING NEW LOCATION
-router.put("/order/newlocation:orderId", async (req, res) => {
+router.put("/order/newlocation/:orderId", async (req, res) => {
   try {
     const updateOrder = await Order.findByIdAndUpdate(
       req.params.orderId,
@@ -162,9 +162,8 @@ router.put("/order/newlocation:orderId", async (req, res) => {
 });
 
 // UPDATING ORDER TOTAL PRICE
-router.put("/order:orderId", async (req, res) => {
+router.put("/order/updateprice/:orderId", async (req, res) => {
   try {
-    console.log("params orderId:", req.params.orderId);
     const ordersItems = await Promise.all(
       req.body.orderSpecs.map(async (item) => {
         let orderSpecId = item._id;
@@ -207,7 +206,7 @@ router.put("/order:orderId", async (req, res) => {
       req.params.orderId,
       {
         orderSpecs: ordersItems,
-        totalPrice: totalPrice,
+        totalPrice: totalPrice.toFixed(2),
         codePayment: totalPrice.toString(16),
       },
       { new: true }
