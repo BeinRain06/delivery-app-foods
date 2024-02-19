@@ -81,14 +81,18 @@ ul {
   /*button*/
   .btn_validate_order,
   .btn_play_game {
+    cursor: default;
     width: 100%;
     height: auto;
     padding: 0.25rem;
     color: #fff;
+    background-color: #cbcfcd;
     font-size: 0.68rem;
+    opacity: 0.58;
     outline: none;
     border: none;
     transition: all 450ms ease-in-out;
+    z-index: 0;
   }
 
   .btn_validate_order:active {
@@ -99,27 +103,33 @@ ul {
     background-color: #d3e05c;
   }
 
-  .btn_validate_order {
+  /*  .btn_validate_order {
     background-color: #1c7e4d;
     opacity: 0.95;
     letter-spacing: 0px;
     transition: all 1s ease-in-out;
     transform: scale(1);
     border-radius: 0px;
-  }
+  } */
 
   .btn_validate_order.impact_more_step {
+    cursor: pointer;
     opacity: 1;
-    background-color: #6b4d21;
+    /*  background-color: #6b4d21; */
+    background-color: #1c7e4d;
     border: 2px solid #d3e05c;
     letter-spacing: 2px;
     transition: letter-spacing 650ms ease-out 260ms all 1s ease-in-out;
     transform: scale(1.1);
     border-radius: 30%;
+    z-index: 3;
   }
 
-  .btn_play_game {
+  .btn_play_game.impact_play {
+    cursor: pointer;
+    opacity: 1;
     background-color: #f38383;
+    z-index: 3;
   }
 
   /*orders*/
@@ -313,8 +323,8 @@ ul {
     padding: 0 1rem;
     margin: 0 auto;
     transition: all 1s ease-in-out;
-    display: block;
-    /* color: #3b4d44; */
+    display: none;
+    /* color: #35463d; */
   }
 
   .available_book_content.anim_show_book {
@@ -386,6 +396,7 @@ ul {
 
   button.minimize_template {
     position: relative;
+    right: 2rem;
     padding: 0.25em 1em;
     margin: 1rem;
     color: #fff;
@@ -535,28 +546,26 @@ ul {
     gap: 0.25rem;
   }
 
+  /* same in TemplateOrder.css*/
   .input_radio_price {
     position: relative;
     top: 0;
-    left: -0.5rem;
-    /*  width: 78%; */
+    left: 0;
     width: 98%;
     padding: 0.75rem 0 0.5rem;
-    /* font-size: clamp(0.8rem, 0.9rem, 1rem); */
     font-size: clamp(0.5rem, 0.6rem, 0.65rem);
     display: grid;
     place-items: center;
-    /*  grid-template-columns: repeat(2, minmax(170px, 1fr)); */
     grid-template-columns: repeat(2, minmax(80px, 1fr));
     grid-area: area1;
-    grid-column: 1 / span 2;
+    grid-column: 1 / span 3;
     grid-row: 1 / span 1;
     margin: 0 auto;
     /* background-color: blue; */
   }
 
+  /* same in TemplateOrder.css*/
   .total_bill {
-    /*  width: 24%; */
     height: 0px;
     padding: 0rem 0 0.5rem;
     font-size: 23px;
@@ -569,11 +578,9 @@ ul {
     grid-column: 3 / span 1;
     grid-row: 1 / span 1;
     transition: all 650ms linear;
-    /* background-color: yellow; */
   }
-
+  /* same in TemplateOrder.css*/
   .total_bill.anim_height {
-    /*  width: 24%; */
     height: auto;
     padding: 0.75rem 0 0.5rem;
     font-size: 23px;
@@ -581,7 +588,7 @@ ul {
     opacity: 1;
     visibility: visible;
     text-align: center;
-    display: grid;
+    display: none;
     grid-area: area2;
     grid-column: 3 / span 1;
     grid-row: 1 / span 1;
@@ -589,22 +596,29 @@ ul {
     /* background-color: yellow; */
   }
 
+  /* same in TemplateOrder.css*/
   .submit_container {
-    margin-top: 0.25rem;
-    justify-content: center;
-    transform: scale(0.2) translate(200px, 0);
+    position: relative;
+    top: 0rem;
+    left: -0.3rem;
+    /* justify-content: center; */
     opacity: 1;
     visibility: hidden;
     transition: all 450ms linear;
     display: grid;
     grid-area: area3;
-    grid-column: 3 / span 1;
+    grid-column: 1 / span 3;
     grid-row: 2 / span 1;
   }
-
+  /* same in TemplateOrder.css*/
   .submit_container.addShowBtn {
-    transform: scale(1) translate(60px, 0);
+    /*   margin: 0 auto; */
+
     opacity: 0.8;
+    grid-area: area3;
+    grid-column: 1 / span 3;
+    grid-row: 2 / span 1;
+    place-items: center;
     visibility: visible;
     transition: all 650ms linear;
   }
@@ -634,12 +648,14 @@ ul {
   /*order track time*/
   .order_track_time {
     position: relative;
-    height: 90px;
+    top: 1rem;
+    height: 70px;
     padding: 0;
-    margin: 0 0 0.75rem;
+    margin: 0.5rem 0 1.5rem;
     font-size: 0.65rem;
     display: flex;
     justify-content: center;
+    /*  background-color: blue; */
   }
 
   .remaining_track_time {
@@ -1372,6 +1388,35 @@ ul {
     font-size: 0.75rem;
   }
 
+  .input_radio_price {
+    position: relative;
+    top: 0;
+    left: -1rem;
+    grid-area: area1;
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 1;
+    /* background-color: blue; */
+  }
+
+  .total_bill.anim_height {
+    display: grid;
+  }
+
+  .submit_container {
+    margin: 0.25rem 0 0.5rem;
+    justify-content: center;
+    transform: scale(0.2) translate(-30px, 0);
+    grid-area: area3;
+    grid-column: 3 / span 1;
+  }
+
+  .submit_container.addShowBtn {
+    margin: 0.25rem 0 0.5rem;
+    transform: scale(1) translate(5px, 0);
+    grid-area: area3;
+    grid-column: 3 / span 1;
+  }
+
   .order_track_time {
     font-size: 0.75rem;
     text-align: center;
@@ -1689,6 +1734,10 @@ ul {
     width: 40%;
     font-size: 1.1rem;
     margin: 0 auto;
+  }
+
+  .submit_container {
+    transform: scale(0.2) translate(150px, 0);
   }
 
   .appealing_registration {

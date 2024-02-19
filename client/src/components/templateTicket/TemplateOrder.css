@@ -245,21 +245,19 @@
   .input_radio_price {
     position: relative;
     top: 0;
-    left: -1rem;
-
-    width: 78%;
+    left: 0;
+    width: 98%;
     padding: 0.75rem 0 0.5rem;
     font-size: 15px;
     display: grid;
     grid-template-columns: repeat(2, minmax(170px, 1fr));
     grid-area: area1;
-    grid-column: 1 / span 2;
+    grid-column: 1 / span 3;
     grid-row: 1 / span 1;
     /* background-color: blue; */
   }
 
   .total_bill {
-    /*  width: 24%; */
     height: 0px;
     padding: 0rem 0 0.5rem;
     font-size: 23px;
@@ -284,7 +282,7 @@
     opacity: 1;
     visibility: visible;
     text-align: center;
-    display: grid;
+    display: none;
     grid-area: area2;
     grid-column: 3 / span 1;
     grid-row: 1 / span 1;
@@ -293,21 +291,23 @@
   }
 
   .submit_container {
-    margin-top: 0.25rem;
     justify-content: center;
-    transform: scale(0.2) translate(200px, 0);
     opacity: 1;
     visibility: hidden;
     transition: all 450ms linear;
     display: grid;
     grid-area: area3;
-    grid-column: 3 / span 1;
+    grid-column: 1 / span 3;
     grid-row: 2 / span 1;
   }
 
   .submit_container.addShowBtn {
-    transform: scale(1) translate(60px, 0);
+    /*  margin: 0 auto; */
     opacity: 0.8;
+    grid-area: area3;
+    grid-column: 1 / span 3;
+    grid-row: 2 / span 1;
+    place-items: center;
     visibility: visible;
     transition: all 650ms linear;
   }

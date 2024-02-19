@@ -1,36 +1,55 @@
 import React, { useRef, useContext } from "react";
 import styled from "styled-components";
 import { TemplateContext } from "../../../services/context/TemplateContext";
+import { devices } from "./devices";
 
-const Button = styled.button`
+const ButtonA = styled.button`
   padding: 0.25em 1em;
-  font-size: clamp(0.84rem, 1.25rem, 1.3rem);
+  /*  font-size: clamp(0.7rem, 1.25rem, 1.3rem); */
   border: 2px solid #fff;
   border-radius: 5px;
   background-color: #1c7e4d;
+  @media ${devices.mobileXtraMini} {
+    font-size: 0.88rem;
+  }
+  @media ${devices.mobileMiniS} {
+    font-size: clamp(0.7rem, 1rem, 1.3rem);
+  }
 `;
 
-function ButtonApply() {
-  const { handleNewLocation } = useContext(TemplateContext);
+const ButtonB = styled.button.attrs(() => ({}))`
+  position: relative;
+  right: 2rem;
+  padding: 0.25em 1em;
+  margin: 1rem;
+  color: #fff;
+  background-color: #636262;
+  font-size: clamp(0.72rem, 0.84rem, 1rem);
+  display: block;
+  float: right;
+  border-radius: 24px;
+  border: 2px solid #555353;
+  transition: all 1s ease-in-out;
 
-  const minimizeOrApplyRef = useRef(null);
+  &:hover {
+    color: #f5f5e5;
+    background-color: #333;
+    border: 2px solid #fff;
+    animation: minimizeText 700ms ease-in-out 1s forwards;
+  }
 
-  const openToNewLocation = () => {
-    if (minimizeOrApplyRef.current.textContent === "Apply") {
-      handleNewLocation(true);
-    } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
-      ticketTempRef.current.style.classList.add("anim_hide_template");
+  @media ${devices.mobileXtraMini} {
+    width: 96%;
+  }
+  @media ${devices.mobileMiniS} {
+    width: 70%;
+  }
+`;
 
-      // add anim show bookOrder
-      ticketManualRef.current.style.classList.add("anim_show_book");
-    }
-  };
+function ButtonApply({ applyText }) {
+  if (applyText === "Apply") return <ButtonA>Apply</ButtonA>;
 
-  return (
-    <Button onClick={openToNewLocation} ref={minimizeOrApplyRef}>
-      Apply
-    </Button>
-  );
+  if (applyText === "Minimize") return <ButtonB>minimize</ButtonB>;
 }
 
 /* function ButtonApply() {

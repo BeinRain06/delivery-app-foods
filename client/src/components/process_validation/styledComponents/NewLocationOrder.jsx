@@ -1,30 +1,33 @@
-import React from "react";
+import React, { useRef, useContext, useState } from "react";
 import styled from "styled-components";
+import { TemplateContext } from "../../../services/context/TemplateContext";
 
 const NewLocation = styled.div`
   position: absolute;
-  top: calc(20vh);
+  top: calc(55vh);
   left: 50%;
   transform: translate(-50%, 0);
-  width: 80%;
-  height: calc(15vh);
+  width: 70%;
+  min-height: 100vh;
   padding: 1em;
   background-color: #3b4d44;
   color: #fff;
+  border-radius: 3px;
 `;
 const Title = styled.span`
   padding: 0.25em 0;
   font-weight: bold;
-  font-size: clamp(0.72rem, 0.82rem, 1rem);
+  font-size: clamp(0.72rem, 1.15rem, 1.25rem);
 `;
 
 const Area = styled.ul`
-  width: 100%;
+  width: 90%;
   padding: 0.5rem 0.25rem;
-  margin: 0 auto;
+  margin: 0.5rem auto 0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const Li = styled.li`
@@ -40,7 +43,7 @@ const Input = styled.input`
 `;
 
 const Label = styled.label`
-  font-size: 0.85em;
+  font-size: 0.95em;
 `;
 
 const MoreInformation = styled.div`
@@ -50,19 +53,23 @@ const MoreInformation = styled.div`
 `;
 
 const NewDirection = styled.form`
-  width: 100%;
-  padding: 1rem;
+  width: 70%;
+  padding: 1rem 0;
+  margin: 0 auto;
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   justify-content: center;
+  align-items: center;
+  gap: 1rem;
 `;
 
 const LocationField = styled.ul`
-  margin: 0.75rem 0;
-  width: 100%;
+  margin: 0.75rem 0rem;
+  width: 60%;
   height: auto;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 1rem;
 `;
 
@@ -77,7 +84,10 @@ const LiLocation = styled.li`
 const InputLocation = styled.input`
   width: 100%;
   height: 40px;
-  background: transparent;
+  color: #eee;
+  background: #35463d;
+  line-height: 1.3;
+  font-size: clamp(0.9rem, 1rem, 1.15rem);
   display: flex;
   justify-content: center;
   text-indent: 10%;
@@ -85,10 +95,13 @@ const InputLocation = styled.input`
 `;
 
 const ReadyToSendLoc = styled.ul`
-  width: 100%;
+  position: relative;
   padding: 0.5rem 0;
+  width: 40%;
+  margin: 0 3.2rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SpreadLoc = styled.li`
@@ -107,6 +120,25 @@ const Button = styled.button`
   padding: 0.25em;
   border-radius: 3px;
 `;
+
+const ErrWarning = styled.p`
+  position: absolute;
+  top: 5.5rem;
+  width: 90%;
+  color: brown;
+  background-color: #e7e697;
+  padding: 0.25rem 1rem;
+  font-size: clamp(0.65rem, 0.75rem, 0.8rem);
+  border: 2px solid #fff;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  transition: all 1s ease-in-out;
+`;
+
+const MsgWarning = ({ message }) => {
+  return <ErrWarning>{message}</ErrWarning>;
+};
 
 /* function NewLocationOrder() {
   const newLocationRef = useRef(null);
@@ -275,6 +307,10 @@ const Button = styled.button`
 } */
 
 function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
+  const { handleNewLocation } = useContext(TemplateContext);
+
+  const [msgErr, setMsgErr] = useState("");
+
   const newRadioRefOne = useRef(null);
   const newRadioRefTwo = useRef(null);
 
@@ -310,6 +346,7 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
       //close new location
       handleNewLocation(false);
       phone.value = "";
+      setMsgErr("");
 
       //move to one more step
       /*  oneMoreStepRef.current.style.visibility = "visible"; */
@@ -337,10 +374,16 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
       phone.value === "";
       city.value === "";
       street.value === "";
+      setMsgErr("");
 
       //move to one more step
-      oneMoreStepRef.current.style.visibility = "visible";
+      /*  oneMoreStepRef.current.style.visibility = "visible"; */
       setIsMoreOneStep(true);
+    } else {
+      setMsgErr("Select between home and new location First !");
+      setTimeout(() => {
+        setMsgErr("");
+      }, 5000);
     }
   };
 
@@ -383,7 +426,7 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
         <NewDirection onSubmit={handleFirstStepLoc}>
           <LocationField>
             <LiLocation ref={newLocationRef}>
-              <Label htmlFor="phone">add a Number</Label>
+              <Label htmlFor="phone">add Phone Number</Label>
               <InputLocation type="number" name="newNum" id="number_add" />
             </LiLocation>
             <LiLocation ref={newCityRef}>
@@ -403,9 +446,10 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
             </SpreadLoc>
             <SpreadLoc id="spread_ok">
               <Button $primary type="submit">
-                OK
+                Send
               </Button>
             </SpreadLoc>
+            {msgErr !== "" && <MsgWarning message={msgErr} />}
           </ReadyToSendLoc>
         </NewDirection>
       </MoreInformation>

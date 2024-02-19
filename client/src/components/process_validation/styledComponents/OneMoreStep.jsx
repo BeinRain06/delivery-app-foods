@@ -1,20 +1,36 @@
-import React from "react";
+import React, { useContext, forwardRef } from "react";
 import styled from "styled-components";
+import { TemplateContext } from "../../../services/context/TemplateContext";
+import { devices } from "./devices";
 
 const MoreStep = styled.div`
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%, -50%);
-width:100%;
-height100%;
-margin: 0 auto;`;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  padding: 0.5rem 1rem;
+  margin: 0 auto;
+  background-color: #1c7e4d;
+
+  @media ${devices.mobileXtraMini} {
+    width: 96%;
+  }
+  @media ${devices.mobileMiniS} {
+    width: 70%;
+  }
+
+  @media ${devices.mobileMiniL} {
+    width: 60%;
+  }
+`;
 
 const MoreContent = styled.div`
   position: relative;
   padding: 0.25em 1em;
   width: 100%;
   height: 100%;
+  color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -23,10 +39,11 @@ const MoreContent = styled.div`
 
 const FirstMyWord = styled.div`
   width: 100%;
-  margin: 0.5em 1em;
+  margin: 0.5em 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 0.5rem;
 `;
 const RemindNext = styled.span`
@@ -34,11 +51,15 @@ const RemindNext = styled.span`
 `;
 const SmallTask = styled.p`
   width: 100%;
-  font-size: clamp(0.72rem, 0.84rem, 1rem);
+  margin: 0.25rem 0;
+  font-size: clamp(0.54rem, 0.84rem, 1rem);
+  line-height: 1.5;
+  text-align: center;
 `;
 
 const Validation = styled.span`
   padding: 0.25em 0.5em;
+  margin: 0 0.25rem;
   background-color: #1c7e4d;
   color: #fff;
   border: 2px solid #fff;
@@ -50,16 +71,33 @@ const Strong = styled.strong``;
 const Decision = styled.ul`
   width: 100%;
   padding: 0.5em 1em;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: blue;
+  @media ${devices.mobileXtraMini} {
+    padding: 0.5em 0em;
+  }
 `;
 
 const Proposal = styled.li`
-  width: 60px;
-  height: 50px;
+  width: 4em;
+  height: 34px;
   border-radius: 5px;
   margin: 0 auto;
+  font-size: clamp(0.5rem, 0.65rem, 1rem);
+
+  @media ${devices.mobileXtraMini} {
+    width: 4em;
+  }
+  @media ${devices.mobileMiniS} {
+    width: 6em;
+  }
+
+  @media ${devices.mobileMiniL} {
+    width: 8em;
+  }
 `;
 
 const Button = styled.button`
@@ -72,44 +110,153 @@ const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.15rem;
 `;
 
-const Span = styled.span``;
+const Span = styled.span`
+  display: flex;
+  justify-content: center;
+`;
 
-const ChevronLeft = styled.i``;
+const ChevronLeft = styled.i`
+  transform: scale(1);
+`;
 
-function OneMoreStep() {
+const ChevronLeftMod = styled(ChevronLeft)`
+  transform: scale(0.74);
+
+  @media ${devices.mobileXtraMini} {
+    display: none;
+  }
+  @media ${devices.mobileMiniS} {
+    display: flex;
+    justify-content: center;
+  }
+`;
+
+const OneMoreStep = forwardRef(function OneMoreStep(
+  { isOneMoreStep, setIsMoreOneStep },
+  ref
+) {
+  const {
+    state: { totalPrice },
+    handleTimer,
+    handleTicketNumber,
+    handleHoursPrint,
+  } = useContext(TemplateContext);
+
+  const handleStepBackLoc = () => {
+    setIsMoreOneStep(false);
+    handleNewLocation(true);
+    ref.current.style.classList.remove("impact_more_step"); // validateRef
+  };
+
+  const handleMoveToValidation = () => {
+    setIsMoreOneStep(false);
+    ref.current.style.classList.add("impact_more_step"); // validateRef
+    handleTicketNumber((totalPrice - 3).toString(16));
+    handleHoursPrint(moment().format("hh:mm a"));
+    handleTimer("02:00:00");
+  };
+
   return (
-    <MoreStep>
-      <MoreContent>
-        <FirstMyWord>
-          <RemindNext>One more step:</RemindNext>
-          <SmallTask>
-            click on the button <Validation>validate</Validation> Please to
-            terminate the process of sending your <Strong>order</Strong>
-          </SmallTask>
-        </FirstMyWord>
-        <Decision>
-          <Proposal>
-            <Button onClick={handleStepBackLoc}>
-              <Span>
-                <ChevronLeft className="fa-solid fa-chevron-left fa-2x" />
-                <ChevronLeft className="fa-solid fa-chevron-left fa-2x" />
-              </Span>
-              <Span>Back</Span>
-            </Button>
-          </Proposal>
-          <Proposal>
-            <Button $primary onClick={handleMoveToValidation}>
-              OK
-            </Button>
-          </Proposal>
-        </Decision>
-      </MoreContent>
-    </MoreStep>
+    <>
+      {isOneMoreStep && (
+        <MoreStep>
+          <MoreContent>
+            <FirstMyWord>
+              <RemindNext>One more step:</RemindNext>
+              <SmallTask>
+                click on the button <Validation>validate</Validation> Please to
+                terminate the process of sending your <Strong>order</Strong>
+              </SmallTask>
+            </FirstMyWord>
+            <Decision>
+              <Proposal>
+                <Button onClick={handleStepBackLoc}>
+                  <Span>
+                    <ChevronLeftMod> &#10092; </ChevronLeftMod>
+                  </Span>
+                  <Span>Back</Span>
+                </Button>
+              </Proposal>
+              <Proposal>
+                <Button $primary onClick={handleMoveToValidation}>
+                  <ChevronLeft>&#10024;</ChevronLeft>
+                  OK
+                </Button>
+              </Proposal>
+            </Decision>
+          </MoreContent>
+        </MoreStep>
+      )}
+    </>
   );
-}
+});
+
+/* function OneMoreStep({
+  isOneMoreStep,
+  setIsMoreOneStep,
+  validateRef,
+  fourthMealRef,
+}) {
+  const {
+    state: { totalPrice },
+    handleTimer,
+    handleTicketNumber,
+    handleHoursPrint,
+  } = useContext(TemplateContext);
+
+  const handleStepBackLoc = () => {
+    setIsMoreOneStep(false);
+    handleNewLocation(true);
+    validateRef.current.style.classList.remove("impact_more_step");
+    fourthMealRef.current.style.classList.remove("impact_play");
+  };
+
+  const handleMoveToValidation = () => {
+    setIsMoreOneStep(false);
+    validateRef.current.style.classList.add("impact_more_step");
+    fourthMealRef.current.style.classList.add("impact_play");
+    handleTicketNumber((totalPrice - 3).toString(16));
+    handleHoursPrint(moment().format("hh:mm a"));
+    handleTimer("02:00:00");
+  };
+
+  return (
+    <>
+      {isOneMoreStep && (
+        <MoreStep>
+          <MoreContent>
+            <FirstMyWord>
+              <RemindNext>One more step:</RemindNext>
+              <SmallTask>
+                click on the button <Validation>validate</Validation> Please to
+                terminate the process of sending your <Strong>order</Strong>
+              </SmallTask>
+            </FirstMyWord>
+            <Decision>
+              <Proposal>
+                <Button onClick={handleStepBackLoc}>
+                  <Span>
+                    <ChevronLeftMod> &#10092; </ChevronLeftMod>
+                  </Span>
+                  <Span>Back</Span>
+                </Button>
+              </Proposal>
+              <Proposal>
+                <Button $primary onClick={handleMoveToValidation}>
+                  <ChevronLeft>&#10024;</ChevronLeft>
+                  OK
+                </Button>
+              </Proposal>
+            </Decision>
+          </MoreContent>
+        </MoreStep>
+      )}
+    </>
+  );
+} */
 
 /* function OneMoreStep() {
   const oneMoreStepRef = useRef(null);

@@ -62,10 +62,11 @@ const Button = styled.button`
   );
 } */
 
-function ValidateOrder({ setOpenFinalValidation }) {
+function ValidateOrder({ setOpenFinalValidation, setApplyText }) {
   const setOrder = () => {
     // do something
     setOpenFinalValidation(false);
+    setApplyText("Minimize");
   };
 
   const cancelOrder = () => {

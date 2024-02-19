@@ -70,6 +70,8 @@ function Orders() {
   //process validation Hook
   const [openFinalValidation, setOpenFinalValidation] = useState(false);
   const [isOneMoreStep, setIsMoreOneStep] = useState(false);
+  const [applyText, setApplyText] = useState("Apply");
+  const [isanOrderDay, SetIsAnOrDay] = useState(false);
 
   const newLocationRef = useRef(null);
   const newCityRef = useRef(null);
@@ -85,6 +87,7 @@ function Orders() {
   const applyOrderRef = useRef(null);
   const totalRef = useRef(null);
   const validateRef = useRef(null);
+  const fourthMealRef = useRef(null);
   const sliderTemplateRef = useRef(null);
 
   const orderOftheDay =
@@ -217,6 +220,9 @@ function Orders() {
           // dispatch(templateActions.handleFirstTimeOrder(true));
         }, 1000);
         totalRef.current.classList.add("anim_height");
+        setTimeout(async () => {
+          await applyOrderRef.current.classList.add("addShowBtn");
+        }, 2000);
         return;
       } else {
         handleFirstTimeOrder(false);
@@ -263,6 +269,12 @@ function Orders() {
         }
       }
 
+      if (orderSpecsCurrent.length >= 3) {
+        fourthMealRef.current.style.classList.add("impact_play");
+      } else if (orderSpecsCurrent < 3) {
+        fourthMealRef.current.style.classList.remove("impact_play");
+      }
+
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
     } else if (e.target.id === "reg_price_1") {
@@ -281,9 +293,23 @@ function Orders() {
     }
   };
 
+  const openToNewLocation = () => {
+    if (applyText === "Apply") {
+      handleNewLocation(true);
+
+      /*    ticketTempRef.current.style.classList.remove("anim_hide_template");
+      ticketManualRef.current.style.classList.remove("anim_show_book"); */
+    } else if (applyText === "Minimize") {
+      ticketTempRef.current.style.classList.add("anim_hide_template");
+      // add anim show bookOrder
+      ticketManualRef.current.style.classList.add("anim_show_book");
+    }
+  };
+
   const handleSubmitOrder = (e) => {
     e.preventDefault();
     console.log(e.target);
+    openToNewLocation();
   };
 
   const getRemainingTime = (cb) => {
@@ -485,7 +511,9 @@ function Orders() {
               </div>
             </div>
             <div className="available_ticket_content" ref={ticketTempRef}>
-              <button className="minimize_template">minimize</button>
+              {/* <button className="minimize_template" onclick={openToNewLocation}>
+                minimize
+              </button> */}
               <h4 className="title_order">Sample</h4>
               <hr className="breakpoint_ticket"></hr>
               <div className="sample_ticket">
@@ -553,7 +581,7 @@ function Orders() {
                         <td>
                           <i className="fa-solid fa-minus"></i>
                         </td>
-                        <td>${thisOrder.totalPrice}</td>
+                        <td>${showTotalPrice}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -591,7 +619,7 @@ function Orders() {
                       $ {showTotalPrice}
                     </span>
                     <div className="submit_container" ref={applyOrderRef}>
-                      <ButtonApply />
+                      <ButtonApply type="submit" applyText={applyText} />
                     </div>
                   </form>
                 </div>
@@ -599,7 +627,7 @@ function Orders() {
                 {firstTimeOrder && (
                   <div className="appealing_registration">
                     {/* //write css */}
-                    <LogOrRegisterForm />
+                    <LogOrRegisterForm setShowTotalPrice={setShowTotalPrice} />
                   </div>
                 )}
 
@@ -617,7 +645,11 @@ function Orders() {
                     </ul>
                   </div>
                   {isOneMoreStep && (
-                    <OneMoreStep setIsMoreOneStep={setIsMoreOneStep} />
+                    <OneMoreStep
+                      isOneMoreStep={isOneMoreStep}
+                      setIsMoreOneStep={setIsMoreOneStep}
+                      ref={validateRef}
+                    />
                   )}
                 </div>
 
@@ -643,6 +675,7 @@ function Orders() {
                       type="button"
                       id="btn_play_game"
                       className="btn_play_game"
+                      ref={fourthMealRef}
                     >
                       Fourth Meal Game
                     </button>
@@ -650,6 +683,7 @@ function Orders() {
                     {openFinalValidation && (
                       <ValidateOrder
                         setOpenFinalValidation={setOpenFinalValidation}
+                        setApplyText={setApplyText}
                       />
                     )}
                   </div>
@@ -767,7 +801,7 @@ function Orders() {
 
             <div className="days_week_order">
               <ul className="days_dish_recap">
-                {orders.length !== 0 &&
+                {isanOrderDay ? (
                   orders?.map((item, i) => {
                     let dateOrderedFormat = item.dateOrdered.format("MMM D");
 
@@ -787,7 +821,14 @@ function Orders() {
                         </div>
                       );
                     }
-                  })}
+                  })
+                ) : (
+                  <div className="wrapper_no_items">
+                    <div className="content_no">
+                      <span className="no_items">No Items</span>
+                    </div>
+                  </div>
+                )}
                 {/* <li className="day_dish_recall">
                   <div className="dish_table">
                     <div className="dish_sub_operation">

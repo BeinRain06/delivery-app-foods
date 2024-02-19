@@ -12,7 +12,11 @@ import { initiateOrder } from "../../callAPI/OrdersApi";
 import moment from "moment";
 import "./loadingLogSession.css";
 
-function LoadingLogSession({ loginData, setIsLoggingDataSession }) {
+function LoadingLogSession({
+  loginData,
+  setIsLoggingDataSession,
+  setShowTotalPrice,
+}) {
   // const dispatch = useDispatch();
 
   // branching your data to Local Storage
@@ -103,6 +107,8 @@ function LoadingLogSession({ loginData, setIsLoggingDataSession }) {
 
       await handleTotalPrice(totalPriceIn);
 
+      setShowTotalPrice(totalPriceIn);
+
       let currentTime = moment().format("hh:mm a");
       await handleHoursPrint(currentTime);
     }, 3500);
@@ -112,8 +118,8 @@ function LoadingLogSession({ loginData, setIsLoggingDataSession }) {
 
   const setDataEndLoading = async (myOrder) => {
     return await new Promise((resolve) => {
-      let codePayment = (myOrder.totalPrice - 3).toString(16);
-      handleTicketNumber(codePayment);
+      /*  let codePayment = (myOrder.totalPrice - 3).toString(16);
+      handleTicketNumber(codePayment); */
 
       setIsLoggingDataSession(false);
 

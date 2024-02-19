@@ -3,20 +3,14 @@ import LoadingLogSession from "../loading/loadingLogSession";
 import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { useDispatch, useSelector } from "react-redux";
-import { mealActions } from "../../services/redux/createslice/MealSplice";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
-import {
-  thisOrder_section,
-  totalPrice_section,
-  orderSpecsCurrent_section,
-} from "../../services/redux/createslice/TemplateSlice";
 import { user_section } from "../../services/redux/createslice/MealSplice";
 import { userLogging, userRegistering } from "../../callAPI/UsersApi";
 import { initiateOrder } from "../../callAPI/OrdersApi";
 import moment from "moment";
 import "./register-login-form.css";
 
-function LogOrRegisterForm() {
+function LogOrRegisterForm({ setShowTotalPrice }) {
   /*  const dispatch = useDispatch(); */
 
   const {
@@ -38,16 +32,7 @@ function LogOrRegisterForm() {
   const [hoursPrinted, setHoursPrinted] = useState("time");
 
   // branching your data to Local Storage
-  /*   const appState = JSON.parse(localStorage.getItem("appState"));
 
-   const user = appState.mealPrime.user;
-  const user = useSelector(user_section);
-
-   const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
-  const thisOrder = appState.orderPrime.thisOrder;
-  const totalPrice = appState.orderPrime.totalPrice;
-  const thisOrderSplice = useSelector(thisOrder_section);
- */
   const handleRegistering = (e) => {
     e.preventDefault();
     let registeringData;
@@ -133,13 +118,6 @@ function LogOrRegisterForm() {
 
     updatefieldTemplate(firstStatus);
   };
-
-  /* const sendLoggingData = async ({ email, password }) => {
-    console.log(`that email: ${email}, that password:  ${password}`);
-    const res = await userLogging({ email, password });
-
-    return res;
-  }; */
 
   const sendRegisteringData = async ({
     password,
@@ -229,30 +207,18 @@ function LogOrRegisterForm() {
 
       let totalPriceIn = catchTotalPrice(myOrder);
 
-      dispatch(templateActions.handleTotalPrice(totalPriceIn));
+      handleTotalPrice(totalPriceIn);
     }, 3000);
 
     console.log("total price in login:", totalPrice);
 
     let currentTime = moment().format("hh:mm a");
-    dispatch(templateActions.handleHoursPrint(currentTime));
-
-    let codePayment = (totalPrice - 3).toString(16);
-    dispatch(templateActions.handleTicketNumber(codePayment));
-
-    dispatch(templateActions.handleFirstTimeOrder(firstStatus));
 
     setTimeout(() => {
       console.log("updation ended");
       /*  setIsUpdate(false); */
     }, 3000);
   };
-
-  /* useEffect(() => {
-    console.log(
-      "This means to update data Order for our template ticket after login or registering"
-    );
-  }, [isUpdate]); */
 
   return (
     <div className="registration_wrapper">
@@ -302,6 +268,7 @@ function LogOrRegisterForm() {
                 <LoadingLogSession
                   loginData={loginData}
                   setIsLoggingDataSession={setIsLoggingDataSession}
+                  setShowTotalPrice={setShowTotalPrice}
                 />
               </div>
             )}
