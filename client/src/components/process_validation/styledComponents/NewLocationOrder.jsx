@@ -1,18 +1,39 @@
-import React, { useRef, useContext, useState } from "react";
+import React, {
+  useRef,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import styled from "styled-components";
+import {
+  updateThisLocationOrder,
+  updateThisTotalPriceOrder,
+  checkTotalPriceOrder,
+} from "../../../callAPI/OrdersApi";
 import { TemplateContext } from "../../../services/context/TemplateContext";
+import ErrorWarning from "./MsgError";
+import { devices } from "./devices";
 
 const NewLocation = styled.div`
   position: absolute;
-  top: calc(55vh);
+  top: calc(4.5rem);
   left: 50%;
   transform: translate(-50%, 0);
   width: 70%;
-  min-height: 100vh;
-  padding: 1em;
+  height: auto;
+  padding: 1em 1em 0;
   background-color: #3b4d44;
   color: #fff;
   border-radius: 3px;
+
+  @media ${devices.mobileXtraMini} {
+    width: 96%;
+  }
+
+  @media ${devices.mobileMiniL} {
+    width: 70%;
+  }
 `;
 const Title = styled.span`
   padding: 0.25em 0;
@@ -28,6 +49,13 @@ const Area = styled.ul`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  @media ${devices.mobileXtraMini} {
+    width: 96%;
+  }
+
+  @media ${devices.mobileMiniL} {
+    width: 90%;
+  }
 `;
 
 const Li = styled.li`
@@ -53,7 +81,7 @@ const MoreInformation = styled.div`
 `;
 
 const NewDirection = styled.form`
-  width: 70%;
+  width: 96%;
   padding: 1rem 0;
   margin: 0 auto;
   display: flex;
@@ -61,16 +89,33 @@ const NewDirection = styled.form`
   justify-content: center;
   align-items: center;
   gap: 1rem;
+
+  @media ${devices.mobileXtraMini} {
+    flex-direction: column;
+  }
+
+  @media ${devices.mobileMiniL} {
+    flex-direction: row-reverse;
+  }
+
+  @media ${devices.tablet} {
+    width: 70%;
+    flex-direction: row-reverse;
+  }
 `;
 
 const LocationField = styled.ul`
   margin: 0.75rem 0rem;
-  width: 60%;
+  width: 90%;
   height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
+
+  @media ${devices.mobileMiniL} {
+    width: 60%;
+  }
 `;
 
 const LiLocation = styled.li`
@@ -92,6 +137,14 @@ const InputLocation = styled.input`
   justify-content: center;
   text-indent: 10%;
   border: 2px solid #eee;
+
+  @media ${devices.mobileXtraMini} {
+    height: 24px;
+  }
+
+  @media ${devices.mobileMiniL} {
+    height: 40px;
+  }
 `;
 
 const ReadyToSendLoc = styled.ul`
@@ -102,26 +155,45 @@ const ReadyToSendLoc = styled.ul`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media ${devices.mobileXtraMini} {
+    width: 60%;
+    gap: 1.25rem;
+  }
+
+  @media ${devices.mobileMiniL} {
+    width: 40%;
+    gap: 0rem;
+  }
 `;
 
 const SpreadLoc = styled.li`
   position: relative;
   width: 60px;
   height: 60px;
-  margin: 0 auto;
+  margin: 0 0.25rem;
 `;
 
 const Button = styled.button`
   background-color: ${(props) => (props.$primary ? "#1c7e4d" : "#d4cfcf")};
   color: ${(props) => (props.$primary ? "#fff" : "#333")};
   border: ${(props) => (props.$primary ? "2px solid #fff" : "2px solid gray")};
-  width: 100%;
+  width: 50px;
   height: 100%;
   padding: 0.25em;
   border-radius: 3px;
+
+  @media ${devices.mobileXtraMini} {
+    width: 60px;
+    height: 38px;
+  }
+  @media ${devices.mobileMiniL} {
+    width: 60px;
+    height: 100%;
+  }
 `;
 
-const ErrWarning = styled.p`
+/* const ErrWarning = styled.p`
   position: absolute;
   top: 5.5rem;
   width: 90%;
@@ -138,7 +210,7 @@ const ErrWarning = styled.p`
 
 const MsgWarning = ({ message }) => {
   return <ErrWarning>{message}</ErrWarning>;
-};
+}; */
 
 /* function NewLocationOrder() {
   const newLocationRef = useRef(null);
@@ -306,10 +378,18 @@ const MsgWarning = ({ message }) => {
   );
 } */
 
-function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
-  const { handleNewLocation } = useContext(TemplateContext);
+function NewLocationOrder({
+  setIsMoreOneStep,
+  setDataNewLocation,
+  dataNewLocation,
+}) {
+  const {
+    state: { thisOrder, orderSpecsCurrent },
+    handleNewLocation,
+  } = useContext(TemplateContext);
 
   const [msgErr, setMsgErr] = useState("");
+  const [isAnyErr, setIsAnyPrevErr] = useState(false);
 
   const newRadioRefOne = useRef(null);
   const newRadioRefTwo = useRef(null);
@@ -322,8 +402,51 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
     handleNewLocation(false);
   };
 
-  const handleFirstStepLoc = (e) => {
+  const message =
+    "can't proceed! You added element Meal(s) but didn't update totalPrice.";
+  const forseen = false;
+
+  const handleDataInSubmittion = async (e) => {
     e.preventDefault();
+
+    const newTotalPrice = await checkingDataPrice();
+
+    if (newTotalPrice === message) {
+      /*  setIsAnyPrevErr(true); */
+      setTimeout(() => {
+        setMsgErr(message);
+      }, 2000);
+      setTimeout(() => {
+        console.log("There is an previous Error somewhere in price...");
+        setMsgErr("");
+      }, 7500);
+    } else {
+      setMsgErr("");
+      handleInSecondStepLoc(e);
+      const updateLocationOrder = await updateThisLocationOrder(
+        dataNewLocation,
+        thisOrder._id
+      );
+
+      console.log("Data in Submit Response:", updateLocationOrder);
+    }
+  };
+
+  const checkingDataPrice = useCallback(async () => {
+    return await new Promise(async (resolve, reject) => {
+      const dataNewTotalPrice = await checkTotalPriceOrder(orderSpecsCurrent);
+      console.log("this order total price:", thisOrder.totalPrice);
+      console.log("this data new total price:", dataNewTotalPrice);
+
+      if (+dataNewTotalPrice !== thisOrder.totalPrice) {
+        resolve(message);
+      } else {
+        resolve(dataNewTotalPrice);
+      }
+    });
+  }, []);
+
+  const handleInSecondStepLoc = (e) => {
     if (newRadioRefOne.current.checked) {
       let phone = e.target.elements.newNum;
       if (phone.value === "") {
@@ -399,6 +522,10 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
     }
   };
 
+  useEffect(() => {
+    if (msgErr !== "") console.log("refreshing nessage error");
+  }, [msgErr]);
+
   return (
     <NewLocation>
       <Title>LOcation</Title>
@@ -423,7 +550,7 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
         </Li>
       </Area>
       <MoreInformation>
-        <NewDirection onSubmit={handleFirstStepLoc}>
+        <NewDirection onSubmit={(e) => handleDataInSubmittion(e)}>
           <LocationField>
             <LiLocation ref={newLocationRef}>
               <Label htmlFor="phone">add Phone Number</Label>
@@ -449,7 +576,14 @@ function NewLocationOrder({ setIsMoreOneStep, setDataNewLocation }) {
                 Send
               </Button>
             </SpreadLoc>
-            {msgErr !== "" && <MsgWarning message={msgErr} />}
+            {/* {msgErr !== "" && <MsgWarning message={msgErr} />} */}
+            {msgErr !== "" && (
+              <ErrorWarning
+                message={msgErr}
+                componentSectionName="sendNewLocOrder"
+                forseen={forseen}
+              />
+            )}
           </ReadyToSendLoc>
         </NewDirection>
       </MoreInformation>

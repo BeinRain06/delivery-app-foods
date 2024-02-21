@@ -1,33 +1,52 @@
 import react, { useState } from "react";
 import styled from "styled-components";
+import { devices } from "./devices";
 
 // styled-components
 const ValidateMsg = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0 auto;
+  bottom: 60px;
+  left: 50%;
+  width: 80%;
+  padding: 0.5rem;
+  background-color: #fff;
+  transform: translateX(-50%);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+  @media ${devices.mobileMiniL} {
+    bottom: 20px;
+    width: 50%;
+  }
+  @media ${devices.tablet} {
+    width: 40%;
+  }
 `;
 
 const ValidateMsgContent = styled.div`
 position:relative;
-width:80%
-height:auto;
-padding: 1rem 0;
+width:100%
+height:100%;
+padding: 0.25rem;
+background-color: #1c7e4d;
+ border-radius:5px;
+ font-size: clamp(0.6rem, 0.7rem, 1rem);
 display:flex;
 flex-direction:column;
 justify-content:center;
-align-items:center`;
+align-items:center;
+`;
 
 const Validation = styled.p`
   font-weight: bolder;
-  font-size: clamp(0.89rem, 0.92rem, 1rem);
+  font-size: clamp(0.7rem, 0.82rem, 1rem);
+  text-align: center;
 `;
 const BtnValidation = styled.div`
   width: 100%;
-  padding: 0.25em 0;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -38,6 +57,7 @@ const Button = styled.button`
   background-color: ${(props) => (props.$primary ? "#1c7e4d" : "#d4cfcf")};
   color: ${(props) => (props.$primary ? "#fff" : "#333")};
   border: ${(props) => (props.$primary ? "2px solid #fff" : "2px solid gray")};
+  font-size: clamp(0.55rem, 0.65rem, 0.85rem);
   margin: 1em;
   padding: 0.25em 1em;
   border-radius: 3px;
@@ -62,30 +82,30 @@ const Button = styled.button`
   );
 } */
 
-function ValidateOrder({ setOpenFinalValidation, setApplyText }) {
-  const setOrder = () => {
+function ConfirmOrder({
+  setOpenFinalValidation,
+  setApplyText,
+  handleStepBackLoc,
+}) {
+  const dressTable = () => {
     // do something
     setOpenFinalValidation(false);
     setApplyText("Minimize");
   };
 
-  const cancelOrder = () => {
-    // do something
-    setOpenFinalValidation(false);
-  };
   return (
     <ValidateMsg>
       <ValidateMsgContent>
         <Validation>Do You Confirm The Order .</Validation>
         <BtnValidation>
-          <Button $primary onClick={setOrder}>
+          <Button $primary onClick={dressTable}>
             YES
           </Button>
-          <Button onClick={cancelOrder}>NO</Button>
+          <Button onClick={() => handleStepBackLoc("toTemplate")}>NO</Button>
         </BtnValidation>
       </ValidateMsgContent>
     </ValidateMsg>
   );
 }
 
-export default ValidateOrder;
+export default ConfirmOrder;

@@ -170,7 +170,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
         type: ACTIONS_TYPES.OPEN_NEW_LOCATION,
         payload: isOpen,
       });
-      setTimeout(resolve, 3000);
+      setTimeout(resolve, 2000);
     });
   }, []);
 
@@ -180,7 +180,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
         type: ACTIONS_TYPES.FIRST_TIME_ORDER,
         payload: nextState,
       });
-      setTimeout(resolve, 3000);
+      setTimeout(resolve, 2000);
     });
   }, []);
 
@@ -423,41 +423,6 @@ const initStateContext = {
 };
 
 export const TemplateContext = createContext(initStateContext);
-
-export const affectThisOrder = () => {
-  const {
-    state: { thisOrder },
-    handleThisOrder,
-  } = useContext(TemplateContext);
-
-  return { thisOrder, handleThisOrder };
-};
-
-export const updateStatusPayment = () => {
-  const {
-    state: { payment },
-    handlePayment,
-  } = useContext(TemplateContext);
-
-  return { payment, handlePayment };
-};
-
-export const grabOrderSpecsCurrent = () => {
-  const {
-    state: { orderSpecsCurrent },
-  } = useContext(TemplateContext);
-  return orderSpecsCurrent;
-};
-
-export const UpstreamOrderFunction = ({ e }) => {
-  const { handleUpstreamOrder } = useContext(TemplateContext);
-
-  const callUpstreamOrder = async (e) => {
-    await handleUpstreamOrder(e);
-  };
-
-  return <span>{callUpstreamOrder(e)}</span>;
-};
 
 function TemplateContextProvider({ children, ...INITIAL_STATE_ONE }) {
   return (

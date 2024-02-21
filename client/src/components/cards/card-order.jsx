@@ -1,19 +1,16 @@
 import React, { useContext, useState, useEffect } from "react";
 import { TemplateContext } from "../../services/context/TemplateContext";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  templateActions,
-  orderSpecsCurrent_section,
-} from "../../services/redux/createslice/TemplateSlice";
+import { updateThisTotalPriceOrder } from "../../callAPI/OrdersApi";
 
 import "./card-order.css";
 
-function CardOrder({ ...props }) {
+function CardOrder({ setShowTotalPrice, ...props }) {
   const {
-    state: { meals, orderSpecsCurrent },
+    state: { orderSpecsCurrent },
     handleClear,
     handleDecrease,
     handleIncrease,
+    handleNewLocation,
   } = useContext(TemplateContext);
 
   /*  const dispatch = useDispatch();
@@ -28,42 +25,34 @@ function CardOrder({ ...props }) {
 
   const mealId = props.id;
 
-  /* const removeMeal = (id) => {
-    dispatch(templateActions.handleDecrease(id));
-  };
-
-  const addMeal = (id) => {
-    dispatch(templateActions.handleIncrease(id));
-  };
-
-  const clearMeal = (id) => {
-    dispatch(templateActions.handleClear(id));
-  };
- */
   const removeMeal = (id, mySpecsOrder) => {
     handleDecrease(id, mySpecsOrder);
-    updateQty();
+    updateQty("removing");
   };
 
   const addMeal = (id, mySpecsOrder) => {
     handleIncrease(id, mySpecsOrder);
-    updateQty();
+    updateQty("adding");
   };
 
   const clearMeal = (id, mySpecsOrder) => {
     handleClear(id, mySpecsOrder);
   };
 
-  const updateQty = () => {
+  const updateQty = (label) => {
     const newQuantity = orderSpecsCurrent.map((item, i) => {
       if (item.meal === props.id) {
         return item.quantity;
       }
     });
     setNewQty(() => newQuantity);
+
+    handleNewLocation(false);
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    updateQty();
+  }, [orderSpecsCurrent]);
 
   return (
     <li id={props.id} className="keeping_table">

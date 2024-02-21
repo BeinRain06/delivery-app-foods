@@ -57,7 +57,7 @@ function CardDayOrders({ props }) {
     } else {
       // post ratedMeal(axios.post)
       let newRatedMeal;
-      newRatedMeal = { meal, nite, feedback };
+      newRatedMeal = { meal, note, feedback };
       postRatedMeal(newRatedMeal);
     }
 

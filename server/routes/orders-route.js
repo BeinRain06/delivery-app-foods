@@ -137,6 +137,51 @@ router.post("/order", async (req, res) => {
   }
 });
 
+//CHECK TOTAL PRICE
+router.post("/order/checkprice", async (req, res) => {
+  try {
+    const orderSpecIds = Promise.all(
+      req.body.ordersSpecs.map(async (orderSpec) => {
+        // instance of OrderSpecs Model
+        let newOrderSpec = new OrderSpecs({
+          meal: orderSpec.meal,
+          quantity: orderSpec.quantity,
+        });
+        newOrderSpec = await newOrderSpec.save();
+
+        return newOrderSpec._id;
+      })
+    );
+
+    const orderSpecIdsResolved = await orderSpecIds;
+
+    // shorthand using "await" to return straight at the end the value of Promise
+    const totalPrices = await Promise.all(
+      orderSpecIdsResolved.map(async (orderSpecId) => {
+        const orderSpec = await OrderSpecs.findById(orderSpecId).populate(
+          "meal",
+          "price"
+        );
+
+        const totalPrice = orderSpec.meal.price * orderSpec.quantity;
+
+        return totalPrice;
+      })
+    );
+
+    const totalPrice = totalPrices.reduce((acc, elt) => acc + elt, 0);
+
+    res.json({ success: true, data: totalPrice });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      error:
+        "Error: check your process something went wrong can't check price of this order",
+    });
+  }
+});
+
 // UPDATING NEW LOCATION
 router.put("/order/newlocation/:orderId", async (req, res) => {
   try {
@@ -165,7 +210,7 @@ router.put("/order/newlocation/:orderId", async (req, res) => {
 router.put("/order/updateprice/:orderId", async (req, res) => {
   try {
     const ordersItems = await Promise.all(
-      req.body.orderSpecs.map(async (item) => {
+      req.body.ordersSpecs.map(async (item) => {
         let orderSpecId = item._id;
 
         if (orderSpecId === undefined) {

@@ -1,22 +1,42 @@
 import React, { useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { templateActions } from "../../services/redux/createslice/TemplateSlice";
-import { dataTemplatesOrdersDay_section } from "../../services/redux/createslice/TemplateSlice";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { MTN, ORANGE } from "../../assets/images";
 
-import ValidateOrder from "../process_validation/styledComponents/ValidateOrder";
+import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
 import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
 import OneMoreStep from "../process_validation/styledComponents/OneMoreStep";
 import ButtonApply from "../process_validation/styledComponents/ButtonApply";
+import ErrorWarning from "../process_validation/styledComponents/MsgError";
 import "./TemplateOrder.css";
 
 function TemplateOrder({ id, dataTemplate }) {
-  const {
+  /*  const {
     state: { isNewLocation, firstTimeOrder },
     handleFirstTimeOrder,
     handleTotalPrice,
     handleNewLocation,
+  } = useContext(TemplateContext); */
+
+  const {
+    state: {
+      firstTimeOrder,
+      orderSpecsCurrent,
+      thisOrder,
+      dataTemplatesOrdersDay,
+      timer,
+      isNewLocation,
+      payment,
+      ticketNumber,
+      totalPrice,
+      hoursPrinted,
+    },
+    handleNewLocation,
+    handleFirstTimeOrder,
+    handleThisOrder,
+    handleTotalPrice,
+    handleTicketNumber,
+    handleHoursPrint,
+    handleTimer,
   } = useContext(TemplateContext);
 
   const ticketTempRef = useRef(null);
@@ -31,16 +51,33 @@ function TemplateOrder({ id, dataTemplate }) {
   const oneMoreStepRef = useRef(null);
   const minimizeOrApplyRef = useRef(null);
   const validateRef = useRef(null);
+  const fourthMealRef = useRef(null);
 
   //process validation Hook
   const [openFinalValidation, setOpenFinalValidation] = useState(false);
   const [isOneMoreStep, setIsMoreOneStep] = useState(false);
+  const [applyText, setApplyText] = useState("Apply");
+  const [forseen, setForseen] = useState(false);
 
-  const hideBookManual = () => {
-    // hide anim show bookOrder
-    ticketManualRef.current.style.classList.add("anim_show_book");
+  const orderOftheDay =
+    user.id === undefined
+      ? []
+      : orders.filter(
+          (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
+        );
 
-    ticketTempRef.current.style.classList.remove("anim_hide_template");
+  const hideOrShowBookManual = (currentPlay) => {
+    if (currentPlay === "show") {
+      // show anim show bookOrder
+      ticketManualRef?.current.style.classList.add("anim_show_book");
+
+      ticketTempRef?.current.style.classList.remove("anim_hide_template");
+    } else {
+      // hide anim show bookOrder
+      ticketManualRef?.current.style.classList.remove("anim_show_book");
+
+      ticketTempRef?.current.style.classList.add("anim_hide_template");
+    }
   };
 
   const handleNewRadioInput = (e) => {
@@ -150,23 +187,45 @@ function TemplateOrder({ id, dataTemplate }) {
     /* dispatch(templateActions.handleNewLocation(false)); */
   };
 
-  const handleStepBackLoc = () => {
-    oneMoreStepRef.current.style.visibility = "hidden";
-    handleNewLocation(true);
-    /*  dispatch(templateActions.handleNewLocation(true)); */
-    validateRef.current.style.classList.remove("impact_more_step");
+  const resetDataHoldingTemplate = () => {
+    handleTicketNumber("_ _ _ _ _ _");
+    handleHoursPrint("time");
+    handleTotalPrice("_ _ _ _");
+    handleThisOrder({});
+    handlePayment({});
+    handleClearOrderSpecs([]);
+    handleTimer("00:00:00");
   };
 
-  const validateThisOrder = () => {
-    minimizeOrApplyRef.current.textContent = "Minimize";
+  const handleStepBackLoc = (space) => {
+    if (space === "toLocation") {
+      setIsMoreOneStep(false);
+      handleNewLocation(true);
+    } else if (space === "toTemplate") {
+      setOpenFinalValidation(false);
+      handleNewLocation(false);
+      setApplyText("Apply");
+    }
 
-    validateRef.current.style.border = "2px solid yellow"; // rather add a class (enhance border, border-radius=50% ---> after click go back to default way is was displaying)
+    validateRef.current.classList.remove("impact_more_step");
+  };
+
+  // HERE ===>  NEXT FUNCTION TO IMPLEMENT ACTION   <=== HERE
+  const validateThisOrder = () => {
+    validateRef.current.classList.remove("impact_more_step");
+
+    /* revisit ALL ACTIONS UNDERNEATH */
 
     //not yet ( this update)
     const newPartLocation = updateThisLocationOrder(
       dataNewLocation,
       thisOrder.id
     );
+
+    /* dispatch(templateActions.handleThisOrder(newPartLocation));
+    let timerOn = callTimer();
+    dispatch(templateActions.handleTimer(timerOn));
+    dispatch(templateActions.wholeCountDownTimersDay(callTimer())); */
 
     handleThisOrder(newPartLocation);
     let timerOn = callTimer();
@@ -188,10 +247,87 @@ function TemplateOrder({ id, dataTemplate }) {
 
     // store element templateOrder in the specified Template in Context API
 
+    if (dataTemplatesOrdersDay.length === 3) {
+      alert("You can't send more than 3 orders");
+      return;
+    }
     handleTemplateOrdersDay(templateOrderVar);
+    // dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
+  };
+
+  function getCookies() {
+    let cookies = document.cookie.split(";").reduce((cookies, cookie) => {
+      const [name, val] = cookie.split("=").map((c) => c.trim());
+      cookies[name] = val;
+      return cookies;
+    }, {});
+    return cookies;
+  }
+
+  const getRemainingTime = (cb) => {
+    const diff = Date.parse(cb) - Date.parse(new Date());
+
+    //get Hrs --> Integer Division of diff by [1hr] in ms
+    const hrs = Math.floor(diff / (1 * 60 * 60 * 1000));
+
+    //get Mins --> Integer Division of the [remainder]-hour Division  by [1min] in ms
+    const min = Math.floor((diff % (1 * 60 * 60 * 1000)) / (1 * 60 * 1000));
+
+    //get Secs --> Integer Division of the [remainder]-minute Division  by [1sec] in ms
+    const sec = Math.floor((diff % (1 * 60 * 1000)) / (1 * 1000));
+
+    return { diff, hrs, min, sec };
+  };
+
+  const startTimer = (cb) => {
+    let { diff, hrs, min, sec } = getRemainingTime(cb);
+
+    if (diff >= 0) {
+      handleTimer(
+        (hrs > 9 ? hrs : "0" + hrs) +
+          ": " +
+          (min > 9 ? min : "0" + min) +
+          ":" +
+          (sec > 9 ? sec : "0" + sec)
+      );
+
+      /*  dispatch(
+        templateActions.handleTimer(
+          (hrs > 9 ? hrs : "0" + hrs) +
+            ": " +
+            (min > 9 ? min : "0" + min) +
+            ":" +
+            (sec > 9 ? sec : "0" + sec)
+        )
+      ); */
+    }
+  };
+
+  const clearTimer = (cb) => {
+    handleTimer("02:00:00");
+    // dispatch(templateActions.handleTimer("02:00:00"));
+
+    //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
+    if (interval.current) clearInterval(interval.current);
+
+    const id = setInterval(() => {
+      startTimer(cb);
+    }, 1000);
+
+    interval.current = id;
+  };
+
+  const getDeadTime = () => {
+    let deadline = new Date();
+    deadline.setSeconds(deadline.getSeconds() + 7200);
+    return deadline;
+  };
+
+  const callTimer = () => {
+    clearTimer(getDeadTime());
   };
 
   const handleSubmitOrder = (e) => {
@@ -200,24 +336,39 @@ function TemplateOrder({ id, dataTemplate }) {
   };
 
   const handleMoveToValidation = () => {
-    oneMoreStepRef.current.style.visibility = "hidden";
-    validateRef.current.style.classList.add("impact_more_step");
-
+    setIsMoreOneStep(false);
+    setOpenFinalValidation(true);
+    setApplyText("Minimize");
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
     handleTimer("02:00:00");
+    validateRef.current.classList.add("impact_more_step");
   };
 
   const openToNewLocation = () => {
-    if (minimizeOrApplyRef.current.textContent === "Apply") {
+    if (applyText === "Apply") {
       handleNewLocation(true);
-    } else if (minimizeOrApplyRef.current.textContent === "Minimize") {
+    } else if (applyText === "Minimize") {
       ticketTempRef.current.style.classList.add("anim_hide_template");
-
       // add anim show bookOrder
       ticketManualRef.current.style.classList.add("anim_show_book");
     }
   };
+
+  useEffect(() => {
+    console.log("this place redirect to login or register form!");
+  }, [firstTimeOrder]);
+
+  useEffect(() => {
+    console.log(
+      "This have to Update The quantity and mini Total Price Template Ticket!"
+    );
+    if (orderSpecsCurrent.length >= 3) {
+      setForseen(true);
+    } else {
+      setForseen(false);
+    }
+  }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   return (
     <div className="template_slider_boundary">
@@ -396,6 +547,14 @@ function TemplateOrder({ id, dataTemplate }) {
                     type="button"
                     id="btn_play_game"
                     className="btn_play_game"
+                    ref={fourthMealRef}
+                    onClick={() => (
+                      <ErrorWarning
+                        message="at least you have to command 3 meals!"
+                        componentSectionName="fourthMealButton"
+                        forseen={forseen}
+                      />
+                    )}
                   >
                     Fourth Meal Game
                   </button>

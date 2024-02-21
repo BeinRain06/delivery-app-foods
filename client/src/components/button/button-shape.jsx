@@ -1,42 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { TemplateContext } from "../../services/context/TemplateContext";
-import { useDispatch, useSelector } from "react-redux";
-import { templateActions } from "../../services/redux/createslice/TemplateSlice";
-import { orderSpecsCurrent_section } from "../../services/redux/createslice/TemplateSlice";
 import "./button-shape.css";
-
-export const PreOrdered = ({ buildOrderItem }) => {
-  /*  const dispatch = useDispatch();
-
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
-
-  const {
-    state: { orderSpecsCurrent },
-    handleOrderSpecs,
-  } = useContext(TemplateContext);
-
-  useEffect(() => {
-    const sendMyNewOrderSpecs = async () => {
-      const orderItem = buildOrderItem();
-      handleOrderSpecs();
-      /* await dispatch(templateActions.handleOrderSpecs(orderItem)); */
-    };
-
-    setTimeout(async () => {
-      await sendMyNewOrderSpecs();
-    }, 3000);
-
-    console.log("pre-orderSpecsCurrent context API:", orderSpecsCurrent);
-  }, []);
-
-  return (
-    <li className="btn_wrap_order">
-      <button type="button" className=" btn btn_ordered">
-        Init...
-      </button>
-    </li>
-  );
-};
 
 export const Ordered = ({ mealid, mealname, mealprice, setIsCliked }) => {
   const [waiting, setWaiting] = useState(true);
@@ -71,6 +35,7 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
   const {
     state: { orderSpecsCurrent },
     handleOrderSpecs,
+    handleNewLocation,
   } = useContext(TemplateContext);
 
   const buildOrderItem = () => {
@@ -95,13 +60,25 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
       if (indexItem !== -1) {
         let orderItem = orderSpecsCurrent[indexItem];
 
-        orderItems = [
+        const begin = orderSpecsCurrent.slice(0, indexItem);
+        const end = orderSpecsCurrent.slice(
+          indexItem + 1,
+          orderSpecsCurrent.length
+        );
+        orderSpecsCurrent[indexItem] = {
+          ...orderItem,
+          quantity: orderItem.quantity + 1,
+        };
+
+        /*  orderItems = [
           ...orderSpecsCurrent,
           (orderSpecsCurrent[indexItem] = {
             ...orderItem,
             quantity: orderItem.quantity + 1,
           }),
-        ];
+        ]; */
+
+        orderItems = [...begin, orderSpecsCurrent[indexItem], ...end];
       } else {
         qty += 1;
 
@@ -137,6 +114,7 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
 
     setTimeout(() => {
       setIsCliked(false);
+      handleNewLocation(false);
       console.log("order Confirmed!");
       console.log("orderSpecsCurrent catch :", orderSpecsCurrent);
     }, 3500);

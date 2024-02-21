@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -51,7 +51,7 @@ function Home() {
   } = useContext(TemplateContext);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadHomeData = useCallback(() => {
     try {
       const removeLoading = (timeset) => {
         if (loading) {
@@ -76,6 +76,10 @@ function Home() {
       console.log(err);
     }
   }, []);
+
+  useEffect(() => {
+    loadHomeData();
+  }, [loadHomeData]);
 
   return (
     <>

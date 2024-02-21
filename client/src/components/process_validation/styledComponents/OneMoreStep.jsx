@@ -1,6 +1,5 @@
 import React, { useContext, forwardRef } from "react";
 import styled from "styled-components";
-import { TemplateContext } from "../../../services/context/TemplateContext";
 import { devices } from "./devices";
 
 const MoreStep = styled.div`
@@ -134,129 +133,39 @@ const ChevronLeftMod = styled(ChevronLeft)`
   }
 `;
 
-const OneMoreStep = forwardRef(function OneMoreStep(
-  { isOneMoreStep, setIsMoreOneStep },
-  ref
-) {
-  const {
-    state: { totalPrice },
-    handleTimer,
-    handleTicketNumber,
-    handleHoursPrint,
-  } = useContext(TemplateContext);
-
-  const handleStepBackLoc = () => {
-    setIsMoreOneStep(false);
-    handleNewLocation(true);
-    ref.current.style.classList.remove("impact_more_step"); // validateRef
-  };
-
-  const handleMoveToValidation = () => {
-    setIsMoreOneStep(false);
-    ref.current.style.classList.add("impact_more_step"); // validateRef
-    handleTicketNumber((totalPrice - 3).toString(16));
-    handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00");
-  };
-
+function OneMoreStep({ handleStepBackLoc, handleMoveToValidation }) {
   return (
     <>
-      {isOneMoreStep && (
-        <MoreStep>
-          <MoreContent>
-            <FirstMyWord>
-              <RemindNext>One more step:</RemindNext>
-              <SmallTask>
-                click on the button <Validation>validate</Validation> Please to
-                terminate the process of sending your <Strong>order</Strong>
-              </SmallTask>
-            </FirstMyWord>
-            <Decision>
-              <Proposal>
-                <Button onClick={handleStepBackLoc}>
-                  <Span>
-                    <ChevronLeftMod> &#10092; </ChevronLeftMod>
-                  </Span>
-                  <Span>Back</Span>
-                </Button>
-              </Proposal>
-              <Proposal>
-                <Button $primary onClick={handleMoveToValidation}>
-                  <ChevronLeft>&#10024;</ChevronLeft>
-                  OK
-                </Button>
-              </Proposal>
-            </Decision>
-          </MoreContent>
-        </MoreStep>
-      )}
+      <MoreStep>
+        <MoreContent>
+          <FirstMyWord>
+            <RemindNext>One more step:</RemindNext>
+            <SmallTask>
+              click on the button <Validation>validate</Validation> Please to
+              terminate the process of sending your <Strong>order</Strong>
+            </SmallTask>
+          </FirstMyWord>
+          <Decision>
+            <Proposal>
+              <Button onClick={() => handleStepBackLoc("toLocation")}>
+                <Span>
+                  <ChevronLeftMod> &#10092; </ChevronLeftMod>
+                </Span>
+                <Span>Back</Span>
+              </Button>
+            </Proposal>
+            <Proposal>
+              <Button $primary onClick={handleMoveToValidation}>
+                <ChevronLeft>&#10024;</ChevronLeft>
+                OK
+              </Button>
+            </Proposal>
+          </Decision>
+        </MoreContent>
+      </MoreStep>
     </>
   );
-});
-
-/* function OneMoreStep({
-  isOneMoreStep,
-  setIsMoreOneStep,
-  validateRef,
-  fourthMealRef,
-}) {
-  const {
-    state: { totalPrice },
-    handleTimer,
-    handleTicketNumber,
-    handleHoursPrint,
-  } = useContext(TemplateContext);
-
-  const handleStepBackLoc = () => {
-    setIsMoreOneStep(false);
-    handleNewLocation(true);
-    validateRef.current.style.classList.remove("impact_more_step");
-    fourthMealRef.current.style.classList.remove("impact_play");
-  };
-
-  const handleMoveToValidation = () => {
-    setIsMoreOneStep(false);
-    validateRef.current.style.classList.add("impact_more_step");
-    fourthMealRef.current.style.classList.add("impact_play");
-    handleTicketNumber((totalPrice - 3).toString(16));
-    handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00");
-  };
-
-  return (
-    <>
-      {isOneMoreStep && (
-        <MoreStep>
-          <MoreContent>
-            <FirstMyWord>
-              <RemindNext>One more step:</RemindNext>
-              <SmallTask>
-                click on the button <Validation>validate</Validation> Please to
-                terminate the process of sending your <Strong>order</Strong>
-              </SmallTask>
-            </FirstMyWord>
-            <Decision>
-              <Proposal>
-                <Button onClick={handleStepBackLoc}>
-                  <Span>
-                    <ChevronLeftMod> &#10092; </ChevronLeftMod>
-                  </Span>
-                  <Span>Back</Span>
-                </Button>
-              </Proposal>
-              <Proposal>
-                <Button $primary onClick={handleMoveToValidation}>
-                  <ChevronLeft>&#10024;</ChevronLeft>
-                  OK
-                </Button>
-              </Proposal>
-            </Decision>
-          </MoreContent>
-        </MoreStep>
-      )}
-    </>
-  );
-} */
+}
 
 /* function OneMoreStep() {
   const oneMoreStepRef = useRef(null);

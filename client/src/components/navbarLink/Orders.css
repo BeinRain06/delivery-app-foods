@@ -120,8 +120,8 @@ ul {
     border: 2px solid #d3e05c;
     letter-spacing: 2px;
     transition: letter-spacing 650ms ease-out 260ms all 1s ease-in-out;
-    transform: scale(1.1);
-    border-radius: 30%;
+    transform: scale(0.94);
+    border-radius: 26%;
     z-index: 3;
   }
 

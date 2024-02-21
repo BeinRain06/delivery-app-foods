@@ -80,7 +80,7 @@ export async function updateThisTotalPriceOrder(orderId, orderSpecsCurrent) {
     const res = await axios.put(
       `${api_url}/${orderId}`,
       {
-        orderSpecs: orderSpecsCurrent,
+        ordersSpecs: orderSpecsCurrent,
       },
 
       {
@@ -96,6 +96,58 @@ export async function updateThisTotalPriceOrder(orderId, orderSpecsCurrent) {
     console.log("order when updated:", order);
 
     return order;
+
+    // with Fetch Method
+
+    /*  const data = {
+      ordersSpecs: orderSpecsCurrent,
+    };
+    const response = await fetch(`${api_url}/${orderId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+      mode: "cors",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const res = await response.json();
+
+    // let decoder = new TextDecoder("utf-16");
+    // let rateData = JSON.parse(decoder.decode(res));
+
+    console.log("res PUT METHOD:", res);
+    return res.data; */
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function checkTotalPriceOrder(orderSpecsCurrent) {
+  try {
+    let api_url = "http://localhost:5000/api/delivery/orders/order/checkprice";
+
+    console.log("orderSpecsCurrent -API-Post METHOD:", orderSpecsCurrent);
+
+    const res = await axios.post(
+      api_url,
+      {
+        ordersSpecs: orderSpecsCurrent,
+      },
+
+      {
+        headers: {
+          /*  "Content-Type": "application/x-www-form-urlencoded", */
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const totalPriceIn = res.data.data.toFixed(2);
+
+    console.log("new total price when updated:", totalPriceIn);
+
+    return totalPriceIn;
 
     // with Fetch Method
 

@@ -20,10 +20,11 @@ import CardWeekOrders from "../cards/card-week-orders.jsx";
 import TemplateOrder from "../templateTicket/TemplateOrder.jsx";
 import LogOrRegisterForm from "../cards/register-login-form.jsx";
 import CardDayOrders from "../cards/card-day-orders.jsx";
-import ValidateOrder from "../process_validation/styledComponents/ValidateOrder";
+import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
 import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
 import OneMoreStep from "../process_validation/styledComponents/OneMoreStep";
 import ButtonApply from "../process_validation/styledComponents/ButtonApply";
+import ErrorWarning from "../process_validation/styledComponents/MsgError";
 import "./Orders.css";
 
 import "slick-carousel/slick/slick.css";
@@ -61,6 +62,9 @@ function Orders() {
     handleFirstTimeOrder,
     handleThisOrder,
     handleTotalPrice,
+    handleTicketNumber,
+    handleHoursPrint,
+    handleTimer,
   } = useContext(TemplateContext);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
@@ -72,6 +76,7 @@ function Orders() {
   const [isOneMoreStep, setIsMoreOneStep] = useState(false);
   const [applyText, setApplyText] = useState("Apply");
   const [isanOrderDay, SetIsAnOrDay] = useState(false);
+  const [forseen, setForseen] = useState(false);
 
   const newLocationRef = useRef(null);
   const newCityRef = useRef(null);
@@ -111,10 +116,11 @@ function Orders() {
     }
   };
 
+  // HERE ===>  NEXT FUNCTION TO IMPLEMENT ACTION   <=== HERE
   const validateThisOrder = () => {
-    minimizeOrApplyRef.current.textContent = "Minimize";
+    validateRef.current.classList.remove("impact_more_step");
 
-    validateRef.current.style.border = "2px solid yellow"; // rather add a class (enhance border, border-radius=50% ---> after click go back to default way is was displaying)
+    /* revisit ALL ACTIONS UNDERNEATH */
 
     //not yet ( this update)
     const newPartLocation = updateThisLocationOrder(
@@ -197,6 +203,29 @@ function Orders() {
     }
   };
 
+  const handleStepBackLoc = (space) => {
+    if (space === "toLocation") {
+      setIsMoreOneStep(false);
+      handleNewLocation(true);
+    } else if (space === "toTemplate") {
+      setOpenFinalValidation(false);
+      handleNewLocation(false);
+      setApplyText("Apply");
+    }
+
+    validateRef.current.classList.remove("impact_more_step");
+  };
+
+  const handleMoveToValidation = () => {
+    setIsMoreOneStep(false);
+    setOpenFinalValidation(true);
+    setApplyText("Minimize");
+    handleTicketNumber((totalPrice - 3).toString(16));
+    handleHoursPrint(moment().format("hh:mm a"));
+    handleTimer("02:00:00");
+    validateRef.current.classList.add("impact_more_step");
+  };
+
   function getCookies() {
     let cookies = document.cookie.split(";").reduce((cookies, cookie) => {
       const [name, val] = cookie.split("=").map((c) => c.trim());
@@ -241,7 +270,7 @@ function Orders() {
 
           setTimeout(() => {
             console.log("new this order send back:", newChange);
-          }, 2500);
+          }, 1000);
 
           setShowTotalPrice(newChange.totalPrice);
           handleTotalPrice(newChange.totalPrice);
@@ -264,25 +293,22 @@ function Orders() {
 
           setTimeout(() => {
             console.log("new taken order command:", newTakenOrder);
-          }, 2500);
+          }, 1000);
           handleTotalPrice(newTakenOrder.totalPrice);
         }
       }
 
-      if (orderSpecsCurrent.length >= 3) {
-        fourthMealRef.current.style.classList.add("impact_play");
+      /*  if (orderSpecsCurrent.length >= 3) {
+        console.log("fourthMealRef current:", fourthMealRef);
+        fourthMealRef.current.classList.add("impact_play");
       } else if (orderSpecsCurrent < 3) {
-        fourthMealRef.current.style.classList.remove("impact_play");
-      }
+        fourthMealRef.current.classList.remove("impact_play");
+        console.log("fourthMealRef current:", fourthMealRef);
+      } */
 
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
     } else if (e.target.id === "reg_price_1") {
-      /*  dispatch(
-        templateActions.handleTotalPrice(
-          "_" + " " + "_" + " " + "_" + " " + "_"
-        )
-      ); */
       setShowTotalPrice("_" + " " + "_" + " " + "_" + " " + "_");
       setTimeout(() => {
         console.log("update showTotalPrice");
@@ -296,9 +322,6 @@ function Orders() {
   const openToNewLocation = () => {
     if (applyText === "Apply") {
       handleNewLocation(true);
-
-      /*    ticketTempRef.current.style.classList.remove("anim_hide_template");
-      ticketManualRef.current.style.classList.remove("anim_show_book"); */
     } else if (applyText === "Minimize") {
       ticketTempRef.current.style.classList.add("anim_hide_template");
       // add anim show bookOrder
@@ -403,38 +426,16 @@ function Orders() {
     console.log("this place redirect to login or register form!");
   }, [firstTimeOrder]);
 
-  /* useEffect(() => {
-    const updateTotalPrice = async () => {
-      let newChange;
-      console.log("orders specs right in time", orderSpecsCurrent);
-      if (user.id !== undefined) {
-        newChange = await updateThisTotalPriceOrder(
-          thisOrder.id,
-          orderSpecsCurrent
-        );
-        // await handleThisOrder(newChange);
-
-        await dispatch(templateActions.handleThisOrder(newChange));
-
-        setTimeout(() => {
-          console.log("update Total Price:", newChange);
-        }, 3000);
-      } else {
-        setTimeout(() => {
-          console.log("update Total Price First Time:", newChange);
-        }, 3000);
-      }
-    };
-
-    updateTotalPrice();
-  }, [user, totalPrice]); */
-
   useEffect(() => {
     console.log(
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
-    console.log("orderSpecsCurrent await :", orderSpecsCurrent);
-  }, [dataTemplatesOrdersDay]);
+    if (orderSpecsCurrent.length >= 3) {
+      setForseen(true);
+    } else {
+      setForseen(false);
+    }
+  }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   return (
     <main className="welcome_orders">
@@ -458,6 +459,7 @@ function Orders() {
                     ratings={mealItem.ratings}
                     price={mealItem.price}
                     image={mealItem.image}
+                    setShowTotalPrice={setShowTotalPrice}
                   />
                 );
               })
@@ -646,9 +648,8 @@ function Orders() {
                   </div>
                   {isOneMoreStep && (
                     <OneMoreStep
-                      isOneMoreStep={isOneMoreStep}
-                      setIsMoreOneStep={setIsMoreOneStep}
-                      ref={validateRef}
+                      handleStepBackLoc={handleStepBackLoc}
+                      handleMoveToValidation={handleMoveToValidation}
                     />
                   )}
                 </div>
@@ -676,14 +677,22 @@ function Orders() {
                       id="btn_play_game"
                       className="btn_play_game"
                       ref={fourthMealRef}
+                      onClick={() => (
+                        <ErrorWarning
+                          message="at least you have to command 3 meals!"
+                          componentSectionName="fourthMealButton"
+                          forseen={forseen}
+                        />
+                      )}
                     >
                       Fourth Meal Game
                     </button>
 
                     {openFinalValidation && (
-                      <ValidateOrder
+                      <ConfirmOrder
                         setOpenFinalValidation={setOpenFinalValidation}
                         setApplyText={setApplyText}
+                        handleStepBackLoc={handleStepBackLoc}
                       />
                     )}
                   </div>
@@ -736,6 +745,7 @@ function Orders() {
                     <NewLocationOrder
                       setIsMoreOneStep={setIsMoreOneStep}
                       setDataNewLocation={setDataNewLocation}
+                      dataNewLocation={dataNewLocation}
                     />
                   )}
                 </div>
