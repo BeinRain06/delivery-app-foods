@@ -20,6 +20,10 @@ const paymentSchema = new mongoose.Schema({
     required: true,
     default: "non-paid",
   },
+  amountBill: {
+    type: String,
+    default: "",
+  },
 });
 
 module.exports = mongoose.model("Payment", paymentSchema);

@@ -82,23 +82,13 @@ const Button = styled.button`
   );
 } */
 
-function ConfirmOrder({
-  setOpenFinalValidation,
-  setApplyText,
-  handleStepBackLoc,
-}) {
-  const dressTable = () => {
-    // do something
-    setOpenFinalValidation(false);
-    setApplyText("Minimize");
-  };
-
+function ConfirmOrder({ handleStepBackLoc, validateThisOrder }) {
   return (
     <ValidateMsg>
       <ValidateMsgContent>
         <Validation>Do You Confirm The Order .</Validation>
         <BtnValidation>
-          <Button $primary onClick={dressTable}>
+          <Button $primary onClick={() => validateThisOrder()}>
             YES
           </Button>
           <Button onClick={() => handleStepBackLoc("toTemplate")}>NO</Button>

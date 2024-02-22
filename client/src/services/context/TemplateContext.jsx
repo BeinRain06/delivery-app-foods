@@ -15,10 +15,10 @@ export const INITIAL_STATE_ONE = {
   hoursPrinted: "time",
   totalPrice: "_ _ _ _",
   timer: "00:00:00",
-  payment: [],
+  payments: {}, //  obj of Arr 3 max
   orderSpecsCurrent: [],
   countDownTimerArr: [], //arr of string
-  dataTemplatesOrdersDay: [], // arr of obj
+  dataTemplatesOrdersDay: {}, //  obj of Arr 3 max
 };
 
 export const ACTIONS_TYPES = {
@@ -66,7 +66,7 @@ export const reducer = (state, action) => {
       return { ...state, timer: action.payload };
 
     case ACTIONS_TYPES.PAYMENT:
-      return { ...state, payment: action.payload };
+      return { ...state, payments: action.payload };
 
     case ACTIONS_TYPES.COUNT_DOWN_TIMER:
       return { ...state, countDownTimerArr: action.payload };
@@ -214,7 +214,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
 
   const handlePayment = useCallback(async (newPayment) => {
     return await new Promise((resolve) => {
-      dispatch({ type: ACTIONS_TYPES.TOTAL_PRICE, payload: newPayment });
+      dispatch({ type: ACTIONS_TYPES.PAYMENT, payload: newPayment });
       setTimeout(resolve, 3000);
     });
   }, []);
@@ -226,7 +226,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
     });
   }, []);
 
-  const handleTemplateOrdersDay = useCallback(async (newTemplate) => {
+  /* const handleTemplateOrdersDay = useCallback(async (newTemplate) => {
     return await new Promise((resolve) => {
       const oldArrTemplate = state.dataTemplatesOrdersDay;
       const nextIndex = oldArrTemplate.length;
@@ -238,6 +238,17 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
       dispatch({
         type: ACTIONS_TYPES.TEMPLATE_ORDERS_DAY,
         payload: newArrTemplateOrders,
+      });
+
+      setTimeout(resolve, 3000);
+    });
+  }, []); */
+
+  const handleTemplateOrdersDay = useCallback(async (newTemplate) => {
+    return await new Promise((resolve) => {
+      dispatch({
+        type: ACTIONS_TYPES.TEMPLATE_ORDERS_DAY,
+        payload: newTemplate,
       });
 
       setTimeout(resolve, 3000);

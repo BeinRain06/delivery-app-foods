@@ -15,7 +15,7 @@ function CardWeek({ ...props }) {
       id={props.id}
       className="weeks_day_li"
       data-value={current.format("MMM D")}
-      onClick={props.onClick}
+      onClick={(e) => handleDayShift(e)}
     >
       <span className={activeClass}>{current.format("ddd")} </span>
       <span className="day_count">{current.format("DD")} </span>

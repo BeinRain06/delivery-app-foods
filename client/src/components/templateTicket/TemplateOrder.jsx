@@ -53,11 +53,16 @@ function TemplateOrder({ id, dataTemplate }) {
   const validateRef = useRef(null);
   const fourthMealRef = useRef(null);
 
+  const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
   //process validation Hook
   const [openFinalValidation, setOpenFinalValidation] = useState(false);
   const [isOneMoreStep, setIsMoreOneStep] = useState(false);
   const [applyText, setApplyText] = useState("Apply");
   const [forseen, setForseen] = useState(false);
+  const [chooseTimer, setChooseTimer] = useState("00:00:00");
+
+  //recording template data order
+  const [dataResume, setDataResume] = useState({});
 
   const orderOftheDay =
     user.id === undefined
@@ -330,6 +335,12 @@ function TemplateOrder({ id, dataTemplate }) {
     clearTimer(getDeadTime());
   };
 
+  const currenTimer = () => {
+    const tmpTimer =
+      dataTemplate.timer === "02:00:00" ? callTimer() : "00:00:00";
+    setChooseTimer(tmpTimer);
+  };
+
   const handleSubmitOrder = (e) => {
     e.preventDefault();
     console.log(e.target);
@@ -363,6 +374,9 @@ function TemplateOrder({ id, dataTemplate }) {
     console.log(
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
+
+    currenTimer();
+
     if (orderSpecsCurrent.length >= 3) {
       setForseen(true);
     } else {
@@ -377,7 +391,7 @@ function TemplateOrder({ id, dataTemplate }) {
           <div
             className="available_book_content"
             ref={ticketManualRef}
-            onClick={hideBookManual}
+            onClick={() => hideOrShowBookManual("show")}
           >
             <div className="available_book_order">
               <div className="entitled">
@@ -386,6 +400,12 @@ function TemplateOrder({ id, dataTemplate }) {
               <div className="logo_restaurant">
                 <span className="label_restaurant">TDS</span>
               </div>
+              <button
+                className="view_template"
+                onClick={() => hideOrShowBookManual("hide")}
+              >
+                template
+              </button>
             </div>
           </div>
           <div className="available_ticket_content" ref={ticketTempRef}>
@@ -402,7 +422,7 @@ function TemplateOrder({ id, dataTemplate }) {
                 </div>
                 <div className="current_day_time">
                   {/* <h4>{dataTemplate.value.hoursPrinted}</h4> */}
-                  <h4>15:46:38</h4>
+                  <h4>{hoursPrinted}</h4>
                 </div>
                 <div className="statement_to_client">
                   <p>AS you order, your time is valued by our Team</p>
@@ -455,7 +475,7 @@ function TemplateOrder({ id, dataTemplate }) {
                       <td>
                         <i className="fa-solid fa-minus"></i>
                       </td>
-                      <td>${thisOrder.totalPrice}</td>
+                      <td>${showTotalPrice}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -490,10 +510,10 @@ function TemplateOrder({ id, dataTemplate }) {
                     </li>
                   </ul>
                   <span className="total_bill" ref={totalRef}>
-                    ${dataTemplate.value.totalPrice}
+                    {/* {dataTemplate.value.totalPrice} */}${showTotalPrice}
                   </span>
                   <div className="submit_container" ref={applyOrderRef}>
-                    <ButtonApply />
+                    <ButtonApply type="submit" applyText={applyText} />
                   </div>
                 </div>
               </div>
@@ -501,7 +521,7 @@ function TemplateOrder({ id, dataTemplate }) {
               {firstTimeOrder && (
                 <div className="appealing_registration">
                   {/* //write css */}
-                  <LogOrRegisterForm />
+                  <LogOrRegisterForm setShowTotalPrice={setShowTotalPrice} />
                 </div>
               )}
 
@@ -517,17 +537,20 @@ function TemplateOrder({ id, dataTemplate }) {
                   <ul className="post_track_time">
                     <li>Time Remaining</li>
 
-                    <li className="time_left">01:45:32</li>
+                    <li className="time_left">{chooseTimer}</li>
                   </ul>
                   {isOneMoreStep && (
-                    <OneMoreStep setIsMoreOneStep={setIsMoreOneStep} />
+                    <OneMoreStep
+                      handleStepBackLoc={handleStepBackLoc}
+                      handleMoveToValidation={handleMoveToValidation}
+                    />
                   )}
                 </div>
               </div>
 
               <div className="address_customers">
                 <div className="address_side">
-                  <p>Location : Titi Garage</p>
+                  <p>Location : ${thisOrder.street}</p>
                   <p className="grateful_words">
                     Thanks you Trusting TDs Services
                   </p>
@@ -560,8 +583,10 @@ function TemplateOrder({ id, dataTemplate }) {
                   </button>
 
                   {openFinalValidation && (
-                    <ValidateOrder
+                    <ConfirmOrder
                       setOpenFinalValidation={setOpenFinalValidation}
+                      setApplyText={setApplyText}
+                      handleStepBackLoc={handleStepBackLoc}
                     />
                   )}
                 </div>
@@ -610,7 +635,13 @@ function TemplateOrder({ id, dataTemplate }) {
                   </div>
                 </div>
                 <p> ORDER {num} </p>
-                {isNewLocation && <NewLocationOrder />}
+                {isNewLocation && (
+                  <NewLocationOrder
+                    setIsMoreOneStep={setIsMoreOneStep}
+                    setDataNewLocation={setDataNewLocation}
+                    dataNewLocation={dataNewLocation}
+                  />
+                )}
               </div>
             </div>
           </div>

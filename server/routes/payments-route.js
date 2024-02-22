@@ -19,15 +19,18 @@ router.get("/", async (req, res) => {
 });
 
 // create payment
-router.post("/order", async (req, res) => {
+router.post("/payment", async (req, res) => {
   try {
+    const status = "non-paid";
     let payment = new Payment({
       order: req.body.order,
       account: req.body.account,
-      status: req.body.status,
+      status: status,
     });
 
     payment = await payment.save();
+
+    console.log("POST PAYMENT:", payment);
 
     res.json({ success: true, data: payment });
   } catch (err) {
@@ -40,18 +43,20 @@ router.post("/order", async (req, res) => {
 });
 
 // update payment
-router.put("/:paymentId", async (req, res) => {
+router.put("/payment/:paymentId", async (req, res) => {
   try {
     const paymentId = req.params.paymentId;
+    const status = "paid";
 
-    let payment = Payment.findByIdAndUpdate(
+    const payment = await Payment.findByIdAndUpdate(
       paymentId,
       {
         account: req.body.account,
-        status: req.body.status,
+        status: status,
       },
       { new: true }
     );
+    console.log("update payment , end payment", payment);
 
     res.json({ success: true, data: payment });
   } catch (err) {

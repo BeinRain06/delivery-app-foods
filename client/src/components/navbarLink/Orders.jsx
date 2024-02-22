@@ -43,6 +43,7 @@ function Orders() {
   const {
     state: { meals, user, indexDayFormat, orders },
     handleWelcome,
+    handleOrders,
   } = useContext(MealContext);
 
   const {
@@ -65,11 +66,14 @@ function Orders() {
     handleTicketNumber,
     handleHoursPrint,
     handleTimer,
+    handleOrderSpecs,
+    handleTemplateOrdersDay,
   } = useContext(TemplateContext);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
   const [dataNewLocation, setDataNewLocation] = useState({});
+  const [timerIn, setTimerIn] = useState("00:00:00");
 
   //process validation Hook
   const [openFinalValidation, setOpenFinalValidation] = useState(false);
@@ -117,48 +121,64 @@ function Orders() {
   };
 
   // HERE ===>  NEXT FUNCTION TO IMPLEMENT ACTION   <=== HERE
+
+  const firstStepPayment = async () => {
+    return await new Promise(async (resolve) => {
+      const newPayment = await postPayment(
+        thisOrder._id,
+        "MTN",
+        thisOrder.codePayment,
+        totalPrice
+      );
+      setTimeout(() => {
+        resolve(newPayment);
+      }, 3000);
+    });
+  };
+
   const validateThisOrder = () => {
+    //Pre-Actions
     validateRef.current.classList.remove("impact_more_step");
+    setApplyText("Minimize");
 
-    /* revisit ALL ACTIONS UNDERNEATH */
+    //MiddleCore Actions
+    let newPayment;
+    let newDataTemplateOrdersDay;
+    setTimeout(async () => {
+      const initPayment = await firstStepPayment();
+      const indexPayment = Array.from(payment).length;
 
-    //not yet ( this update)
-    const newPartLocation = updateThisLocationOrder(
-      dataNewLocation,
-      thisOrder.id
-    );
+      newPayment = { ...payment, [indexPayment]: initPayment };
+      handlePayment(newPayment);
+    }, 3000);
 
-    /* dispatch(templateActions.handleThisOrder(newPartLocation));
-    let timerOn = callTimer();
-    dispatch(templateActions.handleTimer(timerOn));
-    dispatch(templateActions.wholeCountDownTimersDay(callTimer())); */
-
-    handleThisOrder(newPartLocation);
-    let timerOn = callTimer();
-    handleTimer(timerOn);
-    wholeCountDownTimersDay(callTimer());
-
-    //post to collection payment
-    postPayment(thisOrder._id, "mtn-money", thisOrder.codePayment);
-
-    let templateOrderVar = {
-      timer: timerOn,
-      ordersSpecs: orderSpecsCurrent,
-      order: thisOrder,
+    //recording template data order
+    let dataRecordObj = {
       ticketNumber: ticketNumber,
-      hours: hoursPrinted,
+      thisOrder: thisOrder,
+      hoursPrinted: hoursPrinted,
       totalPrice: totalPrice,
       payment: payment,
+      timer: "02:00:00",
+      orderSpecsCurrent: orderSpecsCurrent,
     };
 
-    // store element templateOrder in the specified Template in Context API
+    const indexTemp = Array.from(dataTemplatesOrdersDay).length;
 
-    if (dataTemplatesOrdersDay.length === 3) {
-      alert("You can't send more than 3 orders");
-      return;
-    }
-    handleTemplateOrdersDay(templateOrderVar);
-    // dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
+    newDataTemplateOrdersDay = {
+      ...dataTemplatesOrdersDay,
+      [indexTemp]: dataRecordObj,
+    };
+
+    handleTemplateOrdersDay(newDataTemplateOrdersDay);
+
+    handleOrders(orderSpecsCurrent);
+
+    setTimerIn(() => callTimer());
+
+    SetIsAnOrDay(true);
+
+    setOpenFinalValidation(false);
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
@@ -170,37 +190,8 @@ function Orders() {
     handleTotalPrice("_ _ _ _");
     handleThisOrder({});
     handlePayment({});
-    handleClearOrderSpecs([]);
+    handleOrderSpecs([]);
     handleTimer("00:00:00");
-  };
-
-  /*  const resetDataHoldingTemplate = () => {
-    handleTicketNumber("_ _ _ _ _ _");
-    handleHoursPrint("time");
-    handleTotalPrice("_ _ _ _");
-    handleThisOrder({});
-    handlePayment([]);
-    handleClearOrderSpecs([]);
-    handleTimer("00:00:00");
-    dispatch(templateActions.handleTicketNumber("_ _ _ _ _ _"));
-    dispatch(templateActions.handleHoursPrint("time"));
-    dispatch(templateActions.handleTotalPrice("_ _ _ _"));
-    dispatch(templateActions.handleThisOrder({}));
-    dispatch(templateActions.handlePayment([]));
-    dispatch(templateActions.handleClearOrderSpecs([]));
-    dispatch(templateActions.handleTimer("00:00:00"));
-  }; */
-
-  const handleNewRadioInput = (e) => {
-    if (e.target.id === "name_area_one") {
-      newLocationRef.current.style.visibility = "visible";
-      newCityRef.current.style.display = "none";
-      newStreetRef.current.style.display = "none";
-    } else if (e.target.id === "name_area_two") {
-      newLocationRef.current.style.visibility = "visible";
-      newCityRef.current.style.display = "block";
-      newStreetRef.current.style.display = "block";
-    }
   };
 
   const handleStepBackLoc = (space) => {
@@ -474,23 +465,40 @@ function Orders() {
         </div>
       </div>
 
-      {dataTemplatesOrdersDay.length >= 2 ? (
+      {Array.from(dataTemplatesOrdersDay).length > 1 && (
+        <div className="template_slider_wrapper">
+          {Array.from(dataTemplatesOrdersDay).map((orderOfDay, orderIndex) => {
+            return (
+              <TemplateOrder
+                key={orderIndex}
+                id={orderIndex}
+                dataTemplate={orderOfDay}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {Array.from(dataTemplatesOrdersDay).length > 1 && (
         <div className="template_slider_wrapper">
           <Slider {...settings}>
-            {dataTemplatesOrdersDay.map((orderOfDay, orderIndex) => {
-              return (
-                <TemplateOrder
-                  key={orderIndex}
-                  id={orderIndex}
-                  dataTemplate={orderOfDay.name}
-                />
-              );
-            })}
+            {Array.from(dataTemplatesOrdersDay).map(
+              (orderOfDay, orderIndex) => {
+                return (
+                  <TemplateOrder
+                    key={orderIndex}
+                    id={orderIndex}
+                    dataTemplate={orderOfDay}
+                  />
+                );
+              }
+            )}
           </Slider>
         </div>
-      ) : (
-        (orderSpecsCurrent.length !== 0 ||
-          dataTemplatesOrdersDay.length === 1) && (
+      )}
+
+      {orderSpecsCurrent.length !== 0 &&
+        dataTemplatesOrdersDay.length === 0 && (
           <div className="available_ticket">
             <div
               className="available_book_content"
@@ -643,7 +651,7 @@ function Orders() {
                     <ul className="post_track_time">
                       <li>Time Remaining</li>
 
-                      <li className="time_left">{timer}</li>
+                      <li className="time_left">{timerIn}</li>
                     </ul>
                   </div>
                   {isOneMoreStep && (
@@ -668,7 +676,7 @@ function Orders() {
                       id="btn_validate_order"
                       className="btn_validate_order"
                       ref={validateRef}
-                      onClick={validateThisOrder}
+                      onClick={setOpenFinalValidation(true)}
                     >
                       validate
                     </button>
@@ -690,9 +698,8 @@ function Orders() {
 
                     {openFinalValidation && (
                       <ConfirmOrder
-                        setOpenFinalValidation={setOpenFinalValidation}
-                        setApplyText={setApplyText}
                         handleStepBackLoc={handleStepBackLoc}
+                        validateThisOrder={validateThisOrder}
                       />
                     )}
                   </div>
@@ -752,8 +759,7 @@ function Orders() {
               </div>
             </div>
           </div>
-        )
-      )}
+        )}
 
       <div className="sticking_template_order">
         <div className="msg_grateful_order">
@@ -799,7 +805,7 @@ function Orders() {
             <ul className="weeks_day">
               {tmpIndexWeek.map((day, i) => {
                 return (
-                  <CardWeek key={i} id={i} onClick={(e) => handleDayShift(e)} />
+                  <CardWeek key={i} id={i} handleDayShift={handleDayShift} />
                 );
               })}
 
