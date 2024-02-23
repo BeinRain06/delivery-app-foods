@@ -1,6 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { TemplateContext } from "../../services/context/TemplateContext";
+import PaymentSubmit from "../process_validation/PaymentSubmit";
 import { MTN, ORANGE } from "../../assets/images";
+
+import {
+  initiateOrder,
+  updateThisTotalPriceOrder,
+} from "../../callAPI/OrdersApi";
 
 import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
 import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
@@ -9,14 +15,12 @@ import ButtonApply from "../process_validation/styledComponents/ButtonApply";
 import ErrorWarning from "../process_validation/styledComponents/MsgError";
 import "./TemplateOrder.css";
 
-function TemplateOrder({ id, dataTemplate }) {
-  /*  const {
-    state: { isNewLocation, firstTimeOrder },
-    handleFirstTimeOrder,
-    handleTotalPrice,
-    handleNewLocation,
-  } = useContext(TemplateContext); */
-
+function TemplateDayFlying({
+  id,
+  callTimer,
+  lookingForGameOrValidation,
+  isError,
+}) {
   const {
     state: {
       firstTimeOrder,
@@ -37,6 +41,7 @@ function TemplateOrder({ id, dataTemplate }) {
     handleTicketNumber,
     handleHoursPrint,
     handleTimer,
+    handleTemplateOrdersDay,
   } = useContext(TemplateContext);
 
   const ticketTempRef = useRef(null);
@@ -54,15 +59,18 @@ function TemplateOrder({ id, dataTemplate }) {
   const fourthMealRef = useRef(null);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
+
   //process validation Hook
   const [openFinalValidation, setOpenFinalValidation] = useState(false);
   const [isOneMoreStep, setIsMoreOneStep] = useState(false);
   const [applyText, setApplyText] = useState("Apply");
   const [forseen, setForseen] = useState(false);
-  const [chooseTimer, setChooseTimer] = useState("00:00:00");
+  const [componentSectionName, setComponentSectionName] = useState("");
+  const [messageError, setMessageError] = useState("");
+  const [timerIn, setTimerIn] = useState("00:00:00");
 
   //recording template data order
-  const [dataResume, setDataResume] = useState({});
+  const [isPayment, setIsPayment] = useState({});
 
   const orderOftheDay =
     user.id === undefined
@@ -101,6 +109,8 @@ function TemplateOrder({ id, dataTemplate }) {
     console.log(e.target);
 
     if (e.target.id === "reg_price_2") {
+      const cookies = getCookies();
+      const userId = cookies.userId;
       if (user.id === undefined) {
         setTimeout(() => {
           handleFirstTimeOrder(true);
@@ -109,15 +119,41 @@ function TemplateOrder({ id, dataTemplate }) {
         return;
       } else {
         handleFirstTimeOrder(false);
-        /* await dispatch(templateActions.handleFirstTimeOrder(false)); */
+        if (thisOrder._id !== undefined) {
+          /*  await dispatch(templateActions.handleFirstTimeOrder(false)); */
+          console.log("saved and updated my order (thisOrder):", thisOrder);
 
-        const newThisOrder = await initiateOrder(user.id, orderSpecsCurrent);
+          const newChange = await updateThisTotalPriceOrder(
+            thisOrder._id,
+            orderSpecsCurrent
+          );
 
-        handleTotalPrice(newThisOrder.totalPrice);
-        /* 
-        await dispatch(
-          templateActions.handleTotalPrice(newThisOrder.totalPrice)
-        ); */
+          handleThisOrder(newChange);
+
+          /* const renewTheOrder = await templateActions.handleThisOrder(newChange); */
+
+          setTimeout(() => {
+            console.log("new this order send back:", newChange);
+          }, 1000);
+
+          setShowTotalPrice(newChange.totalPrice);
+          handleTotalPrice(newChange.totalPrice);
+        } else if (thisOrder._id === undefined) {
+          console.log("user data saved:", user);
+          const newTakenOrder = await initiateOrder(
+            user.userEmail,
+            orderSpecsCurrent
+          );
+
+          handleThisOrder(newTakenOrder);
+
+          setShowTotalPrice(newTakenOrder.totalPrice);
+
+          setTimeout(() => {
+            console.log("new taken order command:", newTakenOrder);
+          }, 1000);
+          handleTotalPrice(newTakenOrder.totalPrice);
+        }
       }
 
       applyOrderRef.current.classList.add("addShowBtn");
@@ -217,47 +253,48 @@ function TemplateOrder({ id, dataTemplate }) {
 
   // HERE ===>  NEXT FUNCTION TO IMPLEMENT ACTION   <=== HERE
   const validateThisOrder = () => {
+    //Pre-Actions
     validateRef.current.classList.remove("impact_more_step");
+    setApplyText("Minimize");
 
-    /* revisit ALL ACTIONS UNDERNEATH */
+    //MiddleCore Actions
+    let newPayment;
+    let newDataTemplateOrdersDay;
+    setTimeout(async () => {
+      const initPayment = await firstStepPayment();
+      const indexPayment = Array.from(payment).length;
 
-    //not yet ( this update)
-    const newPartLocation = updateThisLocationOrder(
-      dataNewLocation,
-      thisOrder.id
-    );
+      newPayment = { ...payment, [indexPayment]: initPayment };
+      handlePayment(newPayment);
+    }, 3000);
 
-    /* dispatch(templateActions.handleThisOrder(newPartLocation));
-    let timerOn = callTimer();
-    dispatch(templateActions.handleTimer(timerOn));
-    dispatch(templateActions.wholeCountDownTimersDay(callTimer())); */
-
-    handleThisOrder(newPartLocation);
-    let timerOn = callTimer();
-    handleTimer(timerOn);
-    wholeCountDownTimersDay(callTimer());
-
-    //post to collection payment
-    postPayment(thisOrder._id, "mtn-money", thisOrder.codePayment);
-
-    let templateOrderVar = {
-      timer: timerOn,
-      ordersSpecs: orderSpecsCurrent,
-      order: thisOrder,
+    //recording template data order
+    let dataRecordObj = {
       ticketNumber: ticketNumber,
-      hours: hoursPrinted,
+      thisOrder: thisOrder,
+      hoursPrinted: hoursPrinted,
       totalPrice: totalPrice,
       payment: payment,
+      timer: "02:00:00",
+      orderSpecsCurrent: orderSpecsCurrent,
     };
 
-    // store element templateOrder in the specified Template in Context API
+    const indexTemp = Array.from(dataTemplatesOrdersDay).length;
 
-    if (dataTemplatesOrdersDay.length === 3) {
-      alert("You can't send more than 3 orders");
-      return;
-    }
-    handleTemplateOrdersDay(templateOrderVar);
-    // dispatch(templateActions.handleTemplateOrdersDay(templateOrderVar));
+    newDataTemplateOrdersDay = {
+      ...dataTemplatesOrdersDay,
+      [indexTemp]: dataRecordObj,
+    };
+
+    handleTemplateOrdersDay(newDataTemplateOrdersDay);
+
+    handleOrders(orderSpecsCurrent);
+
+    setTimerIn(() => callTimer());
+
+    SetIsAnOrDay(true);
+
+    setOpenFinalValidation(false);
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
@@ -335,15 +372,20 @@ function TemplateOrder({ id, dataTemplate }) {
     clearTimer(getDeadTime());
   };
 
-  const currenTimer = () => {
-    const tmpTimer =
-      dataTemplate.timer === "02:00:00" ? callTimer() : "00:00:00";
-    setChooseTimer(tmpTimer);
-  };
+  /*  const currentUpdate = () => {
+    if (dataTemplate.timer === "02:00:00") {
+      setChooseTimer(callTimer());
+      setShowTotalPrice(dataTemplate.totalPrice);
+      setApplyText("Minimize");
+    } else {
+      setChooseTimer("00:00:00");
+    }
+  }; */
 
   const handleSubmitOrder = (e) => {
     e.preventDefault();
     console.log(e.target);
+    openToNewLocation();
   };
 
   const handleMoveToValidation = () => {
@@ -374,14 +416,6 @@ function TemplateOrder({ id, dataTemplate }) {
     console.log(
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
-
-    currenTimer();
-
-    if (orderSpecsCurrent.length >= 3) {
-      setForseen(true);
-    } else {
-      setForseen(false);
-    }
   }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   return (
@@ -409,7 +443,7 @@ function TemplateOrder({ id, dataTemplate }) {
             </div>
           </div>
           <div className="available_ticket_content" ref={ticketTempRef}>
-            <h4 className="title_order">Sample </h4>
+            <h4 className="title_order">Sample ${id} </h4>
             <hr className="breakpoint_ticket"></hr>
             <div className="sample_ticket">
               <div className="header_sample">
@@ -421,7 +455,6 @@ function TemplateOrder({ id, dataTemplate }) {
                   </div>
                 </div>
                 <div className="current_day_time">
-                  {/* <h4>{dataTemplate.value.hoursPrinted}</h4> */}
                   <h4>{hoursPrinted}</h4>
                 </div>
                 <div className="statement_to_client">
@@ -430,9 +463,7 @@ function TemplateOrder({ id, dataTemplate }) {
               </div>
               <div className="type_sample">
                 <p style={{ fontWeight: "bold" }}>Delivery Foods</p>
-                {/* <p>Ticket N³%: {dataTemplate.value.ticketNumber} </p> */}
-                <p>Ticket N³%: 2305467957890021 </p>
-                {/* change with ok button last step */}
+                <p>Ticket N³%: ${ticketNumber} </p>
               </div>
               <div className="spec_details_orders">
                 <table>
@@ -445,7 +476,7 @@ function TemplateOrder({ id, dataTemplate }) {
                     </tr>
                   </thead>
 
-                  {dataTemplate.value.orderSpecsCurrent.map((order, i) => {
+                  {orderSpecsCurrent.map((order, i) => {
                     const meal = order.meal;
                     const qty = order.quantity;
                     const minTotal = (meal.price * qty).toFixed(2);
@@ -510,7 +541,7 @@ function TemplateOrder({ id, dataTemplate }) {
                     </li>
                   </ul>
                   <span className="total_bill" ref={totalRef}>
-                    {/* {dataTemplate.value.totalPrice} */}${showTotalPrice}
+                    ${showTotalPrice}
                   </span>
                   <div className="submit_container" ref={applyOrderRef}>
                     <ButtonApply type="submit" applyText={applyText} />
@@ -537,7 +568,7 @@ function TemplateOrder({ id, dataTemplate }) {
                   <ul className="post_track_time">
                     <li>Time Remaining</li>
 
-                    <li className="time_left">{chooseTimer}</li>
+                    <li className="time_left">{timerIn}</li>
                   </ul>
                   {isOneMoreStep && (
                     <OneMoreStep
@@ -557,6 +588,278 @@ function TemplateOrder({ id, dataTemplate }) {
                 </div>
 
                 <div className="submit_ticket">
+                  <button
+                    type="button"
+                    id="btn_validate_order"
+                    className="btn_validate_order"
+                    ref={validateRef}
+                    onClick={(e) => lookingForGameOrValidation(e)}
+                  >
+                    validate
+                  </button>
+                  <button
+                    type="button"
+                    id="btn_play_game"
+                    className="btn_play_game"
+                    ref={fourthMealRef}
+                    onClick={(e) => lookingForGameOrValidation(e)}
+                  >
+                    Fourth Meal Game
+                  </button>
+
+                  {isError && (
+                    <ErrorWarning
+                      message={messageError}
+                      componentSectionName={componentSectionName}
+                      forseen={forseen}
+                    />
+                  )}
+
+                  {openFinalValidation && (
+                    <ConfirmOrder
+                      setOpenFinalValidation={setOpenFinalValidation}
+                      setApplyText={setApplyText}
+                      handleStepBackLoc={handleStepBackLoc}
+                    />
+                  )}
+                </div>
+
+                <div className="noti_payment">
+                  <p className="notification">
+                    You will be shortly send a code to complete the transaction
+                  </p>
+
+                  <div className="payment_wrapper">
+                    <button type="button" className="btn_sub btn_payment">
+                      Payment
+                    </button>
+                  </div>
+                </div>
+                {isNewLocation && (
+                  <NewLocationOrder
+                    setIsMoreOneStep={setIsMoreOneStep}
+                    setDataNewLocation={setDataNewLocation}
+                    dataNewLocation={dataNewLocation}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const TemplateDaySent = (id, dataTemplate, callTimer) => {
+  const [isEndWatchingTimer, setIsEndWatchingTimer] = useState(false);
+  const [isPayment, setIsPayment] = useState(false);
+
+  const ticketManualRef = useRef(null);
+
+  const ticketTempRef = useRef(null);
+
+  const hideOrShowBookManual = (currentPlay) => {
+    if (currentPlay === "show") {
+      // show anim show bookOrder
+      ticketManualRef?.current.style.classList.add("anim_show_book");
+
+      ticketTempRef?.current.style.classList.remove("anim_hide_template");
+    } else {
+      // hide anim show bookOrder
+      ticketManualRef?.current.style.classList.remove("anim_show_book");
+
+      ticketTempRef?.current.style.classList.add("anim_hide_template");
+    }
+  };
+
+  const watchTimer = async () => {
+    return await new Promise((resolve) => {
+      callTimer();
+      resolve();
+    });
+  };
+
+  useEffect(() => {
+    watchTimer().then(() => {
+      console.log("Ready To en Code Payment!");
+      setIsEndWatchingTimer(true);
+    });
+  }, [isEndWatchingTimer]);
+
+  return (
+    <div className="template_slider_boundary">
+      <div className="template_slider_content">
+        <div className="available_ticket">
+          <div
+            className="available_book_content"
+            ref={ticketManualRef}
+            onClick={() => hideOrShowBookManual("show")}
+          >
+            <div className="available_book_order">
+              <div className="entitled">
+                <span className="title_order">1 Book Order</span>
+              </div>
+              <div className="logo_restaurant">
+                <span className="label_restaurant">TDS</span>
+              </div>
+              <button
+                className="view_template"
+                onClick={() => hideOrShowBookManual("hide")}
+              >
+                template
+              </button>
+            </div>
+          </div>
+          <div className="available_ticket_content" ref={ticketTempRef}>
+            <h4 className="title_order">Sample ${id} </h4>
+            <hr className="breakpoint_ticket"></hr>
+            <div className="sample_ticket">
+              <div className="header_sample">
+                <div className="sample_logo">
+                  <div className="logo_brand">
+                    <span>T</span>
+                    <span>D</span>
+                    <span>S</span>
+                  </div>
+                </div>
+                <div className="current_day_time">
+                  <h4>{dataTemplate.hoursPrinted}</h4>
+                </div>
+                <div className="statement_to_client">
+                  <p>AS you order, your time is valued by our Team</p>
+                </div>
+              </div>
+              <div className="type_sample">
+                <p style={{ fontWeight: "bold" }}>Delivery Foods</p>
+                <p>Ticket N³%: ${dataTemplate.ticketNumber} </p>
+              </div>
+              <div className="spec_details_orders">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>meals</th>
+                      <th>qty</th>
+                      <th>price</th>
+                      <th>ToTal</th>
+                    </tr>
+                  </thead>
+
+                  {dataTemplate.orderSpecsCurrent.map((order, i) => {
+                    const meal = order.meal;
+                    const qty = order.quantity;
+                    const minTotal = (meal.price * qty).toFixed(2);
+                    return (
+                      <tbody>
+                        <tr>
+                          <td>{meal.name}</td>
+                          <td>{qty}</td>
+                          <td>${meal.price}</td>
+                          <td>${minTotal}</td>
+                        </tr>
+                      </tbody>
+                    );
+                  })}
+                </table>
+              </div>
+              <div className="table_recap">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <i className="fa-solid fa-minus"></i>
+                      </td>
+                      <td>
+                        <i className="fa-solid fa-minus"></i>
+                      </td>
+                      <td>
+                        <i className="fa-solid fa-minus"></i>
+                      </td>
+                      <td>${dataTemplate.totalPrice}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="totalPrice_in">
+                <div className="control_radio">
+                  <ul className="input_radio_price">
+                    <li>
+                      <input
+                        type="radio"
+                        name="radio_price"
+                        id="reg_price_1"
+                        className="reg_price_1 reg_price"
+                        disabled
+                      />
+                      <label htmlFor="none">keep ordering</label>
+                    </li>
+                    <li>
+                      <input
+                        type="radio"
+                        name="radio_price"
+                        id="reg_price_2"
+                        className="reg_price_2 reg_price"
+                        checked
+                        disabled
+                      />
+                      <label htmlFor="totalPrice">total Price</label>
+                    </li>
+                  </ul>
+                  <span className="total_bill">${dataTemplate.totalPrice}</span>
+                  {/* <div className="submit_container" ref={applyOrderRef}>
+                    <ButtonApply type="submit" applyText={applyText} />
+                  </div> */}
+                </div>
+              </div>
+
+              {/* {firstTimeOrder && (
+                <div className="appealing_registration">
+                  <LogOrRegisterForm setShowTotalPrice={setShowTotalPrice} />
+                </div>
+              )} */}
+
+              <br></br>
+
+              {/* start and display when you hit button validate */}
+              <div className="order_track_time">
+                <div>
+                  Your order will be send in less than
+                  <span style={{ fontWeight: "bold" }}> 2 hours</span>
+                </div>
+                <div className="remaining_track_time">
+                  <ul className="post_track_time">
+                    <li>Time Remaining</li>
+
+                    <li className="time_left">{callTimer()}</li>
+                  </ul>
+                  {/*    {isOneMoreStep && (
+                    <OneMoreStep
+                      handleStepBackLoc={handleStepBackLoc}
+                      handleMoveToValidation={handleMoveToValidation}
+                    />
+                  )} */}
+                </div>
+              </div>
+
+              <div className="address_customers">
+                <div className="address_side">
+                  <p>Location : ${dataTemplate.thisOrder.street}</p>
+                  <p className="grateful_words">
+                    Thanks you Trusting TDs Services
+                  </p>
+                  {isEndWatchingTimer && (
+                    <div className="code_payment_wrapper">
+                      <p>A Deliver will be reaching you soon. Get Ready</p>
+                      <h4>Your Code Payment</h4>
+                      <p className="code_payment_contract">
+                        {dataTemplate.thisOrder.codePayment}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* <div className="submit_ticket">
                   <button
                     type="button"
                     id="btn_validate_order"
@@ -589,7 +892,7 @@ function TemplateOrder({ id, dataTemplate }) {
                       handleStepBackLoc={handleStepBackLoc}
                     />
                   )}
-                </div>
+                </div> */}
 
                 <div className="noti_payment">
                   <p className="notification">
@@ -597,51 +900,24 @@ function TemplateOrder({ id, dataTemplate }) {
                   </p>
 
                   <div className="payment_wrapper">
-                    <button type="button" className="btn_sub btn_payment">
+                    <button
+                      type="button"
+                      className="btn_sub btn_payment"
+                      onClick={setIsPayment(true)}
+                    >
                       Payment
                     </button>
 
-                    {/* visibility set true when button payment is hitted */}
-                    <div className="payment_methods">
-                      <ul>
-                        <li>
-                          {/* <span>use</span> */}
-                          <span>
-                            <i className="fa-brands fa-cc-paypal"></i>
-                          </span>
-                        </li>
-                        <li>
-                          {/* <span>use</span> */}
-                          <span>
-                            <img
-                              src={MTN}
-                              className="img_payment"
-                              alt="missing payment"
-                            />
-                          </span>
-                        </li>
-                        <li>
-                          {/* <span>use</span> */}
-                          <span>
-                            <img
-                              src={ORANGE}
-                              className="img_payment"
-                              alt="missing payment"
-                            />
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
+                    {isPayment && <PaymentSubmit />}
                   </div>
                 </div>
-                <p> ORDER {num} </p>
-                {isNewLocation && (
+                {/*  {isNewLocation && (
                   <NewLocationOrder
                     setIsMoreOneStep={setIsMoreOneStep}
                     setDataNewLocation={setDataNewLocation}
                     dataNewLocation={dataNewLocation}
                   />
-                )}
+                )} */}
               </div>
             </div>
           </div>
@@ -649,6 +925,13 @@ function TemplateOrder({ id, dataTemplate }) {
       </div>
     </div>
   );
-}
+};
+
+function TemplateOrder(
+  id,
+  dataTemplate,
+  callTimer,
+  lookingForGameOrValidation
+) {}
 
 export default TemplateOrder;

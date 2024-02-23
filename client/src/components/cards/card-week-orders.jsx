@@ -19,10 +19,6 @@ const MiniCardWeeksOrders = ({ props }) => {
     state: { openTagRatings, user },
   } = useContext(MealContext);
 
-  /* const dispatch = useDispatch();
-  const openTagRatings = useSelector(openTagRatings_section);
-  const user = useSelector(user_section); */
-
   const [recordUser, setRecordUser] = useState(false);
 
   /* const [newRatings, setNewRatings] = useState({}); */

@@ -52,6 +52,7 @@ function Orders() {
       orderSpecsCurrent,
       thisOrder,
       dataTemplatesOrdersDay,
+      countClickValidate,
       timer,
       isNewLocation,
       payment,
@@ -68,6 +69,7 @@ function Orders() {
     handleTimer,
     handleOrderSpecs,
     handleTemplateOrdersDay,
+    handleCountClickValidate,
   } = useContext(TemplateContext);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
@@ -81,6 +83,9 @@ function Orders() {
   const [applyText, setApplyText] = useState("Apply");
   const [isanOrderDay, SetIsAnOrDay] = useState(false);
   const [forseen, setForseen] = useState(false);
+  const [componentSectionName, setComponentSectionName] = useState("");
+  const [messageError, setMessageError] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const newLocationRef = useRef(null);
   const newCityRef = useRef(null);
@@ -320,6 +325,35 @@ function Orders() {
     }
   };
 
+  const lastingTimeError = (e) => {
+    setIsError(true);
+    setForseen(false);
+    if (e.target.id === "btn_validate_order") {
+      setComponentSectionName("validateButton");
+      setMessageError("Cannot Apply More than 3 dressing Orders!");
+    } else if (e.target.id === "btn_play_game") {
+      setComponentSectionName("fourthMealButton");
+      if (orderSpecsCurrent.length >= 3) {
+        setForseen(true);
+      } else {
+        setMessageError("at least you have to command 3 meals!");
+      }
+    }
+    setTimeout(() => {
+      setIsError(true);
+    }, 6000);
+  };
+
+  const lookingForGameOrValidation = (e) => {
+    //indulge 3 template ticket at more
+    if (e.target.id === "btn_validate_order" && countClickValidate < 2) {
+      const newCount = countClickValidate + 1;
+      handleCountClickValidate(newCount);
+    } else {
+      lastingTimeError(e);
+    }
+  };
+
   const handleSubmitOrder = (e) => {
     e.preventDefault();
     console.log(e.target);
@@ -421,11 +455,6 @@ function Orders() {
     console.log(
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
-    if (orderSpecsCurrent.length >= 3) {
-      setForseen(true);
-    } else {
-      setForseen(false);
-    }
   }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   return (
@@ -473,6 +502,9 @@ function Orders() {
                 key={orderIndex}
                 id={orderIndex}
                 dataTemplate={orderOfDay}
+                callTimer={callTimer}
+                lookingForGameOrValidation={lookingForGameOrValidation}
+                isError={isError}
               />
             );
           })}
@@ -676,7 +708,7 @@ function Orders() {
                       id="btn_validate_order"
                       className="btn_validate_order"
                       ref={validateRef}
-                      onClick={setOpenFinalValidation(true)}
+                      onClick={(e) => lookingForGameOrValidation(e)}
                     >
                       validate
                     </button>
@@ -685,16 +717,18 @@ function Orders() {
                       id="btn_play_game"
                       className="btn_play_game"
                       ref={fourthMealRef}
-                      onClick={() => (
-                        <ErrorWarning
-                          message="at least you have to command 3 meals!"
-                          componentSectionName="fourthMealButton"
-                          forseen={forseen}
-                        />
-                      )}
+                      onClick={(e) => lookingForGameOrValidation(e)}
                     >
                       Fourth Meal Game
                     </button>
+
+                    {isError && (
+                      <ErrorWarning
+                        message={messageError}
+                        componentSectionName={componentSectionName}
+                        forseen={forseen}
+                      />
+                    )}
 
                     {openFinalValidation && (
                       <ConfirmOrder

@@ -391,6 +391,23 @@
     gap: 0.5rem;
   }
 
+  .code_payment_wrapper {
+    margin: 0.25rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .code_payment_wrapper .code_payment_contract {
+    padding: 0.25em 1em;
+    margin: 0.25rem 0;
+    color: #eee;
+    background-color: #d8aa66;
+    font-size: clamp(0.65rem, 0.74rem, 1rem);
+    border: 2px solid #1c7e4d;
+  }
+
   .submit_ticket {
     width: 100%;
     margin: 0.5rem 0;

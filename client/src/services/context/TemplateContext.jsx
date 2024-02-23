@@ -17,6 +17,7 @@ export const INITIAL_STATE_ONE = {
   timer: "00:00:00",
   payments: {}, //  obj of Arr 3 max
   orderSpecsCurrent: [],
+  countClickValidate: -1,
   countDownTimerArr: [], //arr of string
   dataTemplatesOrdersDay: {}, //  obj of Arr 3 max
 };
@@ -32,6 +33,7 @@ export const ACTIONS_TYPES = {
   TOTAL_PRICE: "TOTAL_PRICE",
   TIMER: "TIMER",
   PAYMENT: "PAYMENT",
+  CLICK_VALIDATE: "CLICK_VALIDATE",
   COUNT_DOWN_TIMER: "COUNT_DOWN_TIMER",
   TEMPLATE_ORDERS_DAY: "TEMPLATE_ORDERS_DAY",
 };
@@ -68,6 +70,9 @@ export const reducer = (state, action) => {
     case ACTIONS_TYPES.PAYMENT:
       return { ...state, payments: action.payload };
 
+    case ACTIONS_TYPES.CLICK_VALIDATE:
+      return { ...state, countClickValidate: action.payload };
+
     case ACTIONS_TYPES.COUNT_DOWN_TIMER:
       return { ...state, countDownTimerArr: action.payload };
 
@@ -84,14 +89,6 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
 
   const handleIncrease = useCallback(async (mealId, mySpecsOrder) => {
     return await new Promise((resolve) => {
-      /*  const newOrderSpecs = state.orderSpecsCurrent.map((item) => {
-        if (item.meal === mealId) {
-          item.quantity += 1;
-        }
-      });
-
-      dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: newOrderSpecs }); */
-
       mySpecsOrder.forEach((item) => {
         if (item.meal === mealId) {
           item.quantity += 1;
@@ -255,6 +252,13 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
     });
   }, []);
 
+  const handleCountClickValidate = useCallback(async (updateCount) => {
+    return await new Promise((resolve) => {
+      dispatch({ type: ACTIONS_TYPES.CLICK_VALIDATE, payload: updateCount });
+      setTimeout(resolve, 3000);
+    });
+  }, []);
+
   const wholeCountDownTimersDay = useCallback(async (newTimer) => {
     return await new Promise((resolve) => {
       const oldArrTimers = state.countDownTimerArr;
@@ -405,6 +409,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
     handlePayment,
     handleTimer,
     handleTemplateOrdersDay,
+    handleCountClickValidate,
     handleUpstreamOrder,
     handleOrderSpecs,
     wholeCountDownTimersDay,
@@ -427,6 +432,7 @@ const initStateContext = {
   handlePayment: () => {},
   handleTimer: () => {},
   handleTemplateOrdersDay: () => {},
+  handleCountClickValidate: () => {},
   handleUpstreamOrder: () => {},
   handleOrderSpecs: () => {},
   wholeCountDownTimersDay: () => {},

@@ -10,6 +10,9 @@ import DailyContextProvider, {
 import TemplateContextProvider, {
   INITIAL_STATE_ONE,
 } from "./services/context/TemplateContext.jsx";
+import ValidationContextProvider, {
+  INIT_STATE,
+} from "./services/context/ValidationContext.jsx";
 
 import { Provider } from "react-redux";
 import { store } from "./services/redux/store/store.jsx";
@@ -24,7 +27,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <MealContextProvider {...INITIAL_STATE}>
         <TemplateContextProvider {...INITIAL_STATE_ONE}>
           <DailyContextProvider {...INITIAL_STATE_TWO}>
-            <App />
+            <ValidationContextProvider {...INIT_STATE}>
+              <App />
+            </ValidationContextProvider>
           </DailyContextProvider>
         </TemplateContextProvider>
       </MealContextProvider>
