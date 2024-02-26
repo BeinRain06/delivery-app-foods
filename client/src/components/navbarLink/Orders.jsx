@@ -1,15 +1,22 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
 import { useDispatch, useSelector } from "react-redux";
 import { templateActions } from "../../services/redux/createslice/TemplateSlice";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { MealContext } from "../../services/context/MealsContext";
-
+import { ValidationContext } from "../../services/context/ValidationContext";
 import {
   initiateOrder,
   updateThisLocationOrder,
   updateThisTotalPriceOrder,
+  fetchOrdersWeek,
 } from "../../callAPI/OrdersApi";
 import { postPayment } from "../../callAPI/PaymentApi";
 import { userLogging } from "../../callAPI/UsersApi";
@@ -41,9 +48,9 @@ function Orders() {
   // const dispatch = useDispatch();
 
   const {
-    state: { meals, user, indexDayFormat, orders },
+    state: { meals, user, indexDayFormat, ordersWeek },
     handleWelcome,
-    handleOrders,
+    handleOrdersWeek,
   } = useContext(MealContext);
 
   const {
@@ -52,8 +59,6 @@ function Orders() {
       orderSpecsCurrent,
       thisOrder,
       dataTemplatesOrdersDay,
-      countClickValidate,
-      timer,
       isNewLocation,
       payment,
       ticketNumber,
@@ -69,23 +74,62 @@ function Orders() {
     handleTimer,
     handleOrderSpecs,
     handleTemplateOrdersDay,
-    handleCountClickValidate,
   } = useContext(TemplateContext);
+
+  const {
+    state: {
+      applyText,
+      timerIn,
+      isOneMoreStep,
+      openFinalValidation,
+      countClickValidate,
+      isError,
+      indexWeekDay,
+    },
+    handleIndexWeekDay,
+    handleCountClickValidate,
+    handleIsOneMoreStep,
+    handleIsError,
+    handleForSeen,
+    handleSectionName,
+    handleApplyText,
+    handleTimerIn,
+  } = useContext(ValidationContext);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
-  const [dataNewLocation, setDataNewLocation] = useState({});
-  const [timerIn, setTimerIn] = useState("00:00:00");
+
+  const [ordersWeekArr, setOrdersWeekArr] = useState([]);
+
+  const updateOrdersWeek = useCallback(async () => {
+    const cookies = getCookies();
+    const userId = cookies.userId;
+    const ordersFetch = await fetchOrdersWeek(userId);
+    let newOrdersFetch;
+
+    console.log("ordersFetch:", ordersFetch);
+
+    ordersFetch.map((eltOrder, i) => {
+      const indElt = +moment(eltOrder).format("d");
+      newOrdersFetch = { ...newOrdersFetch, [indElt]: eltOrder };
+    });
+    handleOrdersWeek(newOrdersFetch);
+    setOrdersWeekArr(() => {
+      const ordersWeekArr = Array.from(ordersWeek);
+      return ordersWeekArr;
+    });
+  }, []);
+
+  /*  const [timerIn, handleTimerIn] = useState("00:00:00"); */
 
   //process validation Hook
-  const [openFinalValidation, setOpenFinalValidation] = useState(false);
-  const [isOneMoreStep, setIsMoreOneStep] = useState(false);
-  const [applyText, setApplyText] = useState("Apply");
-  const [isanOrderDay, SetIsAnOrDay] = useState(false);
-  const [forseen, setForseen] = useState(false);
-  const [componentSectionName, setComponentSectionName] = useState("");
-  const [messageError, setMessageError] = useState("");
-  const [isError, setIsError] = useState(false);
+
+  /* const [applyText, handleApplyText] = useState("Apply"); */
+  /*  const [indexWeekDay, handleIndexWeekDay] = useState(false); */
+  /* const [forseen, handleForseen] = useState(false); */
+  /* const [componentSectionName, handleSectionName] = useState(""); */
+  /* const [messageError, handleMessageError] = useState(""); */
+  /* const [isError, handleIsError] = useState(false); */
 
   const newLocationRef = useRef(null);
   const newCityRef = useRef(null);
@@ -107,7 +151,7 @@ function Orders() {
   const orderOftheDay =
     user.id === undefined
       ? []
-      : orders.filter(
+      : ordersWeek.filter(
           (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
         );
 
@@ -125,8 +169,6 @@ function Orders() {
     }
   };
 
-  // HERE ===>  NEXT FUNCTION TO IMPLEMENT ACTION   <=== HERE
-
   const firstStepPayment = async () => {
     return await new Promise(async (resolve) => {
       const newPayment = await postPayment(
@@ -141,10 +183,12 @@ function Orders() {
     });
   };
 
+  // HERE ===>  NEXT FUNCTION TO IMPLEMENT ACTION   <=== HERE
+
   const validateThisOrder = () => {
     //Pre-Actions
     validateRef.current.classList.remove("impact_more_step");
-    setApplyText("Minimize");
+    handleApplyText("Minimize");
 
     //MiddleCore Actions
     let newPayment;
@@ -177,13 +221,11 @@ function Orders() {
 
     handleTemplateOrdersDay(newDataTemplateOrdersDay);
 
-    handleOrders(orderSpecsCurrent);
+    handleOrdersWeek(orderSpecsCurrent);
 
-    setTimerIn(() => callTimer());
+    handleTimerIn(() => callTimer());
 
-    SetIsAnOrDay(true);
-
-    setOpenFinalValidation(false);
+    handleOpenFinalValidation(false);
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
@@ -196,29 +238,31 @@ function Orders() {
     handleThisOrder({});
     handlePayment({});
     handleOrderSpecs([]);
-    handleTimer("00:00:00");
+    /*  handleTimer("00:00:00"); */
+    handleTimerIn("00:00:00");
   };
 
   const handleStepBackLoc = (space) => {
     if (space === "toLocation") {
-      setIsMoreOneStep(false);
+      handleIsOneMoreStep(false);
       handleNewLocation(true);
     } else if (space === "toTemplate") {
-      setOpenFinalValidation(false);
+      handleOpenFinalValidation(false);
       handleNewLocation(false);
-      setApplyText("Apply");
+      handleApplyText("Apply");
     }
 
     validateRef.current.classList.remove("impact_more_step");
   };
 
   const handleMoveToValidation = () => {
-    setIsMoreOneStep(false);
-    setOpenFinalValidation(true);
-    setApplyText("Minimize");
+    handleIsOneMoreStep(false);
+    handleOpenFinalValidation(true);
+    handleApplyText("Minimize");
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00");
+    /* handleTimer("02:00:00"); */
+    handleTimerIn("02:00:00");
     validateRef.current.classList.add("impact_more_step");
   };
 
@@ -251,6 +295,7 @@ function Orders() {
         return;
       } else {
         handleFirstTimeOrder(false);
+        const fetchingWeek = await fetchOrdersWeek(userId);
         if (thisOrder._id !== undefined) {
           /*  await dispatch(templateActions.handleFirstTimeOrder(false)); */
           console.log("saved and updated my order (thisOrder):", thisOrder);
@@ -326,21 +371,21 @@ function Orders() {
   };
 
   const lastingTimeError = (e) => {
-    setIsError(true);
-    setForseen(false);
+    handleIsError(true);
+    handleForseen(false);
     if (e.target.id === "btn_validate_order") {
-      setComponentSectionName("validateButton");
-      setMessageError("Cannot Apply More than 3 dressing Orders!");
+      handleSectionName("validateButton");
+      handleMessageError("Cannot Apply More than 3 dressing Orders!");
     } else if (e.target.id === "btn_play_game") {
-      setComponentSectionName("fourthMealButton");
+      handleSectionName("fourthMealButton");
       if (orderSpecsCurrent.length >= 3) {
-        setForseen(true);
+        handleForseen(true);
       } else {
-        setMessageError("at least you have to command 3 meals!");
+        handleMessageError("at least you have to command 3 meals!");
       }
     }
     setTimeout(() => {
-      setIsError(true);
+      handleIsError(true);
     }, 6000);
   };
 
@@ -400,7 +445,8 @@ function Orders() {
   };
 
   const clearTimer = (cb) => {
-    handleTimer("02:00:00");
+    /*  handleTimer("02:00:00"); */
+    handleTimerIn("02:00:00");
     // dispatch(templateActions.handleTimer("02:00:00"));
 
     //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
@@ -445,7 +491,7 @@ function Orders() {
     }, 3000);
   }, []);
 
-  useEffect(() => {}, [indexDayFormat]);
+  useEffect(() => {}, [indexWeekDay]);
 
   useEffect(() => {
     console.log("this place redirect to login or register form!");
@@ -456,6 +502,11 @@ function Orders() {
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
   }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
+
+  useEffect(() => {
+    updateOrdersWeek();
+    console.log("Update Orders List Week!");
+  }, [ordersWeek]);
 
   return (
     <main className="welcome_orders">
@@ -479,7 +530,6 @@ function Orders() {
                     ratings={mealItem.ratings}
                     price={mealItem.price}
                     image={mealItem.image}
-                    setShowTotalPrice={setShowTotalPrice}
                   />
                 );
               })
@@ -494,7 +544,7 @@ function Orders() {
         </div>
       </div>
 
-      {Array.from(dataTemplatesOrdersDay).length > 1 && (
+      {Array.from(dataTemplatesOrdersDay).length === 1 && (
         <div className="template_slider_wrapper">
           {Array.from(dataTemplatesOrdersDay).map((orderOfDay, orderIndex) => {
             return (
@@ -504,7 +554,6 @@ function Orders() {
                 dataTemplate={orderOfDay}
                 callTimer={callTimer}
                 lookingForGameOrValidation={lookingForGameOrValidation}
-                isError={isError}
               />
             );
           })}
@@ -521,6 +570,8 @@ function Orders() {
                     key={orderIndex}
                     id={orderIndex}
                     dataTemplate={orderOfDay}
+                    callTimer={callTimer}
+                    lookingForGameOrValidation={lookingForGameOrValidation}
                   />
                 );
               }
@@ -661,14 +712,13 @@ function Orders() {
                       $ {showTotalPrice}
                     </span>
                     <div className="submit_container" ref={applyOrderRef}>
-                      <ButtonApply type="submit" applyText={applyText} />
+                      <ButtonApply type="submit" />
                     </div>
                   </form>
                 </div>
 
                 {firstTimeOrder && (
                   <div className="appealing_registration">
-                    {/* //write css */}
                     <LogOrRegisterForm setShowTotalPrice={setShowTotalPrice} />
                   </div>
                 )}
@@ -722,13 +772,7 @@ function Orders() {
                       Fourth Meal Game
                     </button>
 
-                    {isError && (
-                      <ErrorWarning
-                        message={messageError}
-                        componentSectionName={componentSectionName}
-                        forseen={forseen}
-                      />
-                    )}
+                    {isError && <ErrorWarning />}
 
                     {openFinalValidation && (
                       <ConfirmOrder
@@ -748,47 +792,9 @@ function Orders() {
                       <button type="button" className="btn_sub btn_payment">
                         Payment
                       </button>
-
-                      {/* visibility set true when button payment is hitted */}
-                      <div className="payment_methods">
-                        <ul>
-                          <li id="paypal_method">
-                            {/* <span>use</span> */}
-                            <span>
-                              <i className="fa-brands fa-cc-paypal"></i>
-                            </span>
-                          </li>
-                          <li id="mtn_method">
-                            {/* <span>use</span> */}
-                            <span>
-                              <img
-                                src={MTN}
-                                className="img_payment"
-                                alt="missing payment"
-                              />
-                            </span>
-                          </li>
-                          <li id="orange_method">
-                            {/* <span>use</span> */}
-                            <span>
-                              <img
-                                src={ORANGE}
-                                className="img_payment"
-                                alt="missing payment"
-                              />
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
                     </div>
                   </div>
-                  {isNewLocation && (
-                    <NewLocationOrder
-                      setIsMoreOneStep={setIsMoreOneStep}
-                      setDataNewLocation={setDataNewLocation}
-                      dataNewLocation={dataNewLocation}
-                    />
-                  )}
+                  {isNewLocation && <NewLocationOrder />}
                 </div>
               </div>
             </div>
@@ -838,9 +844,7 @@ function Orders() {
           <div className="calendar_orders ">
             <ul className="weeks_day">
               {tmpIndexWeek.map((day, i) => {
-                return (
-                  <CardWeek key={i} id={i} handleDayShift={handleDayShift} />
-                );
+                return <CardWeek key={i} id={i} />;
               })}
 
               {/*  <li>
@@ -851,8 +855,8 @@ function Orders() {
 
             <div className="days_week_order">
               <ul className="days_dish_recap">
-                {isanOrderDay ? (
-                  orders?.map((item, i) => {
+                {ordersWeekArr[indexWeekDay] !== undefined ? (
+                  ordersWeekArr?.map((item, i) => {
                     let dateOrderedFormat = item.dateOrdered.format("MMM D");
 
                     if (dateOrderedFormat === indexDayFormat) {
@@ -918,7 +922,9 @@ function Orders() {
         <div className="new_command">
           <button type="button" className="btn_sub btn_newest_order">
             newest order
-            <span className="new_command_number">{orders.length}</span>
+            <span className="new_command_number">
+              {Array.from(dataTemplatesOrdersDay).length}
+            </span>
           </button>
         </div>
       </div>

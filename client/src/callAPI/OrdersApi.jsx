@@ -40,6 +40,32 @@ export async function initiateOrder(userEmail, orderSpecsCurrent) {
   }
 }
 
+export async function fetchOrdersWeek(userId) {
+  try {
+    let api_url = "http://localhost:5000/api/delivery/orders/orderweek";
+
+    const res = await axios.get(
+      api_url,
+      {
+        user: userId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const orderListWeek = res.data.data;
+
+    console.log("ordered:", orderListWeek);
+
+    return orderListWeek;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function updateThisLocationOrder(dataNewLocation, orderId) {
   try {
     const { phone, city, street } = dataNewLocation;

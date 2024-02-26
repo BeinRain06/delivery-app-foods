@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { ValidationContext } from "../../../services/context/ValidationContext";
 
-function ErrorWarning({ message, componentSectionName, forseen }) {
-  const [errorMsg, setErrorMsg] = useState("");
+function ErrorWarning() {
+  const {
+    state: { messageError, componentSectionName, forseen },
+    handleMessageError,
+  } = useContext(ValidationContext);
 
   const newMessage = forseen
     ? "soon, this feature will be implented."
-    : message;
+    : messageError;
 
   const applyMsgError = () => {
-    setErrorMsg(newMessage);
+    handleMessageError(newMessage);
     setTimeout(() => {
-      setErrorMsg("");
+      handleMessageError("");
     }, 7500);
   };
 
@@ -81,9 +85,9 @@ function ErrorWarning({ message, componentSectionName, forseen }) {
 
   return (
     <>
-      {errorMsg !== "" && (
+      {messageError !== "" && (
         <div style={chooseYourStyle()}>
-          <p>{newMessage}</p>
+          <p>{messageError}</p>
         </div>
       )}
     </>

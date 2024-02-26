@@ -16,7 +16,7 @@ export const INITIAL_STATE = {
   meats: [],
   vegetarians: [],
   desserts: [],
-  orders: [],
+  ordersWeek: [],
   ratings: [],
   openWeek: false,
   indexDayFormat: "",
@@ -37,7 +37,7 @@ export const ACTIONS_TYPES = {
   USER: "USER",
   RATINGS: "USER_RATING",
   NEW_RATING: "NEW_RATING",
-  ORDERS: "ORDERS",
+  ORDERS_WEEK: "ORDERS_WEEK",
   INDEX_DAY: "INDEX_DAY",
   OPEN_TAG_RATING: "OPEN_TAG_RATING",
   REGISTER_FORM: "REGISTER_FORM",
@@ -65,8 +65,8 @@ export const reducer = (state, action) => {
     case ACTIONS_TYPES.RATINGS:
       return { ...state, ratings: action.payload };
 
-    case ACTIONS_TYPES.ORDERS:
-      return { ...state, orders: action.payload };
+    case ACTIONS_TYPES.ORDERS_WEEK:
+      return { ...state, ordersWeek: action.payload };
 
     case ACTIONS_TYPES.INDEX_DAY:
       return { ...state, indexDayFormat: action.payload };
@@ -108,14 +108,14 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     dispatch({ type: ACTIONS_TYPES.SEAFOODS, payload: seafoods });
   }, []);
 
-  const handleOrders = useCallback((orders) => {
+  const handleOrdersWeek = useCallback((orders) => {
     const updateOrders = orders;
 
-    dispatch({ type: ACTIONS_TYPES.ORDERS, payload: updateOrders });
+    dispatch({ type: ACTIONS_TYPES.ORDERS_WEEK, payload: updateOrders });
   }, []);
 
   const handleUser = useCallback((user) => {
-    dispatch({ type: ACTIONS_TYPES.ORDERS, payload: user });
+    dispatch({ type: ACTIONS_TYPES.USER, payload: user });
   }, []);
 
   const handleDayShift = useCallback((e) => {
@@ -158,7 +158,7 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     handleSeaFoods,
     handleVegetarians,
     handleDesserts,
-    handleOrders,
+    handleOrdersWeek,
     handleUser,
     handleDayShift,
     handleOpenTagsRatings,
@@ -176,7 +176,7 @@ const initStateContext = {
   handleSeaFoods: () => {},
   handleVegetarians: () => {},
   handleDesserts: () => {},
-  handleOrders: () => {},
+  handleOrdersWeek: () => {},
   handleUser: () => {},
   handleDayShift: () => {},
   handleOpenTagsRatings: () => {},

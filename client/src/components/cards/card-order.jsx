@@ -4,7 +4,7 @@ import { updateThisTotalPriceOrder } from "../../callAPI/OrdersApi";
 
 import "./card-order.css";
 
-function CardOrder({ setShowTotalPrice, ...props }) {
+function CardOrder({ ...props }) {
   const {
     state: { orderSpecsCurrent },
     handleClear,

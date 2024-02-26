@@ -12,6 +12,7 @@ import {
   checkTotalPriceOrder,
 } from "../../../callAPI/OrdersApi";
 import { TemplateContext } from "../../../services/context/TemplateContext";
+import { ValidationContext } from "../../../services/context/ValidationContext";
 import ErrorWarning from "./MsgError";
 import { devices } from "./devices";
 
@@ -378,15 +379,17 @@ const MsgWarning = ({ message }) => {
   );
 } */
 
-function NewLocationOrder({
-  setIsMoreOneStep,
-  setDataNewLocation,
-  dataNewLocation,
-}) {
+function NewLocationOrder() {
   const {
     state: { thisOrder, orderSpecsCurrent },
     handleNewLocation,
   } = useContext(TemplateContext);
+
+  const {
+    state: { dataNewLocation },
+    handleIsOneMoreStep,
+    handleDataNewLocation,
+  } = useContext(ValidationContext);
 
   const [msgErr, setMsgErr] = useState("");
   const [isAnyErr, setIsAnyPrevErr] = useState(false);

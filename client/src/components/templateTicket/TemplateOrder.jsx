@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { TemplateContext } from "../../services/context/TemplateContext";
+import { ValidationContext } from "../../services/context/ValidationContext";
 import PaymentSubmit from "../process_validation/PaymentSubmit";
 import { MTN, ORANGE } from "../../assets/images";
 
@@ -15,12 +16,10 @@ import ButtonApply from "../process_validation/styledComponents/ButtonApply";
 import ErrorWarning from "../process_validation/styledComponents/MsgError";
 import "./TemplateOrder.css";
 
-function TemplateDayFlying({
-  id,
-  callTimer,
-  lookingForGameOrValidation,
-  isError,
-}) {
+function TemplateDayFlying({ id, lookingForGameOrValidation }) {
+  const {
+    state: { isError },
+  } = useContext(ValidationContext);
   const {
     state: {
       firstTimeOrder,
@@ -61,13 +60,24 @@ function TemplateDayFlying({
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
 
   //process validation Hook
-  const [openFinalValidation, setOpenFinalValidation] = useState(false);
-  const [isOneMoreStep, setIsMoreOneStep] = useState(false);
-  const [applyText, setApplyText] = useState("Apply");
-  const [forseen, setForseen] = useState(false);
-  const [componentSectionName, setComponentSectionName] = useState("");
-  const [messageError, setMessageError] = useState("");
-  const [timerIn, setTimerIn] = useState("00:00:00");
+  const {
+    state: {
+      openFinalValidation,
+      isOneMoreStep,
+      applyText,
+      forseen,
+      componentSectionName,
+      messageError,
+      timerIn,
+    },
+    handleOpenFinalValidation,
+    handleIsOneMoreStep,
+    handleApplyText,
+    handleForSeen,
+    handleSectionName,
+    handleMessageError,
+    handleTimerIn,
+  } = useContext(ValidationContext);
 
   //recording template data order
   const [isPayment, setIsPayment] = useState({});
@@ -240,12 +250,12 @@ function TemplateDayFlying({
 
   const handleStepBackLoc = (space) => {
     if (space === "toLocation") {
-      setIsMoreOneStep(false);
+      handleIsOneMoreStep(false);
       handleNewLocation(true);
     } else if (space === "toTemplate") {
-      setOpenFinalValidation(false);
+      handleOpenFinalValidation(false);
       handleNewLocation(false);
-      setApplyText("Apply");
+      handleApplyText("Apply");
     }
 
     validateRef.current.classList.remove("impact_more_step");
@@ -255,7 +265,7 @@ function TemplateDayFlying({
   const validateThisOrder = () => {
     //Pre-Actions
     validateRef.current.classList.remove("impact_more_step");
-    setApplyText("Minimize");
+    handleApplyText("Minimize");
 
     //MiddleCore Actions
     let newPayment;
@@ -290,11 +300,11 @@ function TemplateDayFlying({
 
     handleOrders(orderSpecsCurrent);
 
-    setTimerIn(() => callTimer());
+    handleTimerIn(() => callTimer());
 
     SetIsAnOrDay(true);
 
-    setOpenFinalValidation(false);
+    handleOpenFinalValidation(false);
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
@@ -376,7 +386,7 @@ function TemplateDayFlying({
     if (dataTemplate.timer === "02:00:00") {
       setChooseTimer(callTimer());
       setShowTotalPrice(dataTemplate.totalPrice);
-      setApplyText("Minimize");
+      handleApplyText("Minimize");
     } else {
       setChooseTimer("00:00:00");
     }
@@ -389,9 +399,9 @@ function TemplateDayFlying({
   };
 
   const handleMoveToValidation = () => {
-    setIsMoreOneStep(false);
-    setOpenFinalValidation(true);
-    setApplyText("Minimize");
+    handleIsOneMoreStep(false);
+    handleOpenFinalValidation(true);
+    handleApplyText("Minimize");
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
     handleTimer("02:00:00");
@@ -544,7 +554,7 @@ function TemplateDayFlying({
                     ${showTotalPrice}
                   </span>
                   <div className="submit_container" ref={applyOrderRef}>
-                    <ButtonApply type="submit" applyText={applyText} />
+                    <ButtonApply type="submit" />
                   </div>
                 </div>
               </div>
@@ -607,19 +617,12 @@ function TemplateDayFlying({
                     Fourth Meal Game
                   </button>
 
-                  {isError && (
-                    <ErrorWarning
-                      message={messageError}
-                      componentSectionName={componentSectionName}
-                      forseen={forseen}
-                    />
-                  )}
+                  {isError && <ErrorWarning />}
 
                   {openFinalValidation && (
                     <ConfirmOrder
-                      setOpenFinalValidation={setOpenFinalValidation}
-                      setApplyText={setApplyText}
                       handleStepBackLoc={handleStepBackLoc}
+                      validateThisOrder={validateThisOrder}
                     />
                   )}
                 </div>
@@ -635,13 +638,7 @@ function TemplateDayFlying({
                     </button>
                   </div>
                 </div>
-                {isNewLocation && (
-                  <NewLocationOrder
-                    setIsMoreOneStep={setIsMoreOneStep}
-                    setDataNewLocation={setDataNewLocation}
-                    dataNewLocation={dataNewLocation}
-                  />
-                )}
+                {isNewLocation && <NewLocationOrder />}
               </div>
             </div>
           </div>
@@ -887,8 +884,8 @@ const TemplateDaySent = (id, dataTemplate, callTimer) => {
 
                   {openFinalValidation && (
                     <ConfirmOrder
-                      setOpenFinalValidation={setOpenFinalValidation}
-                      setApplyText={setApplyText}
+                      handleOpenFinalValidation={handleOpenFinalValidation}
+                      handleApplyText={handleApplyText}
                       handleStepBackLoc={handleStepBackLoc}
                     />
                   )}
@@ -913,7 +910,7 @@ const TemplateDaySent = (id, dataTemplate, callTimer) => {
                 </div>
                 {/*  {isNewLocation && (
                   <NewLocationOrder
-                    setIsMoreOneStep={setIsMoreOneStep}
+                    handleIsOneMoreStep={handleIsOneMoreStep}
                     setDataNewLocation={setDataNewLocation}
                     dataNewLocation={dataNewLocation}
                   />
@@ -927,11 +924,23 @@ const TemplateDaySent = (id, dataTemplate, callTimer) => {
   );
 };
 
-function TemplateOrder(
-  id,
-  dataTemplate,
-  callTimer,
-  lookingForGameOrValidation
-) {}
+function TemplateOrder(id, dataTemplate, lookingForGameOrValidation) {
+  const {
+    state: { countClickValidate },
+  } = useContext(ValidationContext);
+
+  if (+id <= countClickValidate) {
+    <TemplateDaySent
+      id={id}
+      dataTemplate={dataTemplare}
+      callTimer={callTimer}
+    />;
+  } else {
+    <TemplateDayFlying
+      id={id}
+      lookingForGameOrValidation={lookingForGameOrValidation}
+    />;
+  }
+}
 
 export default TemplateOrder;

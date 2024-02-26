@@ -1,6 +1,7 @@
 import React, { useRef, useContext } from "react";
 import styled from "styled-components";
 import { TemplateContext } from "../../../services/context/TemplateContext";
+import ValidationContext from "../../../services/context/ValidationContext";
 import { devices } from "./devices";
 
 const ButtonA = styled.button`
@@ -46,7 +47,10 @@ const ButtonB = styled.button.attrs(() => ({}))`
   }
 `;
 
-function ButtonApply({ applyText }) {
+function ButtonApply() {
+  const {
+    state: { applyText },
+  } = useCintext(ValidationContext);
   if (applyText === "Apply") return <ButtonA>Apply</ButtonA>;
 
   if (applyText === "Minimize") return <ButtonB>minimize</ButtonB>;
