@@ -383,6 +383,8 @@ function NewLocationOrder() {
   const {
     state: { thisOrder, orderSpecsCurrent },
     handleNewLocation,
+    handleTotalPrice,
+    handleThisOrder,
   } = useContext(TemplateContext);
 
   const {
@@ -393,6 +395,7 @@ function NewLocationOrder() {
 
   const [msgErr, setMsgErr] = useState("");
   const [isAnyErr, setIsAnyPrevErr] = useState(false);
+  const [newLocIn, setNewlocIn] = useState({});
 
   const newRadioRefOne = useRef(null);
   const newRadioRefTwo = useRef(null);
@@ -425,12 +428,16 @@ function NewLocationOrder() {
       }, 7500);
     } else {
       setMsgErr("");
-      handleInSecondStepLoc(e);
+      const newLoc = handleInSecondStepLoc(e);
+
+      console.log("new Location -ORDER-LOC-IN before UPDATE:", newLoc);
+
       const updateLocationOrder = await updateThisLocationOrder(
-        dataNewLocation,
+        newLoc,
         thisOrder._id
       );
 
+      handleThisOrder(updateLocationOrder);
       console.log("Data in Submit Response:", updateLocationOrder);
     }
   };
@@ -444,14 +451,16 @@ function NewLocationOrder() {
       if (+dataNewTotalPrice !== thisOrder.totalPrice) {
         resolve(message);
       } else {
+        handleTotalPrice(thisOrder.totalPrice.toString());
         resolve(dataNewTotalPrice);
       }
     });
   }, []);
 
   const handleInSecondStepLoc = (e) => {
+    let phone;
     if (newRadioRefOne.current.checked) {
-      let phone = e.target.elements.newNum;
+      phone = e.target.elements.newNum;
       if (phone.value === "") {
         alert("Please Enter a phone number");
         handleNewLocation(false);
@@ -467,7 +476,7 @@ function NewLocationOrder() {
         street: street,
       };
 
-      setDataNewLocation(newLocation);
+      handleDataNewLocation(newLocation);
 
       //close new location
       handleNewLocation(false);
@@ -475,8 +484,8 @@ function NewLocationOrder() {
       setMsgErr("");
 
       //move to one more step
-      /*  oneMoreStepRef.current.style.visibility = "visible"; */
-      setIsMoreOneStep(true);
+      handleIsOneMoreStep(true);
+      return newLocation;
     } else if (newRadioRefTwo.current.checked) {
       let phone = e.target.elements.newNum;
       let city = e.target.elements.newCity;
@@ -487,12 +496,14 @@ function NewLocationOrder() {
         handleNewLocation(false);
         return;
       }
-      let newlocation = {
+
+      let newLocation = {
         phone: phone.value,
         city: city.value,
         street: street.value,
       };
-      setDataNewLocation(newlocation);
+
+      handleDataNewLocation(newLocation);
 
       //close new location box
       handleNewLocation(false);
@@ -503,13 +514,14 @@ function NewLocationOrder() {
       setMsgErr("");
 
       //move to one more step
-      /*  oneMoreStepRef.current.style.visibility = "visible"; */
-      setIsMoreOneStep(true);
+      handleIsOneMoreStep(true);
+      return newLocation;
     } else {
       setMsgErr("Select between home and new location First !");
       setTimeout(() => {
         setMsgErr("");
       }, 5000);
+      return;
     }
   };
 

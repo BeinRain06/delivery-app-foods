@@ -73,6 +73,7 @@ function Orders() {
     handleHoursPrint,
     handleTimer,
     handleOrderSpecs,
+    handlePayment,
     handleTemplateOrdersDay,
   } = useContext(TemplateContext);
 
@@ -89,6 +90,7 @@ function Orders() {
     handleIndexWeekDay,
     handleCountClickValidate,
     handleIsOneMoreStep,
+    handleOpenFinalValidation,
     handleIsError,
     handleForSeen,
     handleSectionName,
@@ -97,7 +99,16 @@ function Orders() {
   } = useContext(ValidationContext);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
+
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
+
+  const [ourTimer, setOurTimer] = useState(() => {
+    const tmpTimer = Array.from(timerIn);
+    const indTimer = Array.from(timerIn).length;
+    const sentTimer =
+      tmpTimer[indTimer] !== undefined ? tmpTimer[indTimer] : "00:00:00";
+    return sentTimer;
+  });
 
   const [ordersWeekArr, setOrdersWeekArr] = useState([]);
 
@@ -109,15 +120,18 @@ function Orders() {
 
     console.log("ordersFetch:", ordersFetch);
 
-    ordersFetch.map((eltOrder, i) => {
-      const indElt = +moment(eltOrder).format("d");
-      newOrdersFetch = { ...newOrdersFetch, [indElt]: eltOrder };
-    });
-    handleOrdersWeek(newOrdersFetch);
-    setOrdersWeekArr(() => {
-      const ordersWeekArr = Array.from(ordersWeek);
-      return ordersWeekArr;
-    });
+    if (ordersFetch.length !== 0) {
+      ordersFetch?.map((eltOrder, i) => {
+        const indElt = +moment(eltOrder).format("d");
+        newOrdersFetch = { ...newOrdersFetch, [indElt]: eltOrder };
+      });
+
+      handleOrdersWeek(newOrdersFetch);
+      setOrdersWeekArr(() => {
+        const ordersWeekArr = Array.from(ordersWeek);
+        return ordersWeekArr;
+      });
+    }
   }, []);
 
   /*  const [timerIn, handleTimerIn] = useState("00:00:00"); */
@@ -171,12 +185,14 @@ function Orders() {
 
   const firstStepPayment = async () => {
     return await new Promise(async (resolve) => {
+      console.log("inside this order:", thisOrder);
       const newPayment = await postPayment(
         thisOrder._id,
         "MTN",
         thisOrder.codePayment,
-        totalPrice
+        thisOrder.totalPrice
       );
+
       setTimeout(() => {
         resolve(newPayment);
       }, 3000);
@@ -195,7 +211,10 @@ function Orders() {
     let newDataTemplateOrdersDay;
     setTimeout(async () => {
       const initPayment = await firstStepPayment();
-      const indexPayment = Array.from(payment).length;
+
+      console.log("initPayment:", initPayment);
+
+      const indexPayment = Array.from(initPayment).length;
 
       newPayment = { ...payment, [indexPayment]: initPayment };
       handlePayment(newPayment);
@@ -223,12 +242,15 @@ function Orders() {
 
     handleOrdersWeek(orderSpecsCurrent);
 
-    handleTimerIn(() => callTimer());
+    handleTimerIn(() => callTimer);
+
+    const newCount = countClickValidate + 1;
+    handleCountClickValidate(newCount);
 
     handleOpenFinalValidation(false);
 
     //reset variable involved in template_order
-    resetDataHoldingTemplate();
+    /* resetDataHoldingTemplate(); */
   };
 
   const resetDataHoldingTemplate = () => {
@@ -247,7 +269,6 @@ function Orders() {
       handleIsOneMoreStep(false);
       handleNewLocation(true);
     } else if (space === "toTemplate") {
-      handleOpenFinalValidation(false);
       handleNewLocation(false);
       handleApplyText("Apply");
     }
@@ -257,7 +278,6 @@ function Orders() {
 
   const handleMoveToValidation = () => {
     handleIsOneMoreStep(false);
-    handleOpenFinalValidation(true);
     handleApplyText("Minimize");
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
@@ -392,8 +412,7 @@ function Orders() {
   const lookingForGameOrValidation = (e) => {
     //indulge 3 template ticket at more
     if (e.target.id === "btn_validate_order" && countClickValidate < 2) {
-      const newCount = countClickValidate + 1;
-      handleCountClickValidate(newCount);
+      handleOpenFinalValidation(true);
     } else {
       lastingTimeError(e);
     }
@@ -424,30 +443,45 @@ function Orders() {
     let { diff, hrs, min, sec } = getRemainingTime(cb);
 
     if (diff >= 0) {
-      handleTimer(
+      handleTimerIn(() => {
+        const indexTimer = Array.from(timerIn).length;
+
+        const newSendTimer = {
+          ...timerIn,
+          [indexTimer]:
+            (hrs > 9 ? hrs : "0" + hrs) +
+            ": " +
+            (min > 9 ? min : "0" + min) +
+            ":" +
+            (sec > 9 ? sec : "0" + sec),
+        };
+
+        return newSendTimer;
+      });
+
+      setOurTimer(
         (hrs > 9 ? hrs : "0" + hrs) +
           ": " +
           (min > 9 ? min : "0" + min) +
           ":" +
           (sec > 9 ? sec : "0" + sec)
       );
-
-      /*  dispatch(
-        templateActions.handleTimer(
-          (hrs > 9 ? hrs : "0" + hrs) +
-            ": " +
-            (min > 9 ? min : "0" + min) +
-            ":" +
-            (sec > 9 ? sec : "0" + sec)
-        )
-      ); */
     }
   };
 
   const clearTimer = (cb) => {
-    /*  handleTimer("02:00:00"); */
-    handleTimerIn("02:00:00");
-    // dispatch(templateActions.handleTimer("02:00:00"));
+    handleTimerIn(() => {
+      const indexTimer = Array.from(timerIn).length;
+
+      const newSendTimer = {
+        ...timerIn,
+        [indexTimer]: "02:00:00",
+      };
+
+      return newSendTimer;
+    });
+
+    setOurTimer("02:00:00");
 
     //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
     if (interval.current) clearInterval(interval.current);
@@ -504,6 +538,11 @@ function Orders() {
   }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   useEffect(() => {
+    /*  if (Array.from(ordersWeek?.length) !== 0) {
+      updateOrdersWeek();
+      console.log("Update Orders List Week!");
+    } */
+
     updateOrdersWeek();
     console.log("Update Orders List Week!");
   }, [ordersWeek]);
@@ -581,7 +620,7 @@ function Orders() {
       )}
 
       {orderSpecsCurrent.length !== 0 &&
-        dataTemplatesOrdersDay.length === 0 && (
+        Array.from(dataTemplatesOrdersDay).length === 0 && (
           <div className="available_ticket">
             <div
               className="available_book_content"
@@ -733,7 +772,7 @@ function Orders() {
                     <ul className="post_track_time">
                       <li>Time Remaining</li>
 
-                      <li className="time_left">{timerIn}</li>
+                      <li className="time_left"> {ourTimer} </li>
                     </ul>
                   </div>
                   {isOneMoreStep && (
@@ -814,11 +853,6 @@ function Orders() {
             </p>
           </div>
         </div>
-        {/*   <div className="wrapper_no_items">
-          <div className="content_no">
-            <span className="no_items">No Items</span>
-          </div>
-        </div> */}
 
         <div className="orders_day">
           <div className="template_day_orders">
@@ -842,16 +876,11 @@ function Orders() {
         <div className="template_week_orders ">
           <p className="title_week_orders">Week Orders</p>
           <div className="calendar_orders ">
-            <ul className="weeks_day">
+            <div className="weeks_day">
               {tmpIndexWeek.map((day, i) => {
                 return <CardWeek key={i} id={i} />;
               })}
-
-              {/*  <li>
-                <span className="day_week">MON</span>
-                <span className="day_count">16</span>
-              </li> */}
-            </ul>
+            </div>
 
             <div className="days_week_order">
               <ul className="days_dish_recap">

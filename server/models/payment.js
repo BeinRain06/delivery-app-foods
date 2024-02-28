@@ -21,7 +21,7 @@ const paymentSchema = new mongoose.Schema({
     default: "non-paid",
   },
   amountBill: {
-    type: String,
+    type: Number,
     default: "",
   },
 });

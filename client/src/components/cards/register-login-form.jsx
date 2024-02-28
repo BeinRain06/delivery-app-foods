@@ -94,7 +94,7 @@ function LogOrRegisterForm({ setShowTotalPrice }) {
       return { email, password };
     });
     setTimeout(() => {
-      setIsLoggingDataSession(true);
+      setIsLoggingDataSession(true); // call loadingLogSession.jsx
     }, 3000);
   };
 
@@ -199,10 +199,8 @@ function LogOrRegisterForm({ setShowTotalPrice }) {
     return myOrderIn;
   };
 
-  const updatefieldTemplate = (firstStatus, myOrder) => {
+  const updatefieldTemplate = (myOrder) => {
     setTimeout(() => {
-      console.log("this order in templateSlice :", thisOrderSplice);
-
       console.log("this order in appState:", thisOrder);
 
       let totalPriceIn = catchTotalPrice(myOrder);

@@ -17,7 +17,7 @@ export const INIT_STATE = {
   componentSectionName: "",
   messageError: "",
   isError: false,
-  timerIn: "00:00:00",
+  timerIn: {},
 };
 
 const ACTIONS_TYPES = {
@@ -83,7 +83,7 @@ const functionsValidationContext = (INIT_STATE) => {
         payload: indexDay,
       });
 
-      setTimeout(resolve, 1000);
+      setTimeout(resolve, 3000);
     });
   }, []);
 
@@ -94,7 +94,7 @@ const functionsValidationContext = (INIT_STATE) => {
         payload: newArea,
       });
 
-      setTimeout(resolve, 1000);
+      setTimeout(resolve, 3000);
     });
   }, []);
 
@@ -104,7 +104,7 @@ const functionsValidationContext = (INIT_STATE) => {
         type: ACTIONS_TYPES.OPEN_FINAL,
       });
 
-      setTimeout(resolve, 1000);
+      setTimeout(resolve, 3000);
     });
   }, []);
 
@@ -184,7 +184,7 @@ const functionsValidationContext = (INIT_STATE) => {
         payload: timerClock,
       });
 
-      setTimeout(resolve, 1000);
+      setTimeout(resolve, 4000);
     });
   }, []);
 

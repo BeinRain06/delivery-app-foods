@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { TemplateContext } from "../../services/context/TemplateContext";
+import { ValidationContext } from "../../services/context/ValidationContext";
 import "./button-shape.css";
 
 export const Ordered = ({ mealid, mealname, mealprice, setIsCliked }) => {
@@ -167,11 +168,13 @@ export const TimeAwait = ({ setWaiting }) => {
 };
 
 function Button({ mealid, mealname, mealprice }) {
+  const { handleOpenFinalValidation } = useContext(ValidationContext);
+
   const [isClicked, setIsCliked] = useState(false);
 
   const upstreamOrder = (e) => {
     console.log(e.target);
-
+    /*  handleOpenFinalValidation(false); */
     /* setIsCliked(true); */
 
     setTimeout(async () => {

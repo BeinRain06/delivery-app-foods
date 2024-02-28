@@ -73,6 +73,15 @@ function LoadingLogSession({
     return res;
   };
 
+  const initThatOrder = async (userEmail) => {
+    return await new Promise((resolve) => {
+      const res = initiateOrder(userEmail, orderSpecsCurrent);
+      setTimeout(() => {
+        resolve(res);
+      }, 2400);
+    });
+  };
+
   const updateUserandInitOrder = async (userInfo) => {
     await handleUser(userInfo);
 
@@ -82,15 +91,7 @@ function LoadingLogSession({
 
     let myOrderIn;
 
-    const initThatOrder = async () => {
-      return await new Promise((resolve) => {
-        const res = initiateOrder(userEmail, orderSpecsCurrent);
-        setTimeout(() => {
-          resolve(res);
-        }, 2400);
-      });
-    };
-    myOrderIn = initThatOrder();
+    myOrderIn = await initThatOrder(userEmail);
 
     handleThisOrder(myOrderIn);
 

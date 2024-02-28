@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const cors = require("cors");
+var moment = require("moment");
 
 const Order = require("../models/order");
 
@@ -22,6 +23,44 @@ router.use(
     credentials: true,
   })
 );
+
+//Fetching Order Week
+router.get("/orderWeek", async (req, res) => {
+  console.log("order on the week");
+  try {
+    const ordersList = await Order.find({ user: req.body.user })
+      .populate("ordersSpecs", "quantity")
+      .populate({
+        path: "ordersSpecs",
+        populate: {
+          path: "meals",
+          populate: ["name", "ratings", "price", "_id", "origin"],
+        },
+      })
+      .sort({ dateOrdered: -1 });
+
+    const monday = moment().weekday(1);
+    const sunday = moment().weekday(7);
+
+    const ordersListWeek = await Promise.all(
+      ordersList.map(async (orderCatch) => {
+        if (
+          moment(orderCatch.dateOrdered).isBetween(monday, sunday, null, "[]")
+        ) {
+          return orderCatch;
+        }
+      })
+    );
+
+    console.log("ordersListWeek:", ordersListWeek);
+    res.json({ sucess: true, data: ordersListWeek });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ success: false, error: "Can't fetch ordered week meals !" });
+  }
+});
 
 //Emit Order
 router.post("/order", async (req, res) => {
@@ -184,6 +223,8 @@ router.post("/order/checkprice", async (req, res) => {
 
 // UPDATING NEW LOCATION
 router.put("/order/newlocation/:orderId", async (req, res) => {
+  console.log("body phone:", req.body.phone);
+
   try {
     const updateOrder = await Order.findByIdAndUpdate(
       req.params.orderId,

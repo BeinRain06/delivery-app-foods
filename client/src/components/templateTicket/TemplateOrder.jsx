@@ -338,29 +338,35 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
     let { diff, hrs, min, sec } = getRemainingTime(cb);
 
     if (diff >= 0) {
-      handleTimer(
-        (hrs > 9 ? hrs : "0" + hrs) +
-          ": " +
-          (min > 9 ? min : "0" + min) +
-          ":" +
-          (sec > 9 ? sec : "0" + sec)
-      );
+      handleTimerIn(() => {
+        const indexTimer = Array.from(timerIn).length;
 
-      /*  dispatch(
-        templateActions.handleTimer(
-          (hrs > 9 ? hrs : "0" + hrs) +
+        const newSendTimer = {
+          ...timerIn,
+          [indexTimer]:
+            (hrs > 9 ? hrs : "0" + hrs) +
             ": " +
             (min > 9 ? min : "0" + min) +
             ":" +
-            (sec > 9 ? sec : "0" + sec)
-        )
-      ); */
+            (sec > 9 ? sec : "0" + sec),
+        };
+
+        return newSendTimer;
+      });
     }
   };
 
   const clearTimer = (cb) => {
-    handleTimer("02:00:00");
-    // dispatch(templateActions.handleTimer("02:00:00"));
+    handleTimerIn(() => {
+      const indexTimer = Array.from(timerIn).length;
+
+      const newSendTimer = {
+        ...timerIn,
+        [indexTimer]: "02:00:00",
+      };
+
+      return newSendTimer;
+    });
 
     //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
     if (interval.current) clearInterval(interval.current);
@@ -648,8 +654,12 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
   );
 }
 
-const TemplateDaySent = (id, dataTemplate, callTimer) => {
+const TemplateDaySent = (id, dataTemplate) => {
   const [isEndWatchingTimer, setIsEndWatchingTimer] = useState(false);
+  const [thisTimer, setThisTimer] = useState(() => {
+    const thisTimer = Array.from(timerIn);
+    return thisTimer[id];
+  });
   const [isPayment, setIsPayment] = useState(false);
 
   const ticketManualRef = useRef(null);
@@ -672,8 +682,8 @@ const TemplateDaySent = (id, dataTemplate, callTimer) => {
 
   const watchTimer = async () => {
     return await new Promise((resolve) => {
-      callTimer();
-      resolve();
+      const thisTimer = Array.from(timerIn);
+      resolve(thisTimer[id]);
     });
   };
 
@@ -828,7 +838,7 @@ const TemplateDaySent = (id, dataTemplate, callTimer) => {
                   <ul className="post_track_time">
                     <li>Time Remaining</li>
 
-                    <li className="time_left">{callTimer()}</li>
+                    <li className="time_left">{thisTimer}</li>
                   </ul>
                   {/*    {isOneMoreStep && (
                     <OneMoreStep
@@ -930,11 +940,7 @@ function TemplateOrder(id, dataTemplate, lookingForGameOrValidation) {
   } = useContext(ValidationContext);
 
   if (+id <= countClickValidate) {
-    <TemplateDaySent
-      id={id}
-      dataTemplate={dataTemplare}
-      callTimer={callTimer}
-    />;
+    <TemplateDaySent id={id} dataTemplate={dataTemplate} />;
   } else {
     <TemplateDayFlying
       id={id}

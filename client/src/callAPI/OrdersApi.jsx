@@ -66,9 +66,9 @@ export async function fetchOrdersWeek(userId) {
   }
 }
 
-export async function updateThisLocationOrder(dataNewLocation, orderId) {
+export async function updateThisLocationOrder(newLoc, orderId) {
   try {
-    const { phone, city, street } = dataNewLocation;
+    const { phone, city, street } = newLoc;
 
     let api_url = "http://localhost:5000/api/delivery/orders/order/newlocation";
 
