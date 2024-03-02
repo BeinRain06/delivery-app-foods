@@ -27,8 +27,23 @@ template_slider_content */
     max-width: 100%;
     height: 700px;
     display: flex;
+    flex-direction: row;
     justify-content: center;
     animation: animGetBackTemplateOrder 3s ease-in-out forward;
+  }
+
+  .available_ticket_end.flex_move {
+    flex-direction: column;
+  }
+
+  .title_order_sample {
+    padding: 0.5rem 1rem;
+    display: none;
+  }
+
+  .title_order_sample.showing_up {
+    padding: 0.5rem 1rem;
+    display: inline-block;
   }
 
   /** book content **/
@@ -37,9 +52,28 @@ template_slider_content */
     top: 50%;
     left: 0;
     transform: translateY(-50%);
+    width: 10%;
+    height: 0px;
+    padding: 0 0.5rem;
+    opacity: 0.85;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    border: 1px solid transparent;
+    transition: all 1s ease-in-out;
+  }
+
+  .ticket_book_left.anim_show_book {
+    position: relative;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
     width: 35%;
     height: 100%;
     padding: 0 0.5rem;
+    opacity: 1;
+    visibility: visible;
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -56,17 +90,7 @@ template_slider_content */
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: all 1s ease-in-out;
   }
-
-  /*  .available_book_content.anim_show_book {
-    position: relative;
-    left: 0;
-    visibility: visible;
-    opacity: 1;
-    padding: 0 1rem;
-    margin: 0 auto;
-  } */
 
   .available_book_order {
     width: 200px;
@@ -158,7 +182,7 @@ template_slider_content */
     animation: animGetBackTemplateOrder 3s ease-in-out forward;
   }
 
-  /*  .available_ticket_content.anim_hide_template {
+  /* .available_ticket_content.anim_shrink_template {
     max-width: 100%;
     height: auto;
     margin: 0 auto;
@@ -166,9 +190,16 @@ template_slider_content */
   } */
 
   .breakpoint_ticket_end {
+    width: 65%;
+    margin-top: 5px;
+    background-color: transparent;
+    border: 1px solid #333;
+  }
+
+  .breakpoint_ticket_end.expand_book {
     width: 1.2rem;
     margin-top: 0px;
-    background-color: #b4b2b2;
+    background-color: #91a77f;
     border: 2px solid #333;
   }
 

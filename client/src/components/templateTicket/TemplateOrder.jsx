@@ -927,24 +927,34 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
 
   const ticketManualRef = useRef(null);
 
-  const ticketTempRef = useRef(null);
+  const breakEndRef = useRef(null);
 
   const hideOrShowBookManual = (currentPlay) => {
     if (currentPlay === "show") {
       // show anim show bookOrder
       ticketManualRef?.current.classList.add("anim_show_book");
 
-      ticketTempRef?.current.classList.add("anim_hide_template");
+      ticketManualRef?.current.previousElementSibling.classList.remove(
+        "showing_up"
+      );
+
+      ticketManualRef?.current.parentElement.classList.remove("flex_move");
+
+      breakEndRef?.current.classList.add("expand_book");
     } else if (currentPlay === "hide") {
       // hide anim show bookOrder
       ticketManualRef?.current.classList.remove("anim_show_book");
 
-      ticketTempRef?.current.classList.add("anim_hide_template");
+      ticketManualRef?.current.previousElementSibling.classList.add(
+        "showing_up"
+      );
+
+      ticketManualRef?.current.parentElement.classList.add("flex_move");
+
+      breakEndRef?.current.classList.remove("expand_book");
     }
 
     console.log("ticketManualRef:", ticketManualRef);
-
-    console.log("ticketTempRef:", ticketTempRef);
   };
 
   const handleIsEndPayment = (e) => {
@@ -960,10 +970,11 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
     <div key={id} className="template_slider_boundary">
       <div className="template_slider_content">
         <div className="available_ticket_sliding">
-          <div className="available_ticket_end" ref={ticketTempRef}>
-            <div className="ticket_book_left">
+          <div className="available_ticket_end">
+            <h4 className="title_order_sample">Sample {id} </h4>
+            <div className="ticket_book_left" ref={ticketManualRef}>
               <h4 className="title_order_mod">Sample {id} </h4>
-              <div className="available_book_content" ref={ticketManualRef}>
+              <div className="available_book_content">
                 <div className="available_book_order">
                   <div className="entitled">
                     <span className="title_order">1 Book Order</span>
@@ -982,7 +993,7 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
                 </div>
               </div>
             </div>
-            <hr className="breakpoint_ticket_end"></hr>
+            <hr className="breakpoint_ticket_end" ref={breakEndRef}></hr>
             <div className="sample_ticket">
               <div className="header_sample">
                 <div className="sample_logo">
