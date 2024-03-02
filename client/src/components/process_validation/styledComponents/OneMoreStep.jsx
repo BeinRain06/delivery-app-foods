@@ -147,7 +147,9 @@ function OneMoreStep({ handleStepBackLoc, handleMoveToValidation }) {
           </FirstMyWord>
           <Decision>
             <Proposal>
-              <Button onClick={() => handleStepBackLoc("toLocation")}>
+              <Button
+                onClick={(space) => handleStepBackLoc((space = "toLocation"))}
+              >
                 <Span>
                   <ChevronLeftMod> &#10092; </ChevronLeftMod>
                 </Span>

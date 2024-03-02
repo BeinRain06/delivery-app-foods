@@ -21,6 +21,11 @@ function Loading() {
 
   const fetchData = async () => {
     const result = await getMeals();
+
+    setTimeout(() => {
+      console.log("fetching course");
+    }, 2500);
+
     const meals = result.data.data;
     let desData = [];
     let vegData = [];
@@ -29,7 +34,6 @@ function Loading() {
 
     if (meals) {
       handleMeals(meals);
-      // dispatch(mealActions.handleMeals(meals));
 
       await meals.map((item, i) => {
         if (item.category._id === import.meta.env.VITE_ID_SEAFOODS) {

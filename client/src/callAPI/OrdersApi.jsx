@@ -66,7 +66,7 @@ export async function fetchOrdersWeek(userId) {
   }
 }
 
-export async function updateThisLocationOrder(newLoc, orderId) {
+export async function updateThisLocationOrder(userId, newLoc, orderId) {
   try {
     const { phone, city, street } = newLoc;
 
@@ -75,6 +75,7 @@ export async function updateThisLocationOrder(newLoc, orderId) {
     const res = await axios.put(
       `${api_url}/${orderId}`,
       {
+        user: userId,
         phone: phone,
         city: city,
         street: street,

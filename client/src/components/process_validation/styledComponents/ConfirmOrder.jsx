@@ -91,7 +91,11 @@ function ConfirmOrder({ handleStepBackLoc, validateThisOrder }) {
           <Button $primary onClick={() => validateThisOrder()}>
             YES
           </Button>
-          <Button onClick={() => handleStepBackLoc("toTemplate")}>NO</Button>
+          <Button
+            onClick={(space) => handleStepBackLoc((space = "toTemplate"))}
+          >
+            NO
+          </Button>
         </BtnValidation>
       </ValidateMsgContent>
     </ValidateMsg>

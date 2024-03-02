@@ -118,13 +118,14 @@ const functionsValidationContext = (INIT_STATE) => {
     });
   }, []);
 
-  const handleApplyText = useCallback(async () => {
+  const handleApplyText = useCallback(async (newText) => {
     return await new Promise((resolve) => {
       dispatch({
         type: ACTIONS_TYPES.APPLY_TEXT,
+        payload: newText,
       });
 
-      setTimeout(resolve, 1000);
+      setTimeout(resolve, 3000);
     });
   }, []);
 

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
+import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
 import PaymentSubmit from "../process_validation/PaymentSubmit";
@@ -16,10 +17,10 @@ import ButtonApply from "../process_validation/styledComponents/ButtonApply";
 import ErrorWarning from "../process_validation/styledComponents/MsgError";
 import "./TemplateOrder.css";
 
-function TemplateDayFlying({ id, lookingForGameOrValidation }) {
+export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
   const {
-    state: { isError },
-  } = useContext(ValidationContext);
+    state: { user },
+  } = useContext(MealContext);
   const {
     state: {
       firstTimeOrder,
@@ -65,14 +66,17 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
       openFinalValidation,
       isOneMoreStep,
       applyText,
+      countClickValidate,
       forseen,
       componentSectionName,
       messageError,
       timerIn,
+      isError,
     },
     handleOpenFinalValidation,
     handleIsOneMoreStep,
     handleApplyText,
+    handleCountClickValidate,
     handleForSeen,
     handleSectionName,
     handleMessageError,
@@ -81,6 +85,7 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
 
   //recording template data order
   const [isPayment, setIsPayment] = useState({});
+  const [ourTimer, setOurTimer] = useState("00:00:00");
 
   const orderOftheDay =
     user.id === undefined
@@ -300,14 +305,21 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
 
     handleOrders(orderSpecsCurrent);
 
-    handleTimerIn(() => callTimer());
+    /*  handleTimerIn(() => callTimer()); */
 
-    SetIsAnOrDay(true);
+    callTimer();
+    setOurTimer("02:00:00");
+
+    const newCount = countClickValidate + 1;
+    handleCountClickValidate(newCount);
 
     handleOpenFinalValidation(false);
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
+    setTimeout(() => {
+      setOurTimer("0):00:00");
+    }, 4000);
   };
 
   function getCookies() {
@@ -339,7 +351,7 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
 
     if (diff >= 0) {
       handleTimerIn(() => {
-        const indexTimer = Array.from(timerIn).length;
+        const indexTimer = Object.keys(timerIn).length;
 
         const newSendTimer = {
           ...timerIn,
@@ -351,6 +363,14 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
             (sec > 9 ? sec : "0" + sec),
         };
 
+        /*  setOurTimer(
+          (hrs > 9 ? hrs : "0" + hrs) +
+            ": " +
+            (min > 9 ? min : "0" + min) +
+            ":" +
+            (sec > 9 ? sec : "0" + sec)
+        ); */
+
         return newSendTimer;
       });
     }
@@ -358,12 +378,14 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
 
   const clearTimer = (cb) => {
     handleTimerIn(() => {
-      const indexTimer = Array.from(timerIn).length;
+      const indexTimer = Object.keys(timerIn).length;
 
       const newSendTimer = {
         ...timerIn,
         [indexTimer]: "02:00:00",
       };
+
+      /* setOurTimer("02:00;00"); */
 
       return newSendTimer;
     });
@@ -425,6 +447,10 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
   };
 
   useEffect(() => {
+    console.log("TemplateDayFlying:", dataTemplatesOrdersDay);
+  }, []);
+
+  useEffect(() => {
     console.log("this place redirect to login or register form!");
   }, [firstTimeOrder]);
 
@@ -435,7 +461,7 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
   }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   return (
-    <div className="template_slider_boundary">
+    <div key={id} className="template_slider_boundary">
       <div className="template_slider_content">
         <div className="available_ticket">
           <div
@@ -597,7 +623,7 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
 
               <div className="address_customers">
                 <div className="address_side">
-                  <p>Location : ${thisOrder.street}</p>
+                  <p>Location21 : ${thisOrder.street}</p>
                   <p className="grateful_words">
                     Thanks you Trusting TDs Services
                   </p>
@@ -652,14 +678,24 @@ function TemplateDayFlying({ id, lookingForGameOrValidation }) {
       </div>
     </div>
   );
-}
+};
 
-const TemplateDaySent = (id, dataTemplate) => {
+export const TemplateDaySentOne = ({ id, dataTemplate, callTimer }) => {
+  const {
+    state: { timerIn },
+  } = useContext(ValidationContext);
+
   const [isEndWatchingTimer, setIsEndWatchingTimer] = useState(false);
-  const [thisTimer, setThisTimer] = useState(() => {
-    const thisTimer = Array.from(timerIn);
-    return thisTimer[id];
-  });
+
+  //  const [thisTimer, setThisTimer] = useState(() => {
+  //   return timerIn[id];
+  // });
+
+  //  const [thisTimer, setThisTimer] = useState(() => {
+  //   return callTimer();
+  // });
+
+  //  const [dataTemplate, setDataTemplate] = useState(null);
   const [isPayment, setIsPayment] = useState(false);
 
   const ticketManualRef = useRef(null);
@@ -680,22 +716,29 @@ const TemplateDaySent = (id, dataTemplate) => {
     }
   };
 
-  const watchTimer = async () => {
-    return await new Promise((resolve) => {
-      const thisTimer = Array.from(timerIn);
-      resolve(thisTimer[id]);
-    });
-  };
+  // const watchTimer = async () => {
+  //   return await new Promise((resolve) => {
+  //     const thisTimer = Array.from(timerIn);
+  //     resolve(thisTimer[id]);
+  //   });
+  // };
 
-  useEffect(() => {
-    watchTimer().then(() => {
-      console.log("Ready To en Code Payment!");
-      setIsEndWatchingTimer(true);
-    });
-  }, [isEndWatchingTimer]);
+  //  useEffect(() => {
+  //   console.log("TemplateDaySent data:", dataTemplatesOrdersDay);
+  //   setDataTemplate(() => {
+  //     return dataTemplatesOrdersDay[+id];
+  //   });
+  // }, []);
+
+  // useEffect(() => {
+  //   watchTimer().then(() => {
+  //     console.log("Ready To en Code Payment!");
+  //     setIsEndWatchingTimer(true);
+  //   });
+  // }, [isEndWatchingTimer]);
 
   return (
-    <div className="template_slider_boundary">
+    <div key={id} className="template_slider_boundary">
       <div className="template_slider_content">
         <div className="available_ticket">
           <div
@@ -755,7 +798,7 @@ const TemplateDaySent = (id, dataTemplate) => {
                   {dataTemplate.orderSpecsCurrent.map((order, i) => {
                     const meal = order.meal;
                     const qty = order.quantity;
-                    const minTotal = (meal.price * qty).toFixed(2);
+                    const minTotal = (order.price * qty).toFixed(2);
                     return (
                       <tbody>
                         <tr>
@@ -814,17 +857,8 @@ const TemplateDaySent = (id, dataTemplate) => {
                     </li>
                   </ul>
                   <span className="total_bill">${dataTemplate.totalPrice}</span>
-                  {/* <div className="submit_container" ref={applyOrderRef}>
-                    <ButtonApply type="submit" applyText={applyText} />
-                  </div> */}
                 </div>
               </div>
-
-              {/* {firstTimeOrder && (
-                <div className="appealing_registration">
-                  <LogOrRegisterForm setShowTotalPrice={setShowTotalPrice} />
-                </div>
-              )} */}
 
               <br></br>
 
@@ -838,20 +872,14 @@ const TemplateDaySent = (id, dataTemplate) => {
                   <ul className="post_track_time">
                     <li>Time Remaining</li>
 
-                    <li className="time_left">{thisTimer}</li>
+                    <li className="time_left">02:00:00</li>
                   </ul>
-                  {/*    {isOneMoreStep && (
-                    <OneMoreStep
-                      handleStepBackLoc={handleStepBackLoc}
-                      handleMoveToValidation={handleMoveToValidation}
-                    />
-                  )} */}
                 </div>
               </div>
 
               <div className="address_customers">
                 <div className="address_side">
-                  <p>Location : ${dataTemplate.thisOrder.street}</p>
+                  <p>Location22 : ${dataTemplate.thisOrder.street}</p>
                   <p className="grateful_words">
                     Thanks you Trusting TDs Services
                   </p>
@@ -865,41 +893,6 @@ const TemplateDaySent = (id, dataTemplate) => {
                     </div>
                   )}
                 </div>
-
-                {/* <div className="submit_ticket">
-                  <button
-                    type="button"
-                    id="btn_validate_order"
-                    className="btn_validate_order"
-                    ref={validateRef}
-                    onClick={validateThisOrder}
-                  >
-                    validate
-                  </button>
-                  <button
-                    type="button"
-                    id="btn_play_game"
-                    className="btn_play_game"
-                    ref={fourthMealRef}
-                    onClick={() => (
-                      <ErrorWarning
-                        message="at least you have to command 3 meals!"
-                        componentSectionName="fourthMealButton"
-                        forseen={forseen}
-                      />
-                    )}
-                  >
-                    Fourth Meal Game
-                  </button>
-
-                  {openFinalValidation && (
-                    <ConfirmOrder
-                      handleOpenFinalValidation={handleOpenFinalValidation}
-                      handleApplyText={handleApplyText}
-                      handleStepBackLoc={handleStepBackLoc}
-                    />
-                  )}
-                </div> */}
 
                 <div className="noti_payment">
                   <p className="notification">
@@ -918,13 +911,6 @@ const TemplateDaySent = (id, dataTemplate) => {
                     {isPayment && <PaymentSubmit />}
                   </div>
                 </div>
-                {/*  {isNewLocation && (
-                  <NewLocationOrder
-                    handleIsOneMoreStep={handleIsOneMoreStep}
-                    setDataNewLocation={setDataNewLocation}
-                    dataNewLocation={dataNewLocation}
-                  />
-                )} */}
               </div>
             </div>
           </div>
@@ -934,19 +920,261 @@ const TemplateDaySent = (id, dataTemplate) => {
   );
 };
 
-function TemplateOrder(id, dataTemplate, lookingForGameOrValidation) {
-  const {
-    state: { countClickValidate },
-  } = useContext(ValidationContext);
+export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
+  const [isEndWatchingTimer, setIsEndWatchingTimer] = useState(false);
 
-  if (+id <= countClickValidate) {
-    <TemplateDaySent id={id} dataTemplate={dataTemplate} />;
-  } else {
-    <TemplateDayFlying
-      id={id}
-      lookingForGameOrValidation={lookingForGameOrValidation}
-    />;
+  const [isPayment, setIsPayment] = useState(false);
+
+  const ticketManualRef = useRef(null);
+
+  const ticketTempRef = useRef(null);
+
+  const hideOrShowBookManual = (currentPlay) => {
+    if (currentPlay === "show") {
+      // show anim show bookOrder
+      ticketManualRef?.current.classList.add("anim_show_book");
+
+      ticketTempRef?.current.classList.add("anim_hide_template");
+    } else if (currentPlay === "hide") {
+      // hide anim show bookOrder
+      ticketManualRef?.current.classList.remove("anim_show_book");
+
+      ticketTempRef?.current.classList.add("anim_hide_template");
+    }
+
+    console.log("ticketManualRef:", ticketManualRef);
+
+    console.log("ticketTempRef:", ticketTempRef);
+  };
+
+  const handleIsEndPayment = (e) => {
+    e.preventDefault();
+    setIsPayment(true);
+  };
+
+  useEffect(() => {
+    console.log("dataTemplate:", dataTemplate);
+  }, []);
+
+  return (
+    <div key={id} className="template_slider_boundary">
+      <div className="template_slider_content">
+        <div className="available_ticket_sliding">
+          <div className="available_ticket_end" ref={ticketTempRef}>
+            <div className="ticket_book_left">
+              <h4 className="title_order_mod">Sample {id} </h4>
+              <div className="available_book_content" ref={ticketManualRef}>
+                <div className="available_book_order">
+                  <div className="entitled">
+                    <span className="title_order">1 Book Order</span>
+                  </div>
+                  <div className="logo_restaurant">
+                    <span className="label_restaurant">TDS</span>
+                  </div>
+                  <button
+                    className="view_template"
+                    onClick={(ongoing) =>
+                      hideOrShowBookManual((ongoing = "hide"))
+                    }
+                  >
+                    template
+                  </button>
+                </div>
+              </div>
+            </div>
+            <hr className="breakpoint_ticket_end"></hr>
+            <div className="sample_ticket">
+              <div className="header_sample">
+                <div className="sample_logo">
+                  <div className="logo_brand">
+                    <span>T</span>
+                    <span>D</span>
+                    <span>S</span>
+                  </div>
+                </div>
+                <div className="current_day_time">
+                  <h4>{dataTemplate.hoursPrinted}</h4>
+                </div>
+                <div className="statement_to_client">
+                  <p>AS you order, your time is valued by our Team</p>
+                </div>
+              </div>
+              <div className="type_sample">
+                <p style={{ fontWeight: "bold" }}>Delivery Foods</p>
+                <p>Ticket N³%: {dataTemplate.ticketNumber} </p>
+              </div>
+              <div className="spec_details_orders">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>meals</th>
+                      <th>qty</th>
+                      <th>price</th>
+                      <th>ToTal</th>
+                    </tr>
+                  </thead>
+
+                  {dataTemplate.orderSpecsCurrent.map((order, i) => {
+                    const meal = order.meal;
+                    const qty = order.quantity;
+                    const minTotal = (order.price * qty).toFixed(2);
+                    return (
+                      <tbody>
+                        <tr>
+                          <td>{meal.name}</td>
+                          <td>{qty}</td>
+                          <td>${order.price}</td>
+                          <td>${minTotal}</td>
+                        </tr>
+                      </tbody>
+                    );
+                  })}
+                </table>
+              </div>
+              <div className="table_recap">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <i className="fa-solid fa-minus"></i>
+                      </td>
+                      <td>
+                        <i className="fa-solid fa-minus"></i>
+                      </td>
+                      <td>
+                        <i className="fa-solid fa-minus"></i>
+                      </td>
+                      <td>${dataTemplate.totalPrice}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="totalPrice_in">
+                <div className="control_radio">
+                  <ul className="input_radio_price">
+                    <li>
+                      <input
+                        type="radio"
+                        name="radio_price"
+                        id="reg_price_1"
+                        className="reg_price_1 reg_price"
+                        disabled
+                      />
+                      <label htmlFor="none">keep ordering</label>
+                    </li>
+                    <li>
+                      <input
+                        type="radio"
+                        name="radio_price"
+                        id="reg_price_2"
+                        className="reg_price_2 reg_price"
+                        checked
+                        disabled
+                      />
+                      <label htmlFor="totalPrice">total Price</label>
+                    </li>
+                  </ul>
+                  <span className="total_bill anim_height ">
+                    ${dataTemplate.totalPrice}
+                  </span>
+                  <div className="submit_container addShowBtn">
+                    <ButtonApply
+                      type="submit"
+                      onClick={(ongoing) =>
+                        hideOrShowBookManual((ongoing = "show"))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <br></br>
+              {/* start and display when you hit button validate */}
+              <div className="order_track_time">
+                <div>
+                  Your order will be send in less than
+                  <span style={{ fontWeight: "bold" }}> 2 hours</span>
+                </div>
+                <div className="remaining_track_time">
+                  <ul className="post_track_time">
+                    <li>Time Remaining</li>
+
+                    <li className="time_left">02:00:00</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="address_customers">
+                <div className="address_side">
+                  <p>Location22 : ${dataTemplate.thisOrder.street}</p>
+                  <p className="grateful_words">
+                    Thanks you Trusting TDs Services
+                  </p>
+                  {isEndWatchingTimer && (
+                    <div className="code_payment_wrapper">
+                      <p>A Deliver will be reaching you soon. Get Ready</p>
+                      <h4>Your Code Payment</h4>
+                      <p className="code_payment_contract">
+                        {dataTemplate.thisOrder.codePayment}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="noti_payment">
+                  <p className="notification">
+                    You will be shortly send a code to complete the transaction
+                  </p>
+
+                  <div className="payment_wrapper">
+                    <button
+                      type="button"
+                      className="btn_sub btn_payment"
+                      onClick={handleIsEndPayment}
+                    >
+                      Payment
+                    </button>
+
+                    {isPayment && <PaymentSubmit />}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+function TemplateOrder({
+  id,
+  dataTemplate,
+  countClickValidate,
+  lookingForGameOrValidation,
+  callTimer,
+}) {
+  const [isEnd, setIsEnd] = useState(() =>
+    +id <= countClickValidate ? true : false
+  );
+
+  {
+    isEnd ? (
+      <TemplateDaySent
+        id={id}
+        dataTemplate={dataTemplate}
+        callTimer={callTimer}
+        countClickValidate={countClickValidate}
+      />
+    ) : (
+      <TemplateDayFlying
+        id={id}
+        lookingForGameOrValidation={lookingForGameOrValidation}
+      />
+    );
   }
+
+  /* return <div>ABC</div>; */
 }
 
 export default TemplateOrder;

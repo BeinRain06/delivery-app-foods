@@ -412,6 +412,15 @@ function NewLocationOrder() {
     "can't proceed! You added element Meal(s) but didn't update totalPrice.";
   const forseen = false;
 
+  function getCookies() {
+    let cookies = document.cookie.split(";").reduce((cookies, cookie) => {
+      const [name, val] = cookie.split("=").map((c) => c.trim());
+      cookies[name] = val;
+      return cookies;
+    }, {});
+    return cookies;
+  }
+
   const handleDataInSubmittion = async (e) => {
     e.preventDefault();
 
@@ -431,8 +440,11 @@ function NewLocationOrder() {
       const newLoc = handleInSecondStepLoc(e);
 
       console.log("new Location -ORDER-LOC-IN before UPDATE:", newLoc);
+      const cookies = getCookies();
+      const userId = cookies.userId;
 
       const updateLocationOrder = await updateThisLocationOrder(
+        userId,
         newLoc,
         thisOrder._id
       );

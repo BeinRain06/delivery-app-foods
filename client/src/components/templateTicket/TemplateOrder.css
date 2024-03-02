@@ -6,33 +6,67 @@
   padding: 0;
 }
 
+/* template_slider_boundary
+template_slider_content */
+
 @media (min-width: 180px) {
   /* available ticket*/
 
-  .available_ticket {
+  .available_ticket_sliding {
     position: relative;
     max-width: 100vw;
     margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  .available_book_content {
+  .available_ticket_end {
+    max-width: 100%;
+    height: 700px;
+    display: flex;
+    justify-content: center;
+    animation: animGetBackTemplateOrder 3s ease-in-out forward;
+  }
+
+  /** book content **/
+  .ticket_book_left {
     position: relative;
-    left: 15%;
-    visibility: hidden;
-    opacity: 0.2;
-    padding: 0 1rem;
-    margin: 0 auto;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 35%;
+    height: 100%;
+    padding: 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    border: 2px solid #333;
+  }
+
+  .title_order_mod {
+    margin-top: 0.5rem;
+  }
+  .available_book_content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     transition: all 1s ease-in-out;
   }
 
-  .available_book_content.anim_show_book {
+  /*  .available_book_content.anim_show_book {
     position: relative;
     left: 0;
     visibility: visible;
     opacity: 1;
     padding: 0 1rem;
     margin: 0 auto;
-  }
+  } */
 
   .available_book_order {
     width: 200px;
@@ -76,13 +110,14 @@
     display: flex;
     justify-content: center;
   }
+  /** end book content **/
 
   /*template slider*/
 
   .template_slider_boundary {
     position: relative;
-    width: calc(96%);
-    height: 820px;
+    width: calc(92%);
+    height: auto;
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -116,31 +151,31 @@
     scroll-snap-align: start;
   }
 
-  .template_slider_content .available_ticket_content {
+  .available_ticket_content {
     max-width: 100%;
     height: auto;
     margin: 0 auto;
     animation: animGetBackTemplateOrder 3s ease-in-out forward;
   }
 
-  .available_ticket_content.anim_hide_template {
+  /*  .available_ticket_content.anim_hide_template {
     max-width: 100%;
     height: auto;
     margin: 0 auto;
     animation: animhideTemplateOrder 3s ease-in-out forward;
-  }
+  } */
 
-  .breakpoint_ticket {
-    width: 65%;
-    margin-top: 5px;
+  .breakpoint_ticket_end {
+    width: 1.2rem;
+    margin-top: 0px;
+    background-color: #b4b2b2;
+    border: 2px solid #333;
   }
 
   .template_slider_content .sample_ticket {
     width: minmax(180px, 42rem);
     height: auto;
-    padding: 0.5rem;
-    /* background-color: #fff; */
-    /* background-color: #6b4d21; */
+    padding: 0.5rem 0;
     font-size: 0.8rem;
   }
 
@@ -227,6 +262,7 @@
   .totalPrice_in {
     /*  --apply-visibility: hidden; */
     width: 100%;
+    height: auto;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -235,29 +271,37 @@
 
   .totalPrice_in .control_radio {
     width: 100%;
+    height: 100%;
     display: grid;
     grid-template-areas:
-      " area1  area1 area2 "
-      " " " " " area3";
+      " area1  area1  "
+      "area2"
+      "area3";
     gap: 0.25rem;
   }
 
   .input_radio_price {
     position: relative;
     top: 0;
+    left: calc(-3%);
     left: 0;
     width: 98%;
     padding: 0.75rem 0 0.5rem;
-    font-size: 15px;
+    font-size: clamp(0.5rem, 0.68rem, 0.65rem);
     display: grid;
-    grid-template-columns: repeat(2, minmax(170px, 1fr));
+    place-items: center;
+    grid-template-columns: repeat(2, minmax(75px, 1fr));
     grid-area: area1;
-    grid-column: 1 / span 3;
+    grid-column: 1 / span 1;
     grid-row: 1 / span 1;
+    margin: 0 auto;
     /* background-color: blue; */
   }
 
   .total_bill {
+    /* width: 50%; */
+    position: relative;
+    top: 0rem;
     height: 0px;
     padding: 0rem 0 0.5rem;
     font-size: 23px;
@@ -266,47 +310,60 @@
     visibility: hidden;
     text-align: center;
     display: grid;
+    /*  grid-template-columns: minmax(70px, 1fr); */
+    grid-template-columns: 1fr;
     grid-area: area2;
-    grid-column: 3 / span 1;
-    grid-row: 1 / span 1;
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
     transition: all 650ms linear;
     /* background-color: yellow; */
   }
 
   .total_bill.anim_height {
     /*  width: 24%; */
+    position: relative;
+    top: -0.35rem;
+    width: 50%;
     height: auto;
     padding: 0.75rem 0 0.5rem;
-    font-size: 23px;
+    font-size: 18px;
     font-weight: bold;
     opacity: 1;
     visibility: visible;
     text-align: center;
-    display: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    /* display: none; */
     grid-area: area2;
-    grid-column: 3 / span 1;
-    grid-row: 1 / span 1;
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
     transition: all 1.2s ease-in-out;
     /* background-color: yellow; */
   }
 
   .submit_container {
+    position: relative;
+    top: 0rem;
+    left: 2rem;
+
     justify-content: center;
     opacity: 1;
     visibility: hidden;
     transition: all 450ms linear;
     display: grid;
+    grid-template-columns: 1fr;
     grid-area: area3;
-    grid-column: 1 / span 3;
-    grid-row: 2 / span 1;
+    grid-column: 1 / span 1;
+    grid-row: 3 / span 1;
   }
 
   .submit_container.addShowBtn {
-    /*  margin: 0 auto; */
+    left: 2rem;
+
     opacity: 0.8;
     grid-area: area3;
-    grid-column: 1 / span 3;
-    grid-row: 2 / span 1;
+    grid-column: 1 / span 1;
+    grid-row: 3 / span 1;
     place-items: center;
     visibility: visible;
     transition: all 650ms linear;
@@ -326,8 +383,8 @@
   .reg_price {
     position: relative;
     top: 0;
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
     background-color: transparent;
     outline: none;
     border-radius: 50%;
@@ -581,6 +638,15 @@
     text-align: right;
   }
 
+  /* .totalPrice_in .control_radio {
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+      " area1  area1 area2 "
+      " " " " " area3";
+    gap: 0.25rem;
+  } */
+
   .spec_details_orders {
     font-size: 0.75rem;
   }
@@ -615,8 +681,13 @@
 
   .sample_ticket {
     width: 80vw;
+    padding: 0.5rem;
     margin: 1rem auto;
     box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.3) yellow;
+  }
+
+  .template_slider_content .sample_ticket {
+    padding: 0.5rem;
   }
 
   .sample_ticket .logo_brand {
@@ -673,6 +744,10 @@
 
 @media (min-width: 710px) {
   /*available ticket*/
+
+  .template_slider_boundary {
+    width: calc(80%);
+  }
 
   .btn_validate_order,
   .btn_play_game {

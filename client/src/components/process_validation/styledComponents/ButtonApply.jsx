@@ -10,25 +10,35 @@ const ButtonA = styled.button`
   border: 2px solid #fff;
   border-radius: 5px;
   background-color: #1c7e4d;
+
   @media ${devices.mobileXtraMini} {
-    font-size: 0.88rem;
+    width: 90%;
+    top: 0.15rem;
+    padding: 0.15em 0.5em;
+    font-size: 0.8em;
+    margin: 0 auto;
   }
   @media ${devices.mobileMiniS} {
-    font-size: clamp(0.7rem, 1rem, 1.3rem);
+    width: 100%;
+    font-size: clamp(0.65rem, 1.1em, 1.5em);
+  }
+  @media ${devices.tablet} {
+    width: 70%;
   }
 `;
 
 const ButtonB = styled.button.attrs(() => ({}))`
   position: relative;
+  top: 0rem;
   right: 2rem;
   padding: 0.25em 1em;
   margin: 1rem;
   color: #fff;
   background-color: #636262;
-  font-size: clamp(0.72rem, 0.84rem, 1rem);
+  font-size: clamp(0.5rem, 0.84rem, 1rem);
   display: block;
   float: right;
-  border-radius: 24px;
+  border-radius: 15px;
   border: 2px solid #555353;
   transition: all 1s ease-in-out;
 
@@ -40,21 +50,30 @@ const ButtonB = styled.button.attrs(() => ({}))`
   }
 
   @media ${devices.mobileXtraMini} {
-    width: 96%;
+    width: 90%;
+    top: 0.15rem;
+    padding: 0.15em 0.5em;
+    font-size: 0.8em;
+    margin: 0 auto;
   }
   @media ${devices.mobileMiniS} {
+    width: 100%;
+    font-size: clamp(0.65rem, 1.1em, 1.5em);
+  }
+  @media ${devices.tablet} {
     width: 70%;
   }
 `;
 
-function ButtonApply() {
+function ButtonApply({ onClick }) {
   const {
     state: { applyText },
   } = useContext(ValidationContext);
 
   if (applyText === "Apply") return <ButtonA>Apply</ButtonA>;
 
-  if (applyText === "Minimize") return <ButtonB>minimize</ButtonB>;
+  if (applyText === "Minimize")
+    return <ButtonB onClick={onClick}>minimize</ButtonB>;
 }
 
 /* function ButtonApply() {

@@ -25,6 +25,10 @@ import CardOrder from "../cards/card-order.jsx";
 import CardWeek from "../cards/card-week.jsx";
 import CardWeekOrders from "../cards/card-week-orders.jsx";
 import TemplateOrder from "../templateTicket/TemplateOrder.jsx";
+import {
+  TemplateDayFlying,
+  TemplateDaySent,
+} from "../templateTicket/TemplateOrder.jsx";
 import LogOrRegisterForm from "../cards/register-login-form.jsx";
 import CardDayOrders from "../cards/card-day-orders.jsx";
 import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
@@ -103,10 +107,8 @@ function Orders() {
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
   const [ourTimer, setOurTimer] = useState(() => {
-    const tmpTimer = Array.from(timerIn);
-    const indTimer = Array.from(timerIn).length;
-    const sentTimer =
-      tmpTimer[indTimer] !== undefined ? tmpTimer[indTimer] : "00:00:00";
+    const tmpTimer = timerIn[0];
+    const sentTimer = tmpTimer !== undefined ? tmpTimer : "00:00:00";
     return sentTimer;
   });
 
@@ -144,6 +146,7 @@ function Orders() {
   /* const [componentSectionName, handleSectionName] = useState(""); */
   /* const [messageError, handleMessageError] = useState(""); */
   /* const [isError, handleIsError] = useState(false); */
+  const [dataTemplate, setDataTemplate] = useState(null);
 
   const newLocationRef = useRef(null);
   const newCityRef = useRef(null);
@@ -207,14 +210,16 @@ function Orders() {
     handleApplyText("Minimize");
 
     //MiddleCore Actions
+    let initPayment;
     let newPayment;
     let newDataTemplateOrdersDay;
+
     setTimeout(async () => {
-      const initPayment = await firstStepPayment();
+      initPayment = await firstStepPayment();
 
       console.log("initPayment:", initPayment);
 
-      const indexPayment = Array.from(initPayment).length;
+      const indexPayment = Object.keys(initPayment).length;
 
       newPayment = { ...payment, [indexPayment]: initPayment };
       handlePayment(newPayment);
@@ -226,12 +231,12 @@ function Orders() {
       thisOrder: thisOrder,
       hoursPrinted: hoursPrinted,
       totalPrice: totalPrice,
-      payment: payment,
+      payment: initPayment,
       timer: "02:00:00",
       orderSpecsCurrent: orderSpecsCurrent,
     };
 
-    const indexTemp = Array.from(dataTemplatesOrdersDay).length;
+    const indexTemp = Object.keys(dataTemplatesOrdersDay).length;
 
     newDataTemplateOrdersDay = {
       ...dataTemplatesOrdersDay,
@@ -242,7 +247,9 @@ function Orders() {
 
     handleOrdersWeek(orderSpecsCurrent);
 
-    handleTimerIn(() => callTimer);
+    /* handleTimerIn(() => callTimer); */
+    callTimer();
+    setOurTimer("02:00:00");
 
     const newCount = countClickValidate + 1;
     handleCountClickValidate(newCount);
@@ -250,7 +257,10 @@ function Orders() {
     handleOpenFinalValidation(false);
 
     //reset variable involved in template_order
-    /* resetDataHoldingTemplate(); */
+    resetDataHoldingTemplate();
+    setTimeout(() => {
+      setOurTimer("0):00:00");
+    }, 4000);
   };
 
   const resetDataHoldingTemplate = () => {
@@ -260,19 +270,18 @@ function Orders() {
     handleThisOrder({});
     handlePayment({});
     handleOrderSpecs([]);
-    /*  handleTimer("00:00:00"); */
-    handleTimerIn("00:00:00");
   };
 
   const handleStepBackLoc = (space) => {
     if (space === "toLocation") {
-      handleIsOneMoreStep(false);
       handleNewLocation(true);
+      setOurTimer("00:00:00");
     } else if (space === "toTemplate") {
       handleNewLocation(false);
       handleApplyText("Apply");
+      handleOpenFinalValidation(false);
     }
-
+    handleIsOneMoreStep(false);
     validateRef.current.classList.remove("impact_more_step");
   };
 
@@ -281,8 +290,8 @@ function Orders() {
     handleApplyText("Minimize");
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
-    /* handleTimer("02:00:00"); */
-    handleTimerIn("02:00:00");
+    /*  handleTimerIn("02:00:00"); */
+    setOurTimer("02:00:00");
     validateRef.current.classList.add("impact_more_step");
   };
 
@@ -444,7 +453,7 @@ function Orders() {
 
     if (diff >= 0) {
       handleTimerIn(() => {
-        const indexTimer = Array.from(timerIn).length;
+        const indexTimer = Object.keys(timerIn).length;
 
         const newSendTimer = {
           ...timerIn,
@@ -459,19 +468,19 @@ function Orders() {
         return newSendTimer;
       });
 
-      setOurTimer(
+      /*  setOurTimer(
         (hrs > 9 ? hrs : "0" + hrs) +
           ": " +
           (min > 9 ? min : "0" + min) +
           ":" +
           (sec > 9 ? sec : "0" + sec)
-      );
+      ); */
     }
   };
 
   const clearTimer = (cb) => {
     handleTimerIn(() => {
-      const indexTimer = Array.from(timerIn).length;
+      const indexTimer = Object.keys(timerIn).length;
 
       const newSendTimer = {
         ...timerIn,
@@ -481,7 +490,7 @@ function Orders() {
       return newSendTimer;
     });
 
-    setOurTimer("02:00:00");
+    /* setOurTimer("02:00:00"); */
 
     //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
     if (interval.current) clearInterval(interval.current);
@@ -535,6 +544,17 @@ function Orders() {
     console.log(
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
+
+    console.log("dataTemplatesOrdersDay details:", dataTemplatesOrdersDay);
+    console.log(
+      "dataTemplatesOrdersDay details first property:",
+      dataTemplatesOrdersDay[0]
+    );
+
+    if (Object.keys(dataTemplatesOrdersDay).length === 1) {
+      setDataTemplate(dataTemplatesOrdersDay[0]);
+    }
+    console.log("timerIn details", timerIn);
   }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   useEffect(() => {
@@ -582,66 +602,38 @@ function Orders() {
           </ul>
         </div>
       </div>
-
-      {Array.from(dataTemplatesOrdersDay).length === 1 && (
+      {Object.keys(dataTemplatesOrdersDay).length === 1 && (
         <div className="template_slider_wrapper">
-          {Array.from(dataTemplatesOrdersDay).map((orderOfDay, orderIndex) => {
-            return (
-              <TemplateOrder
-                key={orderIndex}
-                id={orderIndex}
-                dataTemplate={orderOfDay}
-                callTimer={callTimer}
-                lookingForGameOrValidation={lookingForGameOrValidation}
-              />
-            );
-          })}
+          <TemplateDaySent
+            key="0"
+            id="0"
+            dataTemplate={dataTemplatesOrdersDay[0]}
+            countClickValidate={countClickValidate}
+            lookingForGameOrValidation={lookingForGameOrValidation}
+            callTimer={callTimer}
+          />
         </div>
       )}
 
-      {Array.from(dataTemplatesOrdersDay).length > 1 && (
+      {Object.keys(dataTemplatesOrdersDay).length > 1 && (
         <div className="template_slider_wrapper">
           <Slider {...settings}>
-            {Array.from(dataTemplatesOrdersDay).map(
-              (orderOfDay, orderIndex) => {
-                return (
-                  <TemplateOrder
-                    key={orderIndex}
-                    id={orderIndex}
-                    dataTemplate={orderOfDay}
-                    callTimer={callTimer}
-                    lookingForGameOrValidation={lookingForGameOrValidation}
-                  />
-                );
-              }
-            )}
+            {Object.keys(dataTemplatesOrdersDay).map((key, index) => {
+              return (
+                <TemplateOrder
+                  key={index}
+                  id={index}
+                  dataTemplate={dataTemplatesOrdersDay[index]}
+                  lookingForGameOrValidation={lookingForGameOrValidation}
+                />
+              );
+            })}
           </Slider>
         </div>
       )}
-
       {orderSpecsCurrent.length !== 0 &&
-        Array.from(dataTemplatesOrdersDay).length === 0 && (
+        Object.keys(dataTemplatesOrdersDay).length === 0 && (
           <div className="available_ticket">
-            <div
-              className="available_book_content"
-              ref={ticketManualRef}
-              onClick={() => hideOrShowBookManual("show")}
-            >
-              <div className="available_book_order">
-                <div className="entitled">
-                  <span className="title_order">1 Book Order</span>
-                </div>
-                <div className="logo_restaurant">
-                  <span className="label_restaurant">TDS</span>
-                </div>
-                <button
-                  className="view_template"
-                  onClick={() => hideOrShowBookManual("hide")}
-                >
-                  template
-                </button>
-              </div>
-            </div>
             <div className="available_ticket_content" ref={ticketTempRef}>
               {/* <button className="minimize_template" onclick={openToNewLocation}>
                 minimize
@@ -785,7 +777,7 @@ function Orders() {
 
                 <div className="address_customers">
                   <div className="address_side">
-                    <p>Location : ${thisOrder.street} </p>
+                    <p>Location10 : ${thisOrder.street} </p>
                     <p className="grateful_words">
                       Thanks you Trusting TDs Services
                     </p>
@@ -839,7 +831,6 @@ function Orders() {
             </div>
           </div>
         )}
-
       <div className="sticking_template_order">
         <div className="msg_grateful_order">
           <div>
