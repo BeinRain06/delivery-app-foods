@@ -7,7 +7,8 @@
 }
 
 /* template_slider_boundary
-template_slider_content */
+template_slider_content 
+code_payment_wrapper*/
 
 @media (min-width: 180px) {
   /* available ticket*/
@@ -482,6 +483,7 @@ template_slider_content */
   .code_payment_wrapper {
     margin: 0.25rem auto;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
@@ -492,7 +494,7 @@ template_slider_content */
     margin: 0.25rem 0;
     color: #eee;
     background-color: #d8aa66;
-    font-size: clamp(0.65rem, 0.74rem, 1rem);
+    font-size: clamp(0.75rem, 0.94rem, 1.1rem);
     border: 2px solid #1c7e4d;
   }
 

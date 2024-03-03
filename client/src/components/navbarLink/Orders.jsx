@@ -147,6 +147,7 @@ function Orders() {
   /* const [messageError, handleMessageError] = useState(""); */
   /* const [isError, handleIsError] = useState(false); */
   const [dataTemplate, setDataTemplate] = useState(null);
+  const [startingTestTimer, setStartingTestTimer] = useState("00:00:00");
 
   const newLocationRef = useRef(null);
   const newCityRef = useRef(null);
@@ -248,7 +249,15 @@ function Orders() {
     handleOrdersWeek(orderSpecsCurrent);
 
     /* handleTimerIn(() => callTimer); */
-    callTimer();
+
+    callTimer(120); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
+
+    /*  const indTimerIn = Object.keys(timerIn).length;
+    let newTimerIn;
+    newTimerIn = { ...timerIn, [indTimerIn]: { value: newTime } };
+    console.log("newTimerIn:", newTimerIn);
+    handleTimerIn(newTimerIn); */
+
     setOurTimer("02:00:00");
 
     const newCount = countClickValidate + 1;
@@ -259,7 +268,7 @@ function Orders() {
     //reset variable involved in template_order
     resetDataHoldingTemplate();
     setTimeout(() => {
-      setOurTimer("0):00:00");
+      setOurTimer("00:00:00");
     }, 4000);
   };
 
@@ -452,21 +461,21 @@ function Orders() {
     let { diff, hrs, min, sec } = getRemainingTime(cb);
 
     if (diff >= 0) {
-      handleTimerIn(() => {
-        const indexTimer = Object.keys(timerIn).length;
+      const indexTimer = Object.keys(timerIn).length;
 
-        const newSendTimer = {
-          ...timerIn,
-          [indexTimer]:
+      const newSendTimer = {
+        ...timerIn,
+        [indexTimer]: {
+          value:
             (hrs > 9 ? hrs : "0" + hrs) +
             ": " +
             (min > 9 ? min : "0" + min) +
             ":" +
             (sec > 9 ? sec : "0" + sec),
-        };
+        },
+      };
 
-        return newSendTimer;
-      });
+      handleTimerIn(newSendTimer);
 
       /*  setOurTimer(
         (hrs > 9 ? hrs : "0" + hrs) +
@@ -475,22 +484,28 @@ function Orders() {
           ":" +
           (sec > 9 ? sec : "0" + sec)
       ); */
+
+      setStartingTestTimer(
+        (hrs > 9 ? hrs : "0" + hrs) +
+          ": " +
+          (min > 9 ? min : "0" + min) +
+          ":" +
+          (sec > 9 ? sec : "0" + sec)
+      );
     }
   };
 
   const clearTimer = (cb) => {
-    handleTimerIn(() => {
-      const indexTimer = Object.keys(timerIn).length;
+    const indexTimer = Object.keys(timerIn).length;
+    const newSendTimer = {
+      ...timerIn,
+      [indexTimer]: { value: "00:02:00" }, // change to "02:00:00" --> (for 2 hours)
+    };
 
-      const newSendTimer = {
-        ...timerIn,
-        [indexTimer]: "02:00:00",
-      };
-
-      return newSendTimer;
-    });
+    handleTimerIn(newSendTimer);
 
     /* setOurTimer("02:00:00"); */
+    setStartingTestTimer("02:00:00");
 
     //avoid mutiple setInterval() to run for the same - scope : *interval* (reinitialize Timer or reset Timer !)
     if (interval.current) clearInterval(interval.current);
@@ -502,14 +517,14 @@ function Orders() {
     interval.current = id;
   };
 
-  const getDeadTime = () => {
+  const getDeadTime = (deadTime) => {
     let deadline = new Date();
-    deadline.setSeconds(deadline.getSeconds() + 7200);
+    deadline.setSeconds(deadline.getSeconds() + deadTime);
     return deadline;
   };
 
-  const callTimer = () => {
-    clearTimer(getDeadTime());
+  const callTimer = (deadTime) => {
+    clearTimer(getDeadTime(deadTime));
   };
 
   const settings = {
@@ -518,6 +533,10 @@ function Orders() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+  };
+
+  const startTestTimer = () => {
+    callTimer(7200); //deadTime in s;
   };
 
   // if you want it to be triggered while rendering - have  a try !
@@ -571,6 +590,10 @@ function Orders() {
     <main className="welcome_orders">
       <div className="gen_orders">
         <h4 className="title_order">Orders</h4>
+        <button type="button" onClick={startTestTimer}>
+          Surprise
+        </button>
+        <span>{startingTestTimer} </span>
         <hr className="breakpoint_orders"></hr>
         <div className="recap_wrapper">
           <ul className="ready_ordered snaps_inline_0">
@@ -694,7 +717,7 @@ function Orders() {
                 </div>
                 <div className="table_recap">
                   <table>
-                    <tbody>
+                    <tbody id="body_bill">
                       <tr>
                         <td>
                           <i className="fa-solid fa-minus"></i>

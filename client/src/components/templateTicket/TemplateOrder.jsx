@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
@@ -921,6 +927,10 @@ export const TemplateDaySentOne = ({ id, dataTemplate, callTimer }) => {
 };
 
 export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
+  const {
+    state: { timerIn },
+  } = useContext(ValidationContext);
+
   const [isEndWatchingTimer, setIsEndWatchingTimer] = useState(false);
 
   const [isPayment, setIsPayment] = useState(false);
@@ -966,13 +976,31 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
     console.log("dataTemplate:", dataTemplate);
   }, []);
 
+  useEffect(() => {
+    const tmpArr = timerIn[+id].value.split(":");
+
+    const countDown = tmpArr.reduce((acc, val) => {
+      const newVal = parseInt(val);
+      return acc + newVal;
+    }, 0);
+
+    console.log("countDown:", countDown);
+
+    if (countDown === 0) {
+      setIsEndWatchingTimer(true);
+    }
+  }, [timerIn[+id].value]);
+
   return (
     <div key={id} className="template_slider_boundary">
       <div className="template_slider_content">
         <div className="available_ticket_sliding">
           <div className="available_ticket_end">
             <h4 className="title_order_sample">Sample {id} </h4>
-            <div className="ticket_book_left" ref={ticketManualRef}>
+            <div
+              className="ticket_book_left anim_show_book"
+              ref={ticketManualRef}
+            >
               <h4 className="title_order_mod">Sample {id} </h4>
               <div className="available_book_content">
                 <div className="available_book_order">
@@ -988,12 +1016,15 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
                       hideOrShowBookManual((ongoing = "hide"))
                     }
                   >
-                    template
+                    full template
                   </button>
                 </div>
               </div>
             </div>
-            <hr className="breakpoint_ticket_end" ref={breakEndRef}></hr>
+            <hr
+              className="breakpoint_ticket_end expand_book "
+              ref={breakEndRef}
+            ></hr>
             <div className="sample_ticket">
               <div className="header_sample">
                 <div className="sample_logo">
@@ -1030,7 +1061,7 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
                     const qty = order.quantity;
                     const minTotal = (order.price * qty).toFixed(2);
                     return (
-                      <tbody>
+                      <tbody key={i}>
                         <tr>
                           <td>{meal.name}</td>
                           <td>{qty}</td>
@@ -1044,7 +1075,7 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
               </div>
               <div className="table_recap">
                 <table>
-                  <tbody>
+                  <tbody id="body_bill">
                     <tr>
                       <td>
                         <i className="fa-solid fa-minus"></i>
@@ -1110,7 +1141,7 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
                   <ul className="post_track_time">
                     <li>Time Remaining</li>
 
-                    <li className="time_left">02:00:00</li>
+                    <li className="time_left">{timerIn[+id].value} </li>
                   </ul>
                 </div>
               </div>
@@ -1123,7 +1154,7 @@ export const TemplateDaySent = ({ id, dataTemplate, callTimer }) => {
                   </p>
                   {isEndWatchingTimer && (
                     <div className="code_payment_wrapper">
-                      <p>A Deliver will be reaching you soon. Get Ready</p>
+                      <p>A Deliverer will be reaching you soon. Get Ready</p>
                       <h4>Your Code Payment</h4>
                       <p className="code_payment_contract">
                         {dataTemplate.thisOrder.codePayment}

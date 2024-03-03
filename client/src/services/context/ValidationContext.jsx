@@ -180,6 +180,8 @@ const functionsValidationContext = (INIT_STATE) => {
 
   const handleTimerIn = useCallback(async (timerClock) => {
     return await new Promise((resolve) => {
+      /* console.log("timerClock:", timerClock); */
+
       dispatch({
         type: ACTIONS_TYPES.TIMER_IN,
         payload: timerClock,
