@@ -1,43 +1,76 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
 import "./button-shape.css";
 
 export const Ordered = ({ mealid, mealname, mealprice, setIsCliked }) => {
+  const {
+    state: { countClickValidate },
+  } = useContext(ValidationContext);
+
   const [waiting, setWaiting] = useState(true);
 
-  return (
-    <ul className="order_confirmation">
-      {waiting ? (
-        <TimeAwait setWaiting={setWaiting} />
-      ) : (
-        <>
-          <li className="btn_confirm_order">
-            <Confirm
-              mealid={mealid}
-              mealname={mealname}
-              mealprice={mealprice}
-              setIsCliked={setIsCliked}
-            />
-          </li>
-          <li className="btn_reject_order">
-            <Reject setIsCliked={setIsCliked} />
-          </li>
-        </>
-      )}
-    </ul>
-  );
+  if (countClickValidate === 2) {
+    alert("Your room is Full ! You can't send more than 3£ orders once.");
+    return;
+  }
+
+  if (countClickValidate <= 1) {
+    return (
+      <ul className="order_confirmation">
+        {waiting ? (
+          <TimeAwait setWaiting={setWaiting} />
+        ) : (
+          <>
+            <li className="btn_confirm_order">
+              <Confirm
+                mealid={mealid}
+                mealname={mealname}
+                mealprice={mealprice}
+                setIsCliked={setIsCliked}
+                countClick={countClickValidate}
+              />
+            </li>
+            <li className="btn_reject_order">
+              <Reject setIsCliked={setIsCliked} />
+            </li>
+          </>
+        )}
+      </ul>
+    );
+  }
 };
 
-export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
-  /* const dispatch = useDispatch();
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
-
+export const Confirm = ({
+  mealid,
+  mealname,
+  mealprice,
+  setIsCliked,
+  countClick,
+}) => {
   const {
-    state: { orderSpecsCurrent },
+    state: { orderSpecsCurrent, dataTemplatesOrdersDay },
     handleOrderSpecs,
     handleNewLocation,
+    handleTemplateOrdersDay,
   } = useContext(TemplateContext);
+
+  const getUpdatingTemplateDay = useCallback((items) => {
+    if (countClick >= 0) {
+      let dataRecordObj = {
+        orderSpecsCurrent: items,
+        payment: {},
+      };
+      const indexTemplate = countClick + 1;
+
+      const updating = {
+        ...dataTemplatesOrdersDay,
+        [indexTemplate]: dataRecordObj,
+      };
+
+      handleTemplateOrdersDay(updating);
+    }
+  }, []);
 
   const buildOrderItem = () => {
     const mealID = mealid;
@@ -71,14 +104,6 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
           quantity: orderItem.quantity + 1,
         };
 
-        /*  orderItems = [
-          ...orderSpecsCurrent,
-          (orderSpecsCurrent[indexItem] = {
-            ...orderItem,
-            quantity: orderItem.quantity + 1,
-          }),
-        ]; */
-
         orderItems = [...begin, orderSpecsCurrent[indexItem], ...end];
       } else {
         qty += 1;
@@ -98,12 +123,8 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
     console.log("orderItems:", orderItems);
 
     setTimeout(() => {
-      const sendOrderSpecs = async () => {
-        handleOrderSpecs(orderItems);
-        /* await dispatch(templateActions.handleOrderSpecs(orderItems)); */
-      };
-
-      sendOrderSpecs();
+      handleOrderSpecs(orderItems);
+      getUpdatingTemplateDay(orderItems);
     }, 3000);
   };
 
@@ -118,7 +139,7 @@ export const Confirm = ({ mealid, mealname, mealprice, setIsCliked }) => {
       handleNewLocation(false);
       console.log("order Confirmed!");
       console.log("orderSpecsCurrent catch :", orderSpecsCurrent);
-    }, 3500);
+    }, 3200);
   };
 
   return (

@@ -6,6 +6,8 @@
   padding: 0;
 }
 
+/* slick */
+
 div,
 ul {
   width: 100%;
@@ -828,6 +830,28 @@ ul {
     line-height: 1;
     opacity: 0.75;
   }
+
+  /* .slick-list {
+    width: 100% !important;
+    height: 100% !important;
+  } */
+
+  /* .slick-track {
+    width: 100% !important;
+    height: 100% !important;
+     transform: translate3d(0px, 0px, 0px) !important;
+    background: #1c7e4d !important;
+  } */
+
+  /*  .slick-slide {
+    width: 100% !important;
+    height: 100% !important;
+  } */
+
+  /* .slick-slide > div {
+    width: 100% !important;
+    height: 100% !important;
+  } */
 
   /* orderings of the day */
 

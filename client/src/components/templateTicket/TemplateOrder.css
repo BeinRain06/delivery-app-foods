@@ -142,7 +142,7 @@ code_payment_wrapper*/
   .template_slider_boundary {
     position: relative;
     width: calc(92%);
-    height: auto;
+    height: 800px;
     margin: 0 auto;
     display: flex;
     justify-content: center;

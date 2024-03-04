@@ -173,20 +173,6 @@ function Orders() {
           (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
         );
 
-  const hideOrShowBookManual = (currentPlay) => {
-    if (currentPlay === "show") {
-      // show anim show bookOrder
-      ticketManualRef?.current.style.classList.add("anim_show_book");
-
-      ticketTempRef?.current.style.classList.remove("anim_hide_template");
-    } else {
-      // hide anim show bookOrder
-      ticketManualRef?.current.style.classList.remove("anim_show_book");
-
-      ticketTempRef?.current.style.classList.add("anim_hide_template");
-    }
-  };
-
   const firstStepPayment = async () => {
     return await new Promise(async (resolve) => {
       console.log("inside this order:", thisOrder);
@@ -248,15 +234,7 @@ function Orders() {
 
     handleOrdersWeek(orderSpecsCurrent);
 
-    /* handleTimerIn(() => callTimer); */
-
     callTimer(120); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
-
-    /*  const indTimerIn = Object.keys(timerIn).length;
-    let newTimerIn;
-    newTimerIn = { ...timerIn, [indTimerIn]: { value: newTime } };
-    console.log("newTimerIn:", newTimerIn);
-    handleTimerIn(newTimerIn); */
 
     setOurTimer("02:00:00");
 
@@ -324,7 +302,6 @@ function Orders() {
       if (userId === undefined) {
         setTimeout(() => {
           handleFirstTimeOrder(true);
-          // dispatch(templateActions.handleFirstTimeOrder(true));
         }, 1000);
         totalRef.current.classList.add("anim_height");
         setTimeout(async () => {
@@ -335,7 +312,6 @@ function Orders() {
         handleFirstTimeOrder(false);
         const fetchingWeek = await fetchOrdersWeek(userId);
         if (thisOrder._id !== undefined) {
-          /*  await dispatch(templateActions.handleFirstTimeOrder(false)); */
           console.log("saved and updated my order (thisOrder):", thisOrder);
 
           const newChange = await updateThisTotalPriceOrder(
@@ -345,18 +321,12 @@ function Orders() {
 
           handleThisOrder(newChange);
 
-          /* const renewTheOrder = await templateActions.handleThisOrder(newChange); */
-
           setTimeout(() => {
             console.log("new this order send back:", newChange);
           }, 1000);
 
           setShowTotalPrice(newChange.totalPrice);
           handleTotalPrice(newChange.totalPrice);
-
-          /* await dispatch(
-          templateActions.handleTotalPrice(renewTheOrder.totalPrice)
-        ); */
         } else if (thisOrder._id === undefined) {
           console.log("user data saved:", user);
           const newTakenOrder = await initiateOrder(
@@ -366,8 +336,6 @@ function Orders() {
 
           handleThisOrder(newTakenOrder);
 
-          /* const newThisOrder = await templateActions.handleThisOrder(newChange); */
-
           setShowTotalPrice(newTakenOrder.totalPrice);
 
           setTimeout(() => {
@@ -376,14 +344,6 @@ function Orders() {
           handleTotalPrice(newTakenOrder.totalPrice);
         }
       }
-
-      /*  if (orderSpecsCurrent.length >= 3) {
-        console.log("fourthMealRef current:", fourthMealRef);
-        fourthMealRef.current.classList.add("impact_play");
-      } else if (orderSpecsCurrent < 3) {
-        fourthMealRef.current.classList.remove("impact_play");
-        console.log("fourthMealRef current:", fourthMealRef);
-      } */
 
       applyOrderRef.current.classList.add("addShowBtn");
       totalRef.current.classList.add("anim_height");
@@ -434,12 +394,6 @@ function Orders() {
     } else {
       lastingTimeError(e);
     }
-  };
-
-  const handleSubmitOrder = (e) => {
-    e.preventDefault();
-    console.log(e.target);
-    openToNewLocation();
   };
 
   const getRemainingTime = (cb) => {
@@ -527,7 +481,13 @@ function Orders() {
     clearTimer(getDeadTime(deadTime));
   };
 
-  const settings = {
+  const handleSubmitOrder = (e) => {
+    e.preventDefault();
+    console.log(e.target);
+    openToNewLocation();
+  };
+
+  const settingsSlider = {
     dots: true,
     infinite: true,
     speed: 500,
@@ -627,7 +587,16 @@ function Orders() {
       </div>
       {Object.keys(dataTemplatesOrdersDay).length === 1 && (
         <div className="template_slider_wrapper">
-          <TemplateDaySent
+          {/*  <TemplateDaySent
+            key="0"
+            id="0"
+            dataTemplate={dataTemplatesOrdersDay[0]}
+            countClickValidate={countClickValidate}
+            lookingForGameOrValidation={lookingForGameOrValidation}
+            callTimer={callTimer}
+          /> */}
+
+          <TemplateOrder
             key="0"
             id="0"
             dataTemplate={dataTemplatesOrdersDay[0]}
@@ -640,13 +609,14 @@ function Orders() {
 
       {Object.keys(dataTemplatesOrdersDay).length > 1 && (
         <div className="template_slider_wrapper">
-          <Slider {...settings}>
+          <Slider {...settingsSlider}>
             {Object.keys(dataTemplatesOrdersDay).map((key, index) => {
               return (
                 <TemplateOrder
                   key={index}
                   id={index}
                   dataTemplate={dataTemplatesOrdersDay[index]}
+                  countClickValidate={countClickValidate}
                   lookingForGameOrValidation={lookingForGameOrValidation}
                 />
               );
