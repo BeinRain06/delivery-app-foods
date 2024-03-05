@@ -5,10 +5,12 @@ import React, {
   useContext,
   useCallback,
 } from "react";
+import moment from "moment";
 import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
 import PaymentSubmit from "../process_validation/PaymentSubmit";
+import { postPayment } from "../../callAPI/PaymentApi";
 import { MTN, ORANGE } from "../../assets/images";
 
 import {
@@ -20,10 +22,15 @@ import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
 import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
 import OneMoreStep from "../process_validation/styledComponents/OneMoreStep";
 import ButtonApply from "../process_validation/styledComponents/ButtonApply";
+import { ButtonApplyTest } from "../process_validation/styledComponents/ButtonApply";
 import ErrorWarning from "../process_validation/styledComponents/MsgError";
 import "./TemplateOrder.css";
 
-export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
+export const TemplateDayFlying = ({
+  id,
+  setIsEnd,
+  lookingForGameOrValidation,
+}) => {
   const {
     state: { user },
   } = useContext(MealContext);
@@ -89,11 +96,18 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
     handleTimerIn,
   } = useContext(ValidationContext);
 
+  const { handlePayment, handleOrderSpecs } = useContext(TemplateContext);
+
+  /* handleOrders, handlePayment, handleOrderSpecs */
+
   //recording template data order
   const [isPayment, setIsPayment] = useState({});
   const [ourTimer, setOurTimer] = useState("00:00:00");
+  const [applyColor, setApplyColor] = useState("green");
 
-  /* li  */
+  const interval = useRef(null);
+
+  /* li, handleMoveToValidation  */
 
   const firstStepPayment = async () => {
     return await new Promise(async (resolve) => {
@@ -116,6 +130,7 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
     //Pre-Actions
     validateRef.current.classList.remove("impact_more_step");
     handleApplyText("Minimize");
+    setApplyColor("gray");
 
     //MiddleCore Actions
     let initPayment;
@@ -124,7 +139,7 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
     setTimeout(async () => {
       initPayment = await firstStepPayment();
 
-      const indexPayment = Object.keys(initPayment).length;
+      const indexPayment = countClickValidate + 1;
 
       newPayment = { ...payment, [indexPayment]: initPayment };
       handlePayment(newPayment);
@@ -141,7 +156,7 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
       orderSpecsCurrent: orderSpecsCurrent,
     };
 
-    const indexTemp = Object.keys(dataTemplatesOrdersDay).length;
+    const indexTemp = countClickValidate + 1;
 
     newDataTemplateOrdersDay = {
       ...dataTemplatesOrdersDay,
@@ -150,7 +165,7 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
 
     handleTemplateOrdersDay(newDataTemplateOrdersDay);
 
-    handleOrders(orderSpecsCurrent);
+    /* handleOrdersWeek(orderSpecsCurrent); */
 
     callTimer(120); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
 
@@ -160,6 +175,8 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
     handleCountClickValidate(newCount);
 
     handleOpenFinalValidation(false);
+
+    setIsEnd(true);
 
     //reset variable involved in template_order
     resetDataHoldingTemplate();
@@ -174,7 +191,8 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
     handleTotalPrice("_ _ _ _");
     handleThisOrder({});
     handlePayment({});
-    handleClearOrderSpecs([]);
+    handleApplyText("Apply");
+    handleOrderSpecs([]);
     handleTimer("00:00:00");
   };
 
@@ -194,10 +212,11 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
   const handleMoveToValidation = () => {
     handleIsOneMoreStep(false);
     /*  handleOpenFinalValidation(true); */
-    handleApplyText("Minimize");
+    /* handleApplyText("Minimize"); */
+    setApplyColor("gray");
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
-    handleTimer("02:00:00");
+    setOurTimer("02:00:00");
     validateRef.current.classList.add("impact_more_step");
   };
 
@@ -229,9 +248,14 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
         return;
       } else {
         handleFirstTimeOrder(false);
-        const fetchingWeek = await fetchOrdersWeek(userId);
+
+        /* const fetchingWeek = await fetchOrdersWeek(userId); */
+
         if (thisOrder._id !== undefined) {
-          console.log("saved and updated my order (thisOrder):", thisOrder);
+          console.log(
+            "saved and updated my order errLoc(thisOrder):",
+            thisOrder
+          );
 
           const newChange = await updateThisTotalPriceOrder(
             thisOrder._id,
@@ -306,17 +330,22 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
     let { diff, hrs, min, sec } = getRemainingTime(cb);
 
     if (diff >= 0) {
-      const indexTimer = Object.keys(timerIn).length;
+      /*  const indexTimer = Object.keys(timerIn).length; */
+
+      const indexTimer = countClickValidate + 1;
 
       const newSendTimer = {
         ...timerIn,
-        [indexTimer]:
-          (hrs > 9 ? hrs : "0" + hrs) +
-          ": " +
-          (min > 9 ? min : "0" + min) +
-          ":" +
-          (sec > 9 ? sec : "0" + sec),
+        [indexTimer]: {
+          value:
+            (hrs > 9 ? hrs : "0" + hrs) +
+            ": " +
+            (min > 9 ? min : "0" + min) +
+            ":" +
+            (sec > 9 ? sec : "0" + sec),
+        },
       };
+
       handleTimerIn(newSendTimer);
 
       /*  setOurTimer(
@@ -330,11 +359,13 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
   };
 
   const clearTimer = (cb) => {
-    const indexTimer = Object.keys(timerIn).length;
+    /* const indexTimer = Object.keys(timerIn).length; */
+
+    const indexTimer = countClickValidate + 1;
 
     const newSendTimer = {
       ...timerIn,
-      [indexTimer]: "02:00:00",
+      [indexTimer]: { value: "00:02:00" }, // change to "02:00:00" --> (for 2 hours)
     };
     handleTimerIn(newSendTimer);
 
@@ -465,7 +496,7 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
                 </div>
 
                 <div className="totalPrice_in">
-                  <div
+                  <form
                     className="control_radio"
                     onSubmit={(e) => handleSubmitOrder(e)}
                   >
@@ -496,9 +527,9 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
                       ${showTotalPrice}
                     </span>
                     <div className="submit_container" ref={applyOrderRef}>
-                      <ButtonApply type="submit" />
+                      <ButtonApplyTest type="submit" bgColor={applyColor} />
                     </div>
-                  </div>
+                  </form>
                 </div>
 
                 {firstTimeOrder && (
@@ -592,10 +623,14 @@ export const TemplateDayFlying = ({ id, lookingForGameOrValidation }) => {
   );
 };
 
-export const TemplateDaySent = ({ id, dataTemplate }) => {
+export const TemplateDaySent = ({ id }) => {
   const {
     state: { timerIn },
   } = useContext(ValidationContext);
+
+  const {
+    state: { dataTemplatesOrdersDay },
+  } = useContext(TemplateContext);
 
   const [isEndWatchingTimer, setIsEndWatchingTimer] = useState(false);
 
@@ -639,7 +674,8 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
   };
 
   useEffect(() => {
-    console.log("dataTemplate:", dataTemplate);
+    console.log("dataTemplatesOrdersDay[+id]:", dataTemplatesOrdersDay[+id]);
+    console.log("timerIn[+id]:", timerIn[+id]);
   }, []);
 
   useEffect(() => {
@@ -650,7 +686,7 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
       return acc + newVal;
     }, 0);
 
-    console.log("countDown:", countDown);
+    /*  console.log("countDown:", countDown); */
 
     if (countDown === 0) {
       setIsEndWatchingTimer(true);
@@ -706,7 +742,7 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
                     </div>
                   </div>
                   <div className="current_day_time">
-                    <h4>{dataTemplate.hoursPrinted}</h4>
+                    <h4>{dataTemplatesOrdersDay[+id].hoursPrinted}</h4>
                   </div>
                   <div className="statement_to_client">
                     <p>AS you order, your time is valued by our Team</p>
@@ -714,7 +750,7 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
                 </div>
                 <div className="type_sample">
                   <p style={{ fontWeight: "bold" }}>Delivery Foods</p>
-                  <p>Ticket N³%: {dataTemplate.ticketNumber} </p>
+                  <p>Ticket N³%: {dataTemplatesOrdersDay[+id].ticketNumber} </p>
                 </div>
                 <div className="spec_details_orders">
                   <table>
@@ -727,21 +763,23 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
                       </tr>
                     </thead>
 
-                    {dataTemplate.orderSpecsCurrent.map((order, i) => {
-                      const meal = order.meal;
-                      const qty = order.quantity;
-                      const minTotal = (order.price * qty).toFixed(2);
-                      return (
-                        <tbody key={i}>
-                          <tr>
-                            <td>{meal.name}</td>
-                            <td>{qty}</td>
-                            <td>${order.price}</td>
-                            <td>${minTotal}</td>
-                          </tr>
-                        </tbody>
-                      );
-                    })}
+                    {dataTemplatesOrdersDay[+id].orderSpecsCurrent.map(
+                      (order, i) => {
+                        const meal = order.name;
+                        const qty = order.quantity;
+                        const minTotal = (order.price * qty).toFixed(2);
+                        return (
+                          <tbody key={i}>
+                            <tr>
+                              <td>{meal}</td>
+                              <td>{qty}</td>
+                              <td>${order.price}</td>
+                              <td>${minTotal}</td>
+                            </tr>
+                          </tbody>
+                        );
+                      }
+                    )}
                   </table>
                 </div>
                 <div className="table_recap">
@@ -757,7 +795,7 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
                         <td>
                           <i className="fa-solid fa-minus"></i>
                         </td>
-                        <td>${dataTemplate.totalPrice}</td>
+                        <td>${dataTemplatesOrdersDay[+id].totalPrice}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -788,11 +826,12 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
                       </li>
                     </ul>
                     <span className="total_bill anim_height ">
-                      ${dataTemplate.totalPrice}
+                      ${dataTemplatesOrdersDay[+id].totalPrice}
                     </span>
                     <div className="submit_container addShowBtn">
                       <ButtonApply
                         type="submit"
+                        id={id}
                         onClick={(ongoing) =>
                           hideOrShowBookManual((ongoing = "show"))
                         }
@@ -819,7 +858,10 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
 
                 <div className="address_customers">
                   <div className="address_side">
-                    <p>Location22 : ${dataTemplate.thisOrder.street}</p>
+                    <p>
+                      Location22 : $
+                      {dataTemplatesOrdersDay[+id].thisOrder.street}
+                    </p>
                     <p className="grateful_words">
                       Thanks you Trusting TDs Services
                     </p>
@@ -828,7 +870,7 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
                         <p>A Deliverer will be reaching you soon. Get Ready</p>
                         <h4>Your Code Payment</h4>
                         <p className="code_payment_contract">
-                          {dataTemplate.thisOrder.codePayment}
+                          {dataTemplatesOrdersDay[+id].thisOrder.codePayment}
                         </p>
                       </div>
                     )}
@@ -862,27 +904,31 @@ export const TemplateDaySent = ({ id, dataTemplate }) => {
   );
 };
 
-function TemplateOrder({
-  id,
-  dataTemplate,
-  countClickValidate,
-  lookingForGameOrValidation,
-}) {
+function TemplateOrder({ id, countClick, lookingForGameOrValidation }) {
   /*  const [isEnd, setIsEnd] = useState(getStatusEnd(id, countClickValidate)); */
+  const {
+    state: { countClickValidate },
+  } = useContext(ValidationContext);
+
+  const [idToTake, setIdToTake] = useState(id);
 
   const [isEnd, setIsEnd] = useState(() => {
-    const status = id <= countClickValidate ? true : false;
-    return status;
+    const status = idToTake <= countClick ? true : false;
+    return status; // watch countClick
   });
-
-  const getStatusEnd = (id, comparator) => {
-    const status = id <= comparator ? true : false;
-    return status;
-  };
 
   useEffect(() => {
     console.log("count click validate useEff:", countClickValidate);
   }, []);
+
+  /* useEffect(() => {
+    if (countClickValidate >= 1) {
+      setIdToTake(countClickValidate.toString());
+      setTimeout(() => {
+        setIsEnd(true);
+      }, 3000);
+    }
+  }, [countClickValidate]); */
 
   /* 
   {
@@ -903,21 +949,19 @@ function TemplateOrder({
   if (isEnd) {
     return (
       <TemplateDaySent
-        id={id}
-        dataTemplate={dataTemplate}
-        countClickValidate={countClickValidate}
+        id={idToTake}
+        /* countClickValidate={countClickValidate} */
       />
     );
   } else {
     return (
       <TemplateDayFlying
-        id={id}
+        id={idToTake}
+        setIsEnd={setIsEnd}
         lookingForGameOrValidation={lookingForGameOrValidation}
       />
     );
   }
-
-  /* return <div>ABC</div>; */
 }
 
 export default TemplateOrder;

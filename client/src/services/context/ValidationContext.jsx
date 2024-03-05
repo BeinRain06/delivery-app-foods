@@ -12,6 +12,11 @@ export const INIT_STATE = {
   openFinalValidation: false,
   isOneMoreStep: false,
   applyText: "Apply",
+  boardTemplateText: {
+    0: "Minimize",
+    1: "Minimize",
+    2: "Minimize",
+  },
   countClickValidate: -1,
   forseen: false,
   componentSectionName: "",
@@ -26,6 +31,7 @@ const ACTIONS_TYPES = {
   OPEN_FINAL: "OPEN_FINAL",
   ONE_MORE_STEP: "ONE_MORE_STEP",
   APPLY_TEXT: "APPLY_TEXT",
+  BOARD_TEXT: "BOARD_TEXT",
   CLICK_VALIDATE: "CLICK_VALIDATE",
   FOR_SEEN: "FOR_SEEN",
   SECTION_NAME: "SECTION_NAME",
@@ -50,6 +56,9 @@ const reducer = (state, action) => {
 
     case ACTIONS_TYPES.APPLY_TEXT:
       return { ...state, applyText: action.payload };
+
+    case ACTIONS_TYPES.BOARD_TEXT:
+      return { ...state, boardTemplateText: action.payload };
 
     case ACTIONS_TYPES.CLICK_VALIDATE:
       return { ...state, countClickValidate: action.payload };
@@ -129,6 +138,17 @@ const functionsValidationContext = (INIT_STATE) => {
     });
   }, []);
 
+  const handleBoardText = useCallback(async (newObj) => {
+    return await new Promise((resolve) => {
+      dispatch({
+        type: ACTIONS_TYPES.BOARD_TEXT,
+        payload: newObj,
+      });
+
+      setTimeout(resolve, 3000);
+    });
+  }, []);
+
   const handleForSeen = useCallback(async () => {
     return await new Promise((resolve) => {
       dispatch({
@@ -198,6 +218,7 @@ const functionsValidationContext = (INIT_STATE) => {
     handleOpenFinalValidation,
     handleIsOneMoreStep,
     handleApplyText,
+    handleBoardText,
     handleCountClickValidate,
     handleForSeen,
     handleSectionName,
@@ -214,6 +235,7 @@ const initStateContext = {
   handleOpenFinalValidation: () => {},
   handleIsOneMoreStep: () => {},
   handleApplyText: () => {},
+  handleBoardText: () => {},
   handleCountClickValidate: () => {},
   handleForSeen: () => {},
   handleSectionName: () => {},

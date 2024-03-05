@@ -34,7 +34,7 @@ import CardDayOrders from "../cards/card-day-orders.jsx";
 import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
 import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
 import OneMoreStep from "../process_validation/styledComponents/OneMoreStep";
-import ButtonApply from "../process_validation/styledComponents/ButtonApply";
+import { ButtonApplyTest } from "../process_validation/styledComponents/ButtonApply";
 import ErrorWarning from "../process_validation/styledComponents/MsgError";
 import "./Orders.css";
 
@@ -103,6 +103,7 @@ function Orders() {
   } = useContext(ValidationContext);
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
+  const [applyColor, setApplyColor] = useState("green");
 
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
@@ -232,7 +233,7 @@ function Orders() {
 
     handleTemplateOrdersDay(newDataTemplateOrdersDay);
 
-    handleOrdersWeek(orderSpecsCurrent);
+    /* handleOrdersWeek(orderSpecsCurrent); */
 
     callTimer(120); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
 
@@ -255,6 +256,7 @@ function Orders() {
     handleHoursPrint("time");
     handleTotalPrice("_ _ _ _");
     handleThisOrder({});
+    handleApplyText("Apply");
     handlePayment({});
     handleOrderSpecs([]);
   };
@@ -274,7 +276,8 @@ function Orders() {
 
   const handleMoveToValidation = () => {
     handleIsOneMoreStep(false);
-    handleApplyText("Minimize");
+    /* handleApplyText("Minimize"); */
+    setApplyColor("gray");
     handleTicketNumber((totalPrice - 3).toString(16));
     handleHoursPrint(moment().format("hh:mm a"));
     /*  handleTimerIn("02:00:00"); */
@@ -600,7 +603,7 @@ function Orders() {
             key="0"
             id="0"
             dataTemplate={dataTemplatesOrdersDay[0]}
-            countClickValidate={countClickValidate}
+            countClick={countClickValidate}
             lookingForGameOrValidation={lookingForGameOrValidation}
             callTimer={callTimer}
           />
@@ -615,9 +618,10 @@ function Orders() {
                 <TemplateOrder
                   key={index}
                   id={index}
-                  dataTemplate={dataTemplatesOrdersDay[index]}
-                  countClickValidate={countClickValidate}
+                  countClick={countClickValidate}
                   lookingForGameOrValidation={lookingForGameOrValidation}
+                  setApplyColor={setApplyColor}
+                  bgColor={applyColor}
                 />
               );
             })}
@@ -736,7 +740,7 @@ function Orders() {
                       $ {showTotalPrice}
                     </span>
                     <div className="submit_container" ref={applyOrderRef}>
-                      <ButtonApply type="submit" />
+                      <ButtonApplyTest type="submit" bgColor={applyColor} />
                     </div>
                   </form>
                 </div>

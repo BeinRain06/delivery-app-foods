@@ -9,8 +9,9 @@ const ButtonA = styled.button`
   /*  font-size: clamp(0.7rem, 1.25rem, 1.3rem); */
   border: 2px solid #fff;
   border-radius: 5px;
-  background-color: #1c7e4d;
-
+  color: ${(props) => (props.$primary === "green" ? "#000" : "#555")};
+  background-color: ${(props) =>
+    props.$primary === "green" ? "#1c7e4d" : "#ddd"};
   @media ${devices.mobileXtraMini} {
     width: 90%;
     top: 0.15rem;
@@ -35,6 +36,7 @@ const ButtonB = styled.button.attrs(() => ({}))`
   margin: 1rem;
   color: #fff;
   background-color: #636262;
+  /* background-color: #111; */
   font-size: clamp(0.5rem, 0.84rem, 1rem);
   display: block;
   float: right;
@@ -65,14 +67,26 @@ const ButtonB = styled.button.attrs(() => ({}))`
   }
 `;
 
-function ButtonApply({ onClick }) {
+export const ButtonApplyTest = ({ bgColor, onClick }) => {
   const {
     state: { applyText },
   } = useContext(ValidationContext);
 
-  if (applyText === "Apply") return <ButtonA>Apply</ButtonA>;
+  if (applyText === "Apply") return <ButtonA $primary={bgColor}>Apply</ButtonA>;
 
   if (applyText === "Minimize")
+    return <ButtonB onClick={onClick}>minimize</ButtonB>;
+};
+
+function ButtonApply({ id, onClick }) {
+  const {
+    state: { applyText, boardTemplateText },
+  } = useContext(ValidationContext);
+
+  if (boardTemplateText[+id] === "Apply")
+    return <ButtonA $primary="green">Apply</ButtonA>;
+
+  if (boardTemplateText[+id] === "Minimize")
     return <ButtonB onClick={onClick}>minimize</ButtonB>;
 }
 

@@ -439,6 +439,10 @@ function NewLocationOrder() {
       setMsgErr("");
       const newLoc = handleInSecondStepLoc(e);
 
+      if (typeof newLoc === "string") {
+        return;
+      } // expect data object - newLoc: {...}
+
       console.log("new Location -ORDER-LOC-IN before UPDATE:", newLoc);
       const cookies = getCookies();
       const userId = cookies.userId;
@@ -476,7 +480,9 @@ function NewLocationOrder() {
       if (phone.value === "") {
         alert("Please Enter a phone number");
         handleNewLocation(false);
-        return;
+        const errNumber = "Error Number";
+
+        return errNumber;
       }
 
       let city = "home";
@@ -506,7 +512,10 @@ function NewLocationOrder() {
       if (phone.value === "" || city.value === "" || street.value === "") {
         alert("Please Enter All the field");
         handleNewLocation(false);
-        return;
+
+        const errLoc = "Error Either in Number, City or Street";
+
+        return errLoc;
       }
 
       let newLocation = {
