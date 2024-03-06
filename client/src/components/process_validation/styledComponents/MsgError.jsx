@@ -64,7 +64,10 @@ function ErrorWarning() {
   };
 
   const chooseYourStyle = () => {
-    if (componentSectionName === "sendNewLocOrder") {
+    if (
+      componentSectionName === "sendNewLocOrder" ||
+      componentSectionName === "paymentEnd"
+    ) {
       return styleDivOne;
     } else if (
       componentSectionName === "fourthMealButton" &&

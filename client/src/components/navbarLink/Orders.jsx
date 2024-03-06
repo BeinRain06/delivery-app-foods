@@ -7,16 +7,13 @@ import React, {
 } from "react";
 import moment from "moment";
 import { AhmadIMG, SHAWNAN, MTN, ORANGE } from "../../assets/images";
-import { useDispatch, useSelector } from "react-redux";
-import { templateActions } from "../../services/redux/createslice/TemplateSlice";
+
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { MealContext } from "../../services/context/MealsContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
 import {
   initiateOrder,
-  updateThisLocationOrder,
   updateThisTotalPriceOrder,
-  fetchOrdersWeek,
 } from "../../callAPI/OrdersApi";
 import { postPayment } from "../../callAPI/PaymentApi";
 import { userLogging } from "../../callAPI/UsersApi";
@@ -25,10 +22,7 @@ import CardOrder from "../cards/card-order.jsx";
 import CardWeek from "../cards/card-week.jsx";
 import CardWeekOrders from "../cards/card-week-orders.jsx";
 import TemplateOrder from "../templateTicket/TemplateOrder.jsx";
-import {
-  TemplateDayFlying,
-  TemplateDaySent,
-} from "../templateTicket/TemplateOrder.jsx";
+
 import LogOrRegisterForm from "../cards/register-login-form.jsx";
 import CardDayOrders from "../cards/card-day-orders.jsx";
 import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
@@ -52,9 +46,8 @@ function Orders() {
   // const dispatch = useDispatch();
 
   const {
-    state: { meals, user, indexDayFormat, ordersWeek },
+    state: { meals, user, indexDayFormat, ordersWeek, ordersDay },
     handleWelcome,
-    handleOrdersWeek,
   } = useContext(MealContext);
 
   const {
@@ -113,40 +106,9 @@ function Orders() {
     return sentTimer;
   });
 
-  const [ordersWeekArr, setOrdersWeekArr] = useState([]);
+  const [myDayOrder, setMyDayOrder] = useState([]);
+  const [myWeekOrder, setMyWeekOrder] = useState([]);
 
-  const updateOrdersWeek = useCallback(async () => {
-    const cookies = getCookies();
-    const userId = cookies.userId;
-    const ordersFetch = await fetchOrdersWeek(userId);
-    let newOrdersFetch;
-
-    console.log("ordersFetch:", ordersFetch);
-
-    if (ordersFetch.length !== 0) {
-      ordersFetch?.map((eltOrder, i) => {
-        const indElt = +moment(eltOrder).format("d");
-        newOrdersFetch = { ...newOrdersFetch, [indElt]: eltOrder };
-      });
-
-      handleOrdersWeek(newOrdersFetch);
-      setOrdersWeekArr(() => {
-        const ordersWeekArr = Array.from(ordersWeek);
-        return ordersWeekArr;
-      });
-    }
-  }, []);
-
-  /*  const [timerIn, handleTimerIn] = useState("00:00:00"); */
-
-  //process validation Hook
-
-  /* const [applyText, handleApplyText] = useState("Apply"); */
-  /*  const [indexWeekDay, handleIndexWeekDay] = useState(false); */
-  /* const [forseen, handleForseen] = useState(false); */
-  /* const [componentSectionName, handleSectionName] = useState(""); */
-  /* const [messageError, handleMessageError] = useState(""); */
-  /* const [isError, handleIsError] = useState(false); */
   const [dataTemplate, setDataTemplate] = useState(null);
   const [startingTestTimer, setStartingTestTimer] = useState("00:00:00");
 
@@ -166,13 +128,6 @@ function Orders() {
   const validateRef = useRef(null);
   const fourthMealRef = useRef(null);
   const sliderTemplateRef = useRef(null);
-
-  const orderOftheDay =
-    user.id === undefined
-      ? []
-      : ordersWeek.filter(
-          (order) => order.dateOrdered === moment().format("Do MMMM, YYYY")
-        );
 
   const firstStepPayment = async () => {
     return await new Promise(async (resolve) => {
@@ -219,7 +174,7 @@ function Orders() {
       thisOrder: thisOrder,
       hoursPrinted: hoursPrinted,
       totalPrice: totalPrice,
-      payment: initPayment,
+      payments: initPayment,
       timer: "02:00:00",
       orderSpecsCurrent: orderSpecsCurrent,
     };
@@ -527,12 +482,6 @@ function Orders() {
       "This have to Update The quantity and mini Total Price Template Ticket!"
     );
 
-    console.log("dataTemplatesOrdersDay details:", dataTemplatesOrdersDay);
-    console.log(
-      "dataTemplatesOrdersDay details first property:",
-      dataTemplatesOrdersDay[0]
-    );
-
     if (Object.keys(dataTemplatesOrdersDay).length === 1) {
       setDataTemplate(dataTemplatesOrdersDay[0]);
     }
@@ -540,14 +489,18 @@ function Orders() {
   }, [orderSpecsCurrent, dataTemplatesOrdersDay, applyText]);
 
   useEffect(() => {
-    /*  if (Array.from(ordersWeek?.length) !== 0) {
-      updateOrdersWeek();
-      console.log("Update Orders List Week!");
-    } */
+    console.log("Update Week and Day Show Command");
+    const ArrWeek = Object.keys(ordersWeek).map((key, i) => {
+      return ordersWeek[key];
+    });
 
-    updateOrdersWeek();
-    console.log("Update Orders List Week!");
-  }, [ordersWeek]);
+    const ArrDay = Object.keys(ordersDay).map((key, i) => {
+      return ordersDay[key];
+    });
+
+    setMyWeekOrder(ArrWeek);
+    setMyDayOrder(ArrDay);
+  }, [ordersDay]);
 
   return (
     <main className="welcome_orders">
@@ -845,7 +798,7 @@ function Orders() {
         <div className="orders_day">
           <div className="template_day_orders">
             <ul className="template_day snaps_inline">
-              {orderOftheDay.length !== 0 ? (
+              {myDayOrder.length !== 0 ? (
                 <CardDayOrders
                   key={orderOftheDay.length}
                   ordersSpecs={ordersSpecs}
@@ -872,8 +825,8 @@ function Orders() {
 
             <div className="days_week_order">
               <ul className="days_dish_recap">
-                {ordersWeekArr[indexWeekDay] !== undefined ? (
-                  ordersWeekArr?.map((item, i) => {
+                {myWeekOrder.length !== 0 ? (
+                  myWeekOrder.map((item, i) => {
                     let dateOrderedFormat = item.dateOrdered.format("MMM D");
 
                     if (dateOrderedFormat === indexDayFormat) {

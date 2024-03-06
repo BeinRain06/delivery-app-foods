@@ -42,7 +42,7 @@ export const TemplateDayFlying = ({
       dataTemplatesOrdersDay,
       timer,
       isNewLocation,
-      payment,
+      payments,
       ticketNumber,
       totalPrice,
       hoursPrinted,
@@ -139,9 +139,9 @@ export const TemplateDayFlying = ({
     setTimeout(async () => {
       initPayment = await firstStepPayment();
 
-      const indexPayment = countClickValidate + 1;
+      const indexPayment = Object.keys(payments).length;
 
-      newPayment = { ...payment, [indexPayment]: initPayment };
+      newPayment = { ...payments, [indexPayment]: initPayment };
       handlePayment(newPayment);
     }, 3000);
 
@@ -151,7 +151,7 @@ export const TemplateDayFlying = ({
       thisOrder: thisOrder,
       hoursPrinted: hoursPrinted,
       totalPrice: totalPrice,
-      payment: initPayment,
+      payments: initPayment,
       timer: "02:00:00",
       orderSpecsCurrent: orderSpecsCurrent,
     };
@@ -891,7 +891,9 @@ export const TemplateDaySent = ({ id }) => {
                         Payment
                       </button>
 
-                      {isPayment && <PaymentSubmit />}
+                      {isPayment && (
+                        <PaymentSubmit id={id} setIsPayment={setIsPayment} />
+                      )}
                     </div>
                   </div>
                 </div>

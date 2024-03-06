@@ -48,6 +48,7 @@ router.post("/payment", async (req, res) => {
     console.log();
 
     const status = "non-paid";
+
     let payment = new Payment({
       order: req.body.order,
       account: req.body.account,
@@ -80,6 +81,7 @@ router.put("/payment/:paymentId", async (req, res) => {
       paymentId,
       {
         account: req.body.account,
+        amountBill: req.body.amountBill,
         status: status,
       },
       { new: true }

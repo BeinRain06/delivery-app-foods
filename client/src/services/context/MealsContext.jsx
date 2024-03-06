@@ -16,10 +16,11 @@ export const INITIAL_STATE = {
   meats: [],
   vegetarians: [],
   desserts: [],
+  ordersDay: [],
   ordersWeek: [],
   ratings: [],
   openWeek: false,
-  indexDayFormat: "",
+  indexDayFormat: moment().weekday(1).format("ddd"),
   openTagRatings: false,
   registerForm: {},
   loginForm: {},
@@ -37,6 +38,7 @@ export const ACTIONS_TYPES = {
   USER: "USER",
   RATINGS: "USER_RATING",
   NEW_RATING: "NEW_RATING",
+  ORDERS_DAY: "ORDERS_DAY",
   ORDERS_WEEK: "ORDERS_WEEK",
   INDEX_DAY: "INDEX_DAY",
   OPEN_TAG_RATING: "OPEN_TAG_RATING",
@@ -64,6 +66,9 @@ export const reducer = (state, action) => {
 
     case ACTIONS_TYPES.RATINGS:
       return { ...state, ratings: action.payload };
+
+    case ACTIONS_TYPES.ORDERS_DAY:
+      return { ...state, ordersDay: action.payload };
 
     case ACTIONS_TYPES.ORDERS_WEEK:
       return { ...state, ordersWeek: action.payload };
@@ -114,11 +119,17 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     dispatch({ type: ACTIONS_TYPES.ORDERS_WEEK, payload: updateOrders });
   }, []);
 
+  const handleOrdersDay = useCallback((orders) => {
+    const updateOrders = orders;
+
+    dispatch({ type: ACTIONS_TYPES.ORDERS_DAY, payload: updateOrders });
+  }, []);
+
   const handleUser = useCallback((user) => {
     dispatch({ type: ACTIONS_TYPES.USER, payload: user });
   }, []);
 
-  const handleDayShift = useCallback((e) => {
+  const handleIndexDayShift = useCallback((e) => {
     const i = e.target.id;
 
     let current = moment().startof("week").add(i, "days");
@@ -158,9 +169,10 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     handleSeaFoods,
     handleVegetarians,
     handleDesserts,
+    handleOrdersDay,
     handleOrdersWeek,
     handleUser,
-    handleDayShift,
+    handleIndexDayShift,
     handleOpenTagsRatings,
     handleRatings,
     handleRegisterForm,
@@ -176,9 +188,10 @@ const initStateContext = {
   handleSeaFoods: () => {},
   handleVegetarians: () => {},
   handleDesserts: () => {},
+  handleOrdersDay: () => {},
   handleOrdersWeek: () => {},
   handleUser: () => {},
-  handleDayShift: () => {},
+  handleIndexDayShift: () => {},
   handleOpenTagsRatings: () => {},
   handleRatings: () => {},
   handleRegisterForm: () => {},

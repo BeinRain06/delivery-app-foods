@@ -224,14 +224,26 @@ router.post("/order/checkprice", async (req, res) => {
 // UPDATING NEW LOCATION
 router.put("/order/newlocation/:orderId", async (req, res) => {
   console.log("body phone:", req.body.phone);
+  console.log("body user:", req.body.user);
+
+  let city = req.body.city;
+  let street = req.body.street;
 
   try {
+    if (city === "home" || street === "home") {
+      const user = await User.findById(req.body.user);
+      city = user.city;
+      street = user.street;
+      console.log("city:", city);
+      console.log("street:", street);
+    }
+
     const updateOrder = await Order.findByIdAndUpdate(
       req.params.orderId,
       {
         phone: req.body.phone,
-        city: req.body.city,
-        street: req.body.street,
+        city: city,
+        street: street,
       },
       { new: true }
     );

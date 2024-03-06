@@ -76,7 +76,7 @@ export async function postPayment(orderId, account, codePayment, totalPriceIn) {
 // ---> HERE FURTHER ADD PART FUNCTION (UPDATE REQUEST) TO FINALIZE THE PAYMENT
 
 //FOR POST
-export async function endPayment(paymentId, orderId, account) {
+export async function endPayment(paymentId, account, amountBill) {
   //remember you post the Payment when you click on the "validate Button" in template Order.jsx
   try {
     let api_url = "http://localhost:5000/api/delivery/payments";
@@ -86,9 +86,8 @@ export async function endPayment(paymentId, orderId, account) {
     const res = await axios.put(
       `${api_url}/${paymentId}`,
       {
-        order: orderId, // id_order
         account: account,
-        codePayment: codePayment, // default value first
+        amountBill: amountBill,
       },
       {
         headers: {

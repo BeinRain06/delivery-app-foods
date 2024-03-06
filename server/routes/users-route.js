@@ -139,8 +139,8 @@ router.post("/login", async (req, res) => {
       const maxAge = 3 * 1000 * 60 * 60 * 24; // 3days in ms
 
       //jwt signing
-      const userId = user._id;
-      const token = createToken(user._id, user.isAdmin);
+      const userId = user.id;
+      const token = createToken(user.id, user.isAdmin);
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge });
       res.cookie("userId", userId, { httpOnly: false, maxAge: maxAge });
 

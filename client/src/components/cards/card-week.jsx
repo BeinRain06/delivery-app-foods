@@ -5,44 +5,52 @@ import { ValidationContext } from "../../services/context/ValidationContext";
 import moment from "moment";
 import "./card-week.css";
 
-function CardWeek({ id }) {
-  let i = +id;
-  let current = moment().weekday(i);
+function CardWeek({ id, className, setUpdateClassName }) {
+  const {
+    state: { indexDayFormat },
+    handleIndexDayShift,
+  } = useContext(MealContext);
 
-  const { handleIndexWeekDay } = useContext(ValidationContext);
+  const [prevActiveDay, setPrevActiveDay] = useState(indexDayFormat);
 
-  const [prevActiveDay, setPrevActiveDay] = useState(null);
-
-  const [className, setUpdateClassName] = useState(() => {
-    const className = i === 0 ? "active_day day_week" : "day_week";
-    return className;
-  });
+  const [currentDay, setCurrentDay] = useState(
+    moment().weekday(+id).format("ddd")
+  );
 
   const spanRef = useRef(null);
 
   const handleWhileShiftingDay = (e) => {
-    setUpdateClassName("day_week");
+    setUpdateClassName("day_week"); // all class reset default;
+
     const dayOnClick = e.target.getAttribute("data-value");
 
     if (dayOnClick !== prevActiveDay) {
       spanRef.current.classList.add("active_day");
-      prevActiveDay.classList.remove("active_day");
-      handleIndexWeekDay(+id);
-      setPrevActiveDay(spanRef.current);
+
+      const newPrevActiveDay = moment().weekday(+id).format("ddd");
+
+      handleIndexDayShift(newPrevActiveDay);
+
+      setPrevActiveDay(newPrevActiveDay);
     }
   };
+
+  useEffect(() => {
+    const chooseClassName = +id === 1 ? "active_day day_week" : "day_week";
+    setUpdateClassName(chooseClassName);
+  }, []);
 
   return (
     <li
       id={id}
       className="weeks_day_li"
-      data-value={current.format("MMM D")}
+      data-value={currentDay.format("ddd")}
       onClick={(e) => handleWhileShiftingDay(e)}
     >
       <span className={className} ref={spanRef}>
-        {current.format("ddd")}
+        {currentDay.format("ddd")}
       </span>
-      <span className="day_count">{current.format("DD")} </span>
+      <span className="day_count">{currentDay.format("DD")} </span>
     </li>
   );
 }
