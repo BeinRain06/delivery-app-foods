@@ -44,14 +44,10 @@ ul {
   position: relative;
   width: 100vw;
   height: 300px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
   background-color: #cecaca;
 }
 
-.wrapper_no_items .content_no {
+.template_day_orders .wrapper_no_items .content_no {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -62,6 +58,18 @@ ul {
   font-weight: bolder;
   text-align: center;
   margin: 0 auto;
+}
+
+.template_week_orders .wrapper_no_items .content_no {
+  position: relative;
+  width: 74%;
+  height: 100%;
+  padding: 0;
+  font-size: 20px;
+  font-weight: bolder;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .appealing_registration {
@@ -1410,12 +1418,13 @@ ul {
   }
 
   /*orders days*/
-  /*  .title_template_orders {
+  .title_template_orders {
     padding: 0 0 0.25rem 1rem;
-  } */
+  }
 
   /*ordered in week*/
-  /*  .days_week_order .dish_order_img {
+
+  /* .days_week_order .dish_order_img {
     width: 3.5rem;
     height: 40px;
     object-fit: cover;

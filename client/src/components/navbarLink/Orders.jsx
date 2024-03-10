@@ -48,6 +48,7 @@ function Orders() {
   const {
     state: { meals, user, indexDayFormat, ordersWeek, ordersDay },
     handleWelcome,
+    handleIndexDayShift,
   } = useContext(MealContext);
 
   const {
@@ -57,7 +58,7 @@ function Orders() {
       thisOrder,
       dataTemplatesOrdersDay,
       isNewLocation,
-      payment,
+      payments,
       ticketNumber,
       totalPrice,
       hoursPrinted,
@@ -97,6 +98,7 @@ function Orders() {
 
   const [showTotalPrice, setShowTotalPrice] = useState("_ _ _ _");
   const [applyColor, setApplyColor] = useState("green");
+  const [myPaymentInit, setMyPaymentInit] = useState({});
 
   const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
@@ -108,6 +110,7 @@ function Orders() {
 
   const [myDayOrder, setMyDayOrder] = useState([]);
   const [myWeekOrder, setMyWeekOrder] = useState([]);
+  const [className, setUpdateClassName] = useState("");
 
   const [dataTemplate, setDataTemplate] = useState(null);
   const [startingTestTimer, setStartingTestTimer] = useState("00:00:00");
@@ -153,44 +156,13 @@ function Orders() {
     handleApplyText("Minimize");
 
     //MiddleCore Actions
-    let initPayment;
-    let newPayment;
-    let newDataTemplateOrdersDay;
-
     setTimeout(async () => {
-      initPayment = await firstStepPayment();
-
-      console.log("initPayment:", initPayment);
-
-      const indexPayment = Object.keys(initPayment).length;
-
-      newPayment = { ...payment, [indexPayment]: initPayment };
-      handlePayment(newPayment);
-    }, 3000);
-
-    //recording template data order
-    let dataRecordObj = {
-      ticketNumber: ticketNumber,
-      thisOrder: thisOrder,
-      hoursPrinted: hoursPrinted,
-      totalPrice: totalPrice,
-      payments: initPayment,
-      timer: "02:00:00",
-      orderSpecsCurrent: orderSpecsCurrent,
-    };
-
-    const indexTemp = Object.keys(dataTemplatesOrdersDay).length;
-
-    newDataTemplateOrdersDay = {
-      ...dataTemplatesOrdersDay,
-      [indexTemp]: dataRecordObj,
-    };
-
-    handleTemplateOrdersDay(newDataTemplateOrdersDay);
+      await updateDataTemplate();
+    }, 1000);
 
     /* handleOrdersWeek(orderSpecsCurrent); */
 
-    callTimer(120); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
+    callTimer(70); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
 
     setOurTimer("02:00:00");
 
@@ -214,6 +186,42 @@ function Orders() {
     handleApplyText("Apply");
     handlePayment({});
     handleOrderSpecs([]);
+  };
+
+  const updateDataTemplate = async () => {
+    let initPayment;
+    let newDataTemplateOrdersDay;
+    initPayment = await firstStepPayment();
+
+    console.log("initPayment:", initPayment);
+    setMyPaymentInit(initPayment);
+
+    const indexPayment = countClickValidate + 1;
+
+    let newPayment = { ...payments, [indexPayment]: initPayment };
+    handlePayment(newPayment);
+
+    //recording template data order
+    let dataRecordObj = {
+      ticketNumber: ticketNumber,
+      thisOrder: thisOrder,
+      hoursPrinted: hoursPrinted,
+      totalPrice: totalPrice,
+      payments: newPayment,
+      timer: "02:00:00",
+      orderSpecsCurrent: orderSpecsCurrent,
+    };
+
+    console.log("dataRecordObj:", dataRecordObj);
+
+    const indexTemp = countClickValidate + 1;
+
+    newDataTemplateOrdersDay = {
+      ...dataTemplatesOrdersDay,
+      [indexTemp]: dataRecordObj,
+    };
+
+    handleTemplateOrdersDay(newDataTemplateOrdersDay);
   };
 
   const handleStepBackLoc = (space) => {
@@ -268,7 +276,7 @@ function Orders() {
         return;
       } else {
         handleFirstTimeOrder(false);
-        const fetchingWeek = await fetchOrdersWeek(userId);
+        /*   const fetchingWeek = await fetchOrdersWeek(userId); */
         if (thisOrder._id !== undefined) {
           console.log("saved and updated my order (thisOrder):", thisOrder);
 
@@ -411,7 +419,7 @@ function Orders() {
     const indexTimer = Object.keys(timerIn).length;
     const newSendTimer = {
       ...timerIn,
-      [indexTimer]: { value: "00:02:00" }, // change to "02:00:00" --> (for 2 hours)
+      [indexTimer]: { value: "00:01:10" }, // change to "02:00:00" --> (for 2 hours)
     };
 
     handleTimerIn(newSendTimer);
@@ -503,7 +511,7 @@ function Orders() {
   }, [ordersDay]);
 
   return (
-    <main className="welcome_orders">
+    <main className="welcome_orders" onClick={(e) => console.log(e.target)}>
       <div className="gen_orders">
         <h4 className="title_order">Orders</h4>
         <button type="button" onClick={startTestTimer}>
@@ -819,7 +827,14 @@ function Orders() {
           <div className="calendar_orders ">
             <div className="weeks_day">
               {tmpIndexWeek.map((day, i) => {
-                return <CardWeek key={i} id={i} />;
+                return (
+                  <CardWeek
+                    key={i}
+                    id={i}
+                    className={className}
+                    setUpdateClassName={setUpdateClassName}
+                  />
+                );
               })}
             </div>
 

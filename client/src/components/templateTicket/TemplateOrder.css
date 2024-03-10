@@ -163,7 +163,7 @@ code_payment_wrapper*/
     display: flex;
     justify-content: center;
     gap: 0.25rem;
-    overflow-x: hidden;
+    overflow: hidden;
     animation: playVisibility 2.5s ease-in-out forwards;
   }
 
@@ -202,6 +202,7 @@ code_payment_wrapper*/
     margin-top: 0px;
     background-color: #91a77f;
     border: 2px solid #333;
+    display: none;
   }
 
   .template_slider_content .sample_ticket {
@@ -528,10 +529,27 @@ code_payment_wrapper*/
   }
 
   .btn_payment {
-    width: 3.6rem;
     padding: 0.25rem 0;
+    color: #fff;
     background-color: #333;
     float: right;
+    transition: all 1s ease-in-out;
+  }
+
+  .btn_payment.shadow_btn {
+    padding: 0.25rem 0;
+    color: #555;
+    background-color: #bebebe;
+    float: right;
+  }
+
+  .btn_sub.btn_paid {
+    padding: 0.5rem 0;
+    color: #fff;
+    background-color: #1c7e4d;
+    float: right;
+    transition: all 1s ease-in-out;
+    border: 2px solid #eee;
   }
 
   /*payment methods*/
@@ -693,7 +711,8 @@ code_payment_wrapper*/
     font-size: 0.75rem;
   }
 
-  .btn_payment {
+  .btn_payment,
+  .btn_paid {
     width: auto;
     padding: 0.25rem 0.5rem;
   }
@@ -759,7 +778,8 @@ code_payment_wrapper*/
     font-size: 0.75rem;
   }
 
-  .btn_payment {
+  .btn_payment,
+  .btn_paid {
     width: auto;
     padding: 0.25rem 1rem;
   }
@@ -781,6 +801,14 @@ code_payment_wrapper*/
   .template_slider_boundary {
     width: calc(80%);
   }
+
+  /* .ticket_book_left.anim_show_book {
+    display: flex;
+  }
+
+   .breakpoint_ticket_end.expand_book {
+    display: block;
+  } */
 
   .btn_validate_order,
   .btn_play_game {
@@ -825,7 +853,8 @@ code_payment_wrapper*/
     font-size: 0.75rem;
   }
 
-  .btn_payment {
+  .btn_payment,
+  .btn_paid {
     width: 9rem;
     padding: 0.25rem;
   }

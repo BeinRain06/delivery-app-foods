@@ -133,41 +133,13 @@ export const TemplateDayFlying = ({
     setApplyColor("gray");
 
     //MiddleCore Actions
-    let initPayment;
-    let newPayment;
-    let newDataTemplateOrdersDay;
     setTimeout(async () => {
-      initPayment = await firstStepPayment();
-
-      const indexPayment = Object.keys(payments).length;
-
-      newPayment = { ...payments, [indexPayment]: initPayment };
-      handlePayment(newPayment);
-    }, 3000);
-
-    //recording template data order
-    let dataRecordObj = {
-      ticketNumber: ticketNumber,
-      thisOrder: thisOrder,
-      hoursPrinted: hoursPrinted,
-      totalPrice: totalPrice,
-      payments: initPayment,
-      timer: "02:00:00",
-      orderSpecsCurrent: orderSpecsCurrent,
-    };
-
-    const indexTemp = countClickValidate + 1;
-
-    newDataTemplateOrdersDay = {
-      ...dataTemplatesOrdersDay,
-      [indexTemp]: dataRecordObj,
-    };
-
-    handleTemplateOrdersDay(newDataTemplateOrdersDay);
+      await updateDataTemplate();
+    }, 4000);
 
     /* handleOrdersWeek(orderSpecsCurrent); */
 
-    callTimer(120); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
+    callTimer(70); // time set in s  <--- // change to "7200" --> (for 2 hours) --->;
 
     setOurTimer("02:00:00");
 
@@ -194,6 +166,42 @@ export const TemplateDayFlying = ({
     handleApplyText("Apply");
     handleOrderSpecs([]);
     handleTimer("00:00:00");
+  };
+
+  const updateDataTemplate = async () => {
+    let initPayment;
+    let newDataTemplateOrdersDay;
+    initPayment = await firstStepPayment();
+
+    console.log("initPayment:", initPayment);
+    setMyPaymentInit(initPayment);
+
+    const indexPayment = countClickValidate + 1;
+
+    let newPayment = { ...payments, [indexPayment]: initPayment };
+    handlePayment(newPayment);
+
+    //recording template data order
+    let dataRecordObj = {
+      ticketNumber: ticketNumber,
+      thisOrder: thisOrder,
+      hoursPrinted: hoursPrinted,
+      totalPrice: totalPrice,
+      payments: newPayment,
+      timer: "02:00:00",
+      orderSpecsCurrent: orderSpecsCurrent,
+    };
+
+    console.log("dataRecordObj:", dataRecordObj);
+
+    const indexTemp = Object.keys(dataTemplatesOrdersDay).length;
+
+    newDataTemplateOrdersDay = {
+      ...dataTemplatesOrdersDay,
+      [indexTemp]: dataRecordObj,
+    };
+
+    handleTemplateOrdersDay(newDataTemplateOrdersDay);
   };
 
   const handleStepBackLoc = (space) => {
@@ -365,7 +373,7 @@ export const TemplateDayFlying = ({
 
     const newSendTimer = {
       ...timerIn,
-      [indexTimer]: { value: "00:02:00" }, // change to "02:00:00" --> (for 2 hours)
+      [indexTimer]: { value: "00:01:10" }, // change to "02:00:00" --> (for 2 hours)
     };
     handleTimerIn(newSendTimer);
 
@@ -625,20 +633,24 @@ export const TemplateDayFlying = ({
 
 export const TemplateDaySent = ({ id }) => {
   const {
-    state: { timerIn },
+    state: { timerIn, isEndWatchingTimer },
+    handleIsEndWatchingTimer,
+    handleTimerIn,
   } = useContext(ValidationContext);
 
   const {
     state: { dataTemplatesOrdersDay },
   } = useContext(TemplateContext);
 
-  const [isEndWatchingTimer, setIsEndWatchingTimer] = useState(false);
+  /* const [isEndWatchingTimer, handleIsEndWatchingTimer] = useState(false); */
 
   const [isPayment, setIsPayment] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
 
   const ticketManualRef = useRef(null);
 
   const breakEndRef = useRef(null);
+  const payBtnRef = useRef(null);
 
   const hideOrShowBookManual = (currentPlay) => {
     if (currentPlay === "show") {
@@ -668,34 +680,54 @@ export const TemplateDaySent = ({ id }) => {
     console.log("ticketManualRef:", ticketManualRef);
   };
 
+  const delayPayment = () => {
+    console.log("abort payment");
+    setIsPayment(false);
+    payBtnRef.current.classList.remove("shadow_btn");
+  };
+
   const handleIsEndPayment = (e) => {
     e.preventDefault();
     setIsPayment(true);
+    payBtnRef.current.classList.add("shadow_btn");
   };
 
   useEffect(() => {
+    console.log("isPaid : ==", isPaid);
     console.log("dataTemplatesOrdersDay[+id]:", dataTemplatesOrdersDay[+id]);
-    console.log("timerIn[+id]:", timerIn[+id]);
+    console.log("timerIn[id] --3:", timerIn);
   }, []);
 
   useEffect(() => {
-    const tmpArr = timerIn[+id].value.split(":");
+    console.log("timerIn -- 2:", timerIn);
+    console.log("timerIn[id] -- 2:", timerIn[id]);
 
-    const countDown = tmpArr.reduce((acc, val) => {
-      const newVal = parseInt(val);
-      return acc + newVal;
-    }, 0);
+    const countingTimer = () => {
+      const tmpArr = timerIn[id].value.split(":");
 
-    /*  console.log("countDown:", countDown); */
+      const countDown = tmpArr.reduce((acc, val) => {
+        const newVal = parseInt(val);
+        return acc + newVal;
+      }, 0);
 
-    if (countDown === 0) {
-      setIsEndWatchingTimer(true);
+      if (countDown === 0) {
+        handleIsEndWatchingTimer(true);
+      }
+    };
+    const timerEndAndAction = () => {
+      const newTimerIn = { ...timerIn, [id]: { value: "00:00:00" } };
+      handleTimerIn(newTimerIn);
+
+      handleIsEndWatchingTimer(false);
+      return;
+    };
+
+    if (timerIn !== true) {
+      countingTimer();
+    } else {
+      timerEndAndAction();
     }
-  }, [timerIn[+id].value]);
-
-  {
-    /* <div key={id} className="template_slider_boundary"></div>; */
-  }
+  }, [timerIn]);
 
   return (
     <>
@@ -842,19 +874,24 @@ export const TemplateDaySent = ({ id }) => {
 
                 <br></br>
                 {/* start and display when you hit button validate */}
-                <div className="order_track_time">
-                  <div>
-                    Your order will be send in less than
-                    <span style={{ fontWeight: "bold" }}> 2 hours</span>
+                {isPaid ? (
+                  <div></div>
+                ) : (
+                  <div className="order_track_time">
+                    <div>
+                      Your order will be send in less than
+                      <span style={{ fontWeight: "bold" }}> 2 hours</span>
+                    </div>
+                    <div className="remaining_track_time">
+                      <ul className="post_track_time">
+                        <li>Time Remaining</li>
+                        {timerIn !== true && (
+                          <li className="time_left">{timerIn[id]?.value}</li>
+                        )}
+                      </ul>
+                    </div>
                   </div>
-                  <div className="remaining_track_time">
-                    <ul className="post_track_time">
-                      <li>Time Remaining</li>
-
-                      <li className="time_left">{timerIn[+id].value} </li>
-                    </ul>
-                  </div>
-                </div>
+                )}
 
                 <div className="address_customers">
                   <div className="address_side">
@@ -883,16 +920,38 @@ export const TemplateDaySent = ({ id }) => {
                     </p>
 
                     <div className="payment_wrapper">
-                      <button
-                        type="button"
-                        className="btn_sub btn_payment"
-                        onClick={handleIsEndPayment}
-                      >
-                        Payment
-                      </button>
+                      {!isPaid ? (
+                        <button
+                          type="button"
+                          className="btn_sub btn_payment"
+                          onClick={handleIsEndPayment}
+                          ref={payBtnRef}
+                        >
+                          Payment
+                        </button>
+                      ) : (
+                        <button type="button" className="btn_sub btn_paid">
+                          Paid
+                          <span
+                            style={{
+                              margin: "0 0.5rem",
+                              fontSize: "clamp(0.75rem, 0.85rem, 1rem)",
+
+                              borderColor: "#fff",
+                            }}
+                          >
+                            &#9734;
+                          </span>
+                        </button>
+                      )}
 
                       {isPayment && (
-                        <PaymentSubmit id={id} setIsPayment={setIsPayment} />
+                        <PaymentSubmit
+                          id={id}
+                          delayPayment={delayPayment}
+                          setIsPayment={setIsPayment}
+                          setIsPaid={setIsPaid}
+                        />
                       )}
                     </div>
                   </div>

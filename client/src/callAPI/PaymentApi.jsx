@@ -79,7 +79,7 @@ export async function postPayment(orderId, account, codePayment, totalPriceIn) {
 export async function endPayment(paymentId, account, amountBill) {
   //remember you post the Payment when you click on the "validate Button" in template Order.jsx
   try {
-    let api_url = "http://localhost:5000/api/delivery/payments";
+    let api_url = "http://localhost:5000/api/delivery/payments/payment";
 
     let endPayment;
 

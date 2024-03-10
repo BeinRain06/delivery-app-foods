@@ -23,6 +23,8 @@ export const INIT_STATE = {
   messageError: "",
   isError: false,
   timerIn: {},
+  isEndWatchingTimer: false,
+  isPaid: false,
 };
 
 const ACTIONS_TYPES = {
@@ -38,6 +40,8 @@ const ACTIONS_TYPES = {
   MSG_ERROR: "MSG_ERROR",
   IS_ERROR: "IS_ERROR",
   TIMER_IN: "TIMER_IN",
+  IS_PAID: "IS_PAID",
+  END_WATCHING_TIMER: "END_WATCHING_TIMER",
 };
 
 const reducer = (state, action) => {
@@ -76,6 +80,12 @@ const reducer = (state, action) => {
 
     case ACTIONS_TYPES.TIMER_IN:
       return { ...state, timerIn: action.payload };
+
+    case ACTIONS_TYPES.END_WATCHING_TIMER:
+      return { ...state, isEndWatchingTimer: action.payload };
+
+    case ACTIONS_TYPES.IS_PAID:
+      return { ...state, isPaid: action.payload };
 
     default:
       throw new Error("Something wrong in case type");
@@ -198,6 +208,32 @@ const functionsValidationContext = (INIT_STATE) => {
     });
   }, []);
 
+  const handleIsEndWatchingTimer = useCallback(async (endWatch) => {
+    return await new Promise((resolve) => {
+      /* console.log("endWatch:", endWatch); */
+
+      dispatch({
+        type: ACTIONS_TYPES.END_WATCHING_TIMER,
+        payload: endWatch,
+      });
+
+      setTimeout(resolve, 4000);
+    });
+  }, []);
+
+  const handleIsPaid = useCallback(async (isBillPaid) => {
+    return await new Promise((resolve) => {
+      /* console.log("isBillPaid:", isBillPaid); */
+
+      dispatch({
+        type: ACTIONS_TYPES.TIMER_IN,
+        payload: isBillPaid,
+      });
+
+      setTimeout(resolve, 4000);
+    });
+  }, []);
+
   const handleTimerIn = useCallback(async (timerClock) => {
     return await new Promise((resolve) => {
       /* console.log("timerClock:", timerClock); */
@@ -217,6 +253,8 @@ const functionsValidationContext = (INIT_STATE) => {
     handleDataNewLocation,
     handleOpenFinalValidation,
     handleIsOneMoreStep,
+    handleIsEndWatchingTimer,
+    handleIsPaid,
     handleApplyText,
     handleBoardText,
     handleCountClickValidate,
@@ -234,11 +272,13 @@ const initStateContext = {
   handleDataNewLocation: () => {},
   handleOpenFinalValidation: () => {},
   handleIsOneMoreStep: () => {},
+  handleIsEndWatchingTimer: () => {},
   handleApplyText: () => {},
   handleBoardText: () => {},
   handleCountClickValidate: () => {},
   handleForSeen: () => {},
   handleSectionName: () => {},
+  handleIsPaid: () => {},
   handleMessageError: () => {},
   handleIsError: () => {},
   handleTimerIn: () => {},

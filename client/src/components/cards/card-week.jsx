@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useState } from "react";
+import React, { useRef, useEffect, useContext, useState } from "react";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { MealContext } from "../../services/context/MealsContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
@@ -38,19 +38,20 @@ function CardWeek({ id, className, setUpdateClassName }) {
   useEffect(() => {
     const chooseClassName = +id === 1 ? "active_day day_week" : "day_week";
     setUpdateClassName(chooseClassName);
+    console.log("current day:", currentDay);
   }, []);
 
   return (
     <li
       id={id}
       className="weeks_day_li"
-      data-value={currentDay.format("ddd")}
+      data-value={setCurrentDay}
       onClick={(e) => handleWhileShiftingDay(e)}
     >
       <span className={className} ref={spanRef}>
-        {currentDay.format("ddd")}
+        {currentDay}
       </span>
-      <span className="day_count">{currentDay.format("DD")} </span>
+      <span className="day_count">{moment().weekday(+id).format("DD")} </span>
     </li>
   );
 }
