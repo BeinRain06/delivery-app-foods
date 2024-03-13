@@ -1,15 +1,19 @@
 import axios from "axios";
 
 //ratings : {} , ratedMeals : []  (GET METHOD)
+
 export async function getThisUserRatings(mealId) {
   const userId = user.id;
 
   let api_url = "http://localhost:5000/api/delivery/ratings";
 
   try {
-    let ratings = {};
+    let ratings;
+
     const res = await axios.get(`${api_url}/${userId}/${mealId}`);
     ratings = res.data.data; //res.data(axios res) - .data (structured data response in backend)
+
+    console.log("ratings:", ratings);
 
     return ratings;
   } catch (err) {

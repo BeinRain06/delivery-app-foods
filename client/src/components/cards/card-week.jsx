@@ -43,9 +43,10 @@ function CardWeek({ id, className, setUpdateClassName }) {
 
   return (
     <li
+      key={id}
       id={id}
       className="weeks_day_li"
-      data-value={setCurrentDay}
+      data-value={currentDay}
       onClick={(e) => handleWhileShiftingDay(e)}
     >
       <span className={className} ref={spanRef}>

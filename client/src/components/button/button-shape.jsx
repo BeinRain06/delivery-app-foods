@@ -3,7 +3,14 @@ import { TemplateContext } from "../../services/context/TemplateContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
 import "./button-shape.css";
 
-export const Ordered = ({ mealid, mealname, mealprice, setIsCliked }) => {
+export const Ordered = ({
+  mealid,
+  mealname,
+  mealprice,
+  mealimg,
+  originmeal,
+  setIsCliked,
+}) => {
   const {
     state: { countClickValidate },
   } = useContext(ValidationContext);
@@ -27,6 +34,8 @@ export const Ordered = ({ mealid, mealname, mealprice, setIsCliked }) => {
                 mealid={mealid}
                 mealname={mealname}
                 mealprice={mealprice}
+                mealimg={mealimg}
+                originmeal={originmeal}
                 setIsCliked={setIsCliked}
                 countClick={countClickValidate}
               />
@@ -45,6 +54,8 @@ export const Confirm = ({
   mealid,
   mealname,
   mealprice,
+  mealimg,
+  originmeal,
   setIsCliked,
   countClick,
 }) => {
@@ -76,6 +87,9 @@ export const Confirm = ({
     const mealID = mealid;
     const mealName = mealname;
     const mealPrice = mealprice;
+    const mealImg = mealimg;
+    const originMeal = originmeal;
+    console.log("originMeal: ", originMeal);
 
     let orderItems = [];
     let indexItem = null;
@@ -86,7 +100,14 @@ export const Confirm = ({
 
       orderItems = [
         ...orderItems,
-        { meal: mealID, name: mealName, quantity: qty, price: mealPrice },
+        {
+          id: mealID,
+          name: mealName,
+          quantity: qty,
+          price: mealPrice,
+          image: mealImg,
+          origin: originMeal,
+        },
       ];
     } else {
       indexItem = orderSpecsCurrent.findIndex((item) => item.meal === mealID);
@@ -111,10 +132,12 @@ export const Confirm = ({
         orderItems = [
           ...orderSpecsCurrent,
           {
-            meal: mealID,
+            id: mealID,
             name: mealName,
             quantity: qty,
             price: mealPrice,
+            image: mealImg,
+            origin: originMeal,
           },
         ];
       }
@@ -188,7 +211,7 @@ export const TimeAwait = ({ setWaiting }) => {
   );
 };
 
-function Button({ mealid, mealname, mealprice }) {
+function Button({ mealid, mealname, mealprice, mealimg, originmeal }) {
   const { handleOpenFinalValidation } = useContext(ValidationContext);
 
   const [isClicked, setIsCliked] = useState(false);
@@ -221,6 +244,8 @@ function Button({ mealid, mealname, mealprice }) {
           mealid={mealid}
           mealname={mealname}
           mealprice={mealprice}
+          mealimg={mealimg}
+          originmeal={originmeal}
           isClicked={isClicked}
           setIsCliked={setIsCliked}
         />

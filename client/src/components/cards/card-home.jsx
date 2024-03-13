@@ -47,6 +47,8 @@ function CardHome({ ...props }) {
                 mealid={props.id}
                 mealname={props.name}
                 mealprice={props.price}
+                mealimg={props.image}
+                originmeal={props.origin}
               />
             </ul>
           </div>

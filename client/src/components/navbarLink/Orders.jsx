@@ -473,9 +473,9 @@ function Orders() {
 
   useEffect(() => {
     console.log("present navbar");
+    console.log("present orderDay:", ordersDay);
     setTimeout(() => {
       handleWelcome(false);
-      /* dispatch(mealActions.handleWelcome(false)); */
     }, 3000);
   }, []);
 
@@ -508,7 +508,10 @@ function Orders() {
 
     setMyWeekOrder(ArrWeek);
     setMyDayOrder(ArrDay);
-  }, [ordersDay]);
+
+    console.log("my week order:", ordersWeek);
+    console.log("my day order:", ordersDay);
+  }, [ordersDay, ordersWeek]);
 
   return (
     <main className="welcome_orders" onClick={(e) => console.log(e.target)}>
@@ -805,20 +808,19 @@ function Orders() {
 
         <div className="orders_day">
           <div className="template_day_orders">
-            <ul className="template_day snaps_inline">
-              {myDayOrder.length !== 0 ? (
-                <CardDayOrders
-                  key={orderOftheDay.length}
-                  ordersSpecs={ordersSpecs}
-                />
-              ) : (
-                <div className="wrapper_no_items">
-                  <div className="content_no">
-                    <span className="no_items">No Items</span>
+            {
+              <ul className="template_day snaps_inline">
+                {JSON.stringify(ordersDay) !== "{}" ? (
+                  <CardDayOrders ordersSpecs={ordersDay} />
+                ) : (
+                  <div className="wrapper_no_items">
+                    <div className="content_no">
+                      <span className="no_items">No Items</span>
+                    </div>
                   </div>
-                </div>
-              )}
-            </ul>
+                )}
+              </ul>
+            }
           </div>
         </div>
 
@@ -840,27 +842,13 @@ function Orders() {
 
             <div className="days_week_order">
               <ul className="days_dish_recap">
-                {myWeekOrder.length !== 0 ? (
-                  myWeekOrder.map((item, i) => {
-                    let dateOrderedFormat = item.dateOrdered.format("MMM D");
-
-                    if (dateOrderedFormat === indexDayFormat) {
-                      return (
-                        <CardWeekOrders
-                          key={i}
-                          ordersSpecs={item.ordersSpecs}
-                        />
-                      );
-                    } else {
-                      return (
-                        <div className="wrapper_no_items">
-                          <div className="content_no">
-                            <span className="no_items">No Items</span>
-                          </div>
-                        </div>
-                      );
-                    }
-                  })
+                {JSON.stringify(ordersWeek) !== "{}" ? (
+                  ordersWeek[indexDayFormat.format("d")] !== undefined && (
+                    <CardWeekOrders
+                      key={i}
+                      ordersSpecs={ordersWeek[indexDayFormat.format("d")]}
+                    />
+                  )
                 ) : (
                   <div className="wrapper_no_items">
                     <div className="content_no">

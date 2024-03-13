@@ -632,6 +632,8 @@ export const TemplateDayFlying = ({
 };
 
 export const TemplateDaySent = ({ id }) => {
+  const { handleOrdersWeek, handleOrdersDay } = useContext(MealContext);
+
   const {
     state: { timerIn, isEndWatchingTimer },
     handleIsEndWatchingTimer,

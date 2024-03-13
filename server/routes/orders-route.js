@@ -34,7 +34,7 @@ router.get("/orderWeek", async (req, res) => {
         path: "ordersSpecs",
         populate: {
           path: "meals",
-          populate: ["name", "ratings", "price", "_id", "origin"],
+          populate: ["name", "ratings", "price", "id", "origin", "image"],
         },
       })
       .sort({ dateOrdered: -1 });

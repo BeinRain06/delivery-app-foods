@@ -27,28 +27,14 @@ function Home() {
     state: { meals, meats, seaFoods, vegetarians, desserts },
   } = useContext(MealContext); */
 
-  /*  const {
-    state: { orderSpecsCurrent },
-    useAsyncGenerator,
-  } = useContext(TemplateContext); */
-
-  /*  const dispatch = useDispatch();
-
-  const meals = useSelector(meals_section);
-  const meats = useSelector(meats_section);
-  const seaFoods = useSelector(seaFoods_section);
-  const desserts = useSelector(desserts_section);
-  const vegetarians = useSelector(vegetarians_section);
-  const welcome = useSelector(welcome_section);
-
-  const orderSpecsCurrent = useSelector(orderSpecsCurrent_section); */
-
   const {
     state: { meals, meats, seaFoods, desserts, vegetarians, welcome },
   } = useContext(MealContext);
+
   const {
     state: { orderSpecsCurrent },
   } = useContext(TemplateContext);
+
   const [loading, setLoading] = useState(true);
 
   const loadHomeData = useCallback(() => {

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
+import moment from "moment";
 import styled from "styled-components";
 import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
 import { endPayment } from "../../callAPI/PaymentApi";
-import { fetchOrdersWeek } from "../../callAPI/OrdersApi";
 import ErrorWarning from "./styledComponents/MsgError";
+
 import { MTN, ORANGE } from "../../assets/images";
 import { devices } from "./styledComponents/devices";
 
@@ -309,7 +310,11 @@ const ButtonSend = styled(ButtonBack)`
 } */
 
 function PaymentSubmit({ id, delayPayment, setIsPayment, setIsPaid }) {
-  const { handleOrdersWeek, handleOrdersDay } = useContext(MealContext);
+  const {
+    state: { ordersWeek, ordersDay },
+    handleOrdersWeek,
+    handleOrdersDay,
+  } = useContext(MealContext);
 
   const {
     state: { payments, dataTemplatesOrdersDay },
@@ -335,30 +340,25 @@ function PaymentSubmit({ id, delayPayment, setIsPayment, setIsPaid }) {
 
   const [availableForPayment, setAvailableForPayment] = useState(payments[+id]);
 
-  const updateOrdersWeek = useCallback(async () => {
+  const updateOrdersWeekAndDay = useCallback(async () => {
     //  Updating Orders List Week!
 
-    const cookies = getCookies();
-    const userId = cookies.userId;
-    const ordersFetch = await fetchOrdersWeek(userId);
-    let newOrdersFetchWeek;
-    let newOrdersFetchDay;
+    // new logic
+    const dayMeals = dataTemplatesOrdersDay[id].orderSpecsCurrent;
 
-    console.log("ordersFetch:", ordersFetch);
+    console.log("dayMeals:", dayMeals);
+    const dayMealsObj = { ...ordersDay, ...dayMeals };
+    const indexDay = moment().format("d");
+    const weekMealsObj = {
+      ...ordersWeek,
+      [indexDay]: { ...ordersWeek[indexDay], ...dayMeals },
+    };
 
-    if (ordersFetch.length !== 0) {
-      ordersFetch?.map((eltOrder, i) => {
-        const indElt = +moment(eltOrder.dateOrdered).format("d");
-        newOrdersFetchWeek = { ...newOrdersFetchWeek, [indElt]: eltOrder };
+    console.log("dayMealsObj:", dayMealsObj);
+    console.log("weakMealsObj:", weekMealsObj);
 
-        if (indElt === +moment().format("d")) {
-          newOrdersFetchDay = { ...newOrdersFetchDay, [indElt]: eltOrder };
-        }
-      });
-
-      handleOrdersWeek(newOrdersFetchWeek);
-      handleOrdersDay(newOrdersFetchDay);
-    }
+    handleOrdersDay(dayMealsObj);
+    handleOrdersWeek(weekMealsObj);
   }, []);
 
   const proccessingPayment = useCallback(async (idTmp, dataPayment) => {
@@ -401,15 +401,6 @@ function PaymentSubmit({ id, delayPayment, setIsPayment, setIsPaid }) {
       }, 1500);
     });
   }, []);
-
-  function getCookies() {
-    let cookies = document.cookie.split(";").reduce((cookies, cookie) => {
-      const [name, val] = cookie.split("=").map((c) => c.trim());
-      cookies[name] = val;
-      return cookies;
-    }, {});
-    return cookies;
-  }
 
   const endingStepPayment = (e, id) => {
     e.preventDefault();
@@ -462,7 +453,7 @@ function PaymentSubmit({ id, delayPayment, setIsPayment, setIsPaid }) {
     };
 
     proccessingPayment(id, newHoldingPaymentData);
-    updateOrdersWeek();
+    updateOrdersWeekAndDay();
 
     console.log("timerIn ==> Payment Submit:", timerIn);
 

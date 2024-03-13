@@ -14,7 +14,7 @@ import "./card-week-order.css";
 
 import LogOrRegisterForm from "./register-login-form";
 
-const MiniCardWeeksOrders = ({ props }) => {
+const MiniCardWeekOrders = ({ meal }) => {
   const {
     state: { openTagRatings, user },
   } = useContext(MealContext);
@@ -76,40 +76,36 @@ const MiniCardWeeksOrders = ({ props }) => {
         <div className="dish_sub_operation">
           <div>
             <p>
-              Notes : <span>{props.meal.ratings} </span>
+              Notes : <span>{meal.ratings} </span>
             </p>
           </div>
           <div className="brief_overview_meal">
             <img
-              src={AhmadIMG}
+              src={meal.picture}
               className="dish_order_img"
               alt="oops overview"
             />
 
-            <p className="dish_order_desc">Description: {props.meal.origin}</p>
+            <p className="dish_order_desc">Description: {meal.origin}</p>
           </div>
         </div>
         <div className="dish_topic">
-          <p>{props.meal.name}</p>
+          <p>{meal.name}</p>
           <p>
-            <span className="number_order">{props.quantity}</span>
+            <span className="number_order">{meal.quantity}</span>
             <span>: Ordered</span>
           </p>
         </div>
-        <div
-          className="recap_feedback"
-          data-meal={props.meal._id}
-          ref={mealRef}
-        >
+        <div className="recap_feedback" data-meal={meal.id} ref={mealRef}>
           <p
             className="send_ratings"
-            onClick={() => dispatch(mealActions.handleOpenTagsRatings(true))}
+            onClick={() => handleOpenTagsRatings(true)}
           >
             Ratings
           </p>
           <p
             className="send_feedback"
-            onClick={() => dispatch(mealActions.handleOpenTagsRatings(true))}
+            onClick={() => handleOpenTagsRatings(true)}
           >
             Feedback
           </p>
@@ -152,9 +148,7 @@ const MiniCardWeeksOrders = ({ props }) => {
                     <button
                       type="button"
                       className="abort_submit"
-                      onClick={() =>
-                        dispatch(mealActions.handleOpenTagsRatings(false))
-                      }
+                      onClick={() => handleOpenTagsRatings(false)}
                     >
                       Clear
                     </button>
@@ -174,12 +168,22 @@ const MiniCardWeeksOrders = ({ props }) => {
   );
 };
 
-function CardWeekOrders({ props }) {
-  const mealItems = props.ordersSpecs.map((item, i) => {
+function CardWeekOrders({ ...props }) {
+  if (props) {
+    const ordersInside = props.ordersSpecs;
+
+    const mealItemsKeys = Object.keys(ordersInside);
+
+    return mealItemsKeys.map((key, i) => (
+      <MiniCardWeekOrders key={i} meal={ordersInside[key]} />
+    ));
+  }
+
+  /*  const mealItems = props.ordersSpecs.map((item, i) => {
     const meal = item.meal;
     const quantity = item.quantity;
     return <MiniCardWeeksOrders meal={meal} quantity={quantity} />;
-  });
+  }); */
 }
 
 export default CardWeekOrders;

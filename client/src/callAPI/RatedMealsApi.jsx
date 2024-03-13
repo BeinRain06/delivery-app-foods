@@ -20,7 +20,7 @@ export async function updateRatedMeal(ratedMealId, meal, note, feedback) {
     );
 
     ratedMeal = res.data.data;
-    console.log(ratedMeal);
+    console.log("ratedMeal Update:", ratedMeal);
   } catch (err) {
     console.log(err);
   }
@@ -47,7 +47,7 @@ export async function postRatedMeal(meal, note, feedback) {
     );
 
     ratedMeal = res.data.data;
-    console.log(ratedMeal);
+    console.log("ratedMeal PosT:", ratedMeal);
   } catch (err) {
     console.log(err);
   }

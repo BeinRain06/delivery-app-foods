@@ -1,9 +1,47 @@
-import React from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
+import moment from "moment";
 import { NavLink } from "react-router-dom";
+import { fetchOrdersWeek } from "../../callAPI/OrdersApi";
+import { MealContext } from "../../services/context/MealsContext";
+import getCookies from "../cookies/GetCookies";
 
 import "./welcome.css";
 
 function Welcome() {
+  const { handleOrdersWeek, handleOrdersDay } = useContext(MealContext);
+
+  const OrdersWeekSet = useCallback(async () => {
+    //  Updating Orders List Week!
+
+    const cookies = getCookies();
+    const userId = cookies.userId;
+
+    const ordersFetch = await fetchOrdersWeek(userId);
+
+    let newOrdersFetchWeek;
+    let newOrdersFetchDay;
+
+    console.log("ordersFetch:", ordersFetch);
+
+    if (ordersFetch.length !== 0) {
+      ordersFetch?.map((eltOrder, i) => {
+        const indElt = +moment(eltOrder.dateOrdered).format("d");
+        newOrdersFetchWeek = { ...newOrdersFetchWeek, [indElt]: eltOrder };
+
+        if (indElt === +moment().format("d")) {
+          newOrdersFetchDay = { ...newOrdersFetchDay, [indElt]: eltOrder };
+        }
+      });
+
+      handleOrdersWeek(newOrdersFetchWeek);
+      handleOrdersDay(newOrdersFetchDay);
+    } else {
+      const emptyObj = {};
+      handleOrdersWeek(emptyObj);
+      handleOrdersDay(emptyObj);
+    }
+  }, []);
+
   const styleNavLink = ({ isActive }) => {
     const styleOne = {
       padding: "0.15rem 0.65rem",
@@ -22,7 +60,7 @@ function Welcome() {
     const styleTwo = {
       padding: "0.15rem 0.65rem",
       color: "#fff",
-      backgroundColor: "#1c7e4d",
+      backgroundColor: "purple",
       fontSize: "14px",
       border: "2px solid #fff",
       borderRadius: "12px",
@@ -37,6 +75,10 @@ function Welcome() {
       return isActive ? styleTwo : styleOne;
     }
   };
+
+  useEffect(() => {
+    OrdersWeekSet();
+  }, []);
 
   return (
     <div className="welcome_wrapper">

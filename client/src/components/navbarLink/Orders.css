@@ -568,6 +568,7 @@ ul {
     grid-column: 1 / span 1;
     grid-row: 3 / span 1;
   }
+
   /* same in TemplateOrder.css*/
   .submit_container.addShowBtn {
     left: 2rem;
@@ -865,6 +866,7 @@ ul {
 
   .orders_day {
     position: relative;
+    height: 290px;
     /* background-color: #c1d7e6;
     background-color: #afcc6c; */
     background-color: #b6be9f;
@@ -1736,6 +1738,7 @@ ul {
 
   .orders_day {
     width: calc(100% - 16px);
+    /*  height: 200px; */
   }
 
   /*ordered in week*/
