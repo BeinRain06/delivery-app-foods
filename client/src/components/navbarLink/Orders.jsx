@@ -100,8 +100,6 @@ function Orders() {
   const [applyColor, setApplyColor] = useState("green");
   const [myPaymentInit, setMyPaymentInit] = useState({});
 
-  const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
-
   const [ourTimer, setOurTimer] = useState(() => {
     const tmpTimer = timerIn[0];
     const sentTimer = tmpTimer !== undefined ? tmpTimer : "00:00:00";
@@ -109,10 +107,11 @@ function Orders() {
   });
 
   const [myDayOrder, setMyDayOrder] = useState([]);
+
   const [myWeekOrder, setMyWeekOrder] = useState([]);
-  const [className, setUpdateClassName] = useState("");
 
   const [dataTemplate, setDataTemplate] = useState(null);
+
   const [startingTestTimer, setStartingTestTimer] = useState("00:00:00");
 
   const newLocationRef = useRef(null);
@@ -299,6 +298,8 @@ function Orders() {
             user.userEmail,
             orderSpecsCurrent
           );
+
+          console.log("new taken order command:", newTakenOrder);
 
           handleThisOrder(newTakenOrder);
 
@@ -527,7 +528,7 @@ function Orders() {
             {orderSpecsCurrent.length !== 0 ? (
               orderSpecsCurrent.map((orderSpecItem, index) => {
                 const mealItem = meals.find(
-                  (item) => item._id === orderSpecItem.meal
+                  (item) => item._id === orderSpecItem.id
                 );
                 return (
                   <CardOrder
@@ -634,7 +635,7 @@ function Orders() {
                       </tr>
                     </thead>
                     {orderSpecsCurrent.map((order, i) => {
-                      const mealId = order.meal;
+                      const mealId = order.id;
                       const meal = meals.find((item) => item._id === mealId);
                       const qty = order.quantity;
                       const minTotal = (meal.price * qty).toFixed(2);
@@ -738,7 +739,7 @@ function Orders() {
 
                 <div className="address_customers">
                   <div className="address_side">
-                    <p>Location10 : ${thisOrder.street} </p>
+                    <p>Location10 : ${thisOrder?.street} </p>
                     <p className="grateful_words">
                       Thanks you Trusting TDs Services
                     </p>
@@ -828,26 +829,20 @@ function Orders() {
           <p className="title_week_orders">Week Orders</p>
           <div className="calendar_orders ">
             <div className="weeks_day">
-              {tmpIndexWeek.map((day, i) => {
-                return (
-                  <CardWeek
-                    key={i}
-                    id={i}
-                    className={className}
-                    setUpdateClassName={setUpdateClassName}
-                  />
-                );
-              })}
+              <CardWeek />
             </div>
 
             <div className="days_week_order">
               <ul className="days_dish_recap">
-                {JSON.stringify(ordersWeek) !== "{}" ? (
-                  ordersWeek[indexDayFormat.format("d")] !== undefined && (
-                    <CardWeekOrders
-                      key={i}
-                      ordersSpecs={ordersWeek[indexDayFormat.format("d")]}
-                    />
+                {JSON.stringify(ordersWeek[indexWeekDay]) !== "{}" ? (
+                  ordersWeek[indexWeekDay] !== undefined ? (
+                    <CardWeekOrders ordersSpecs={ordersWeek[indexWeekDay]} />
+                  ) : (
+                    <div className="wrapper_no_items">
+                      <div className="content_no">
+                        <span className="no_items">No Items</span>
+                      </div>
+                    </div>
                   )
                 ) : (
                   <div className="wrapper_no_items">
@@ -856,6 +851,7 @@ function Orders() {
                     </div>
                   </div>
                 )}
+
                 {/* <li className="day_dish_recall">
                   <div className="dish_table">
                     <div className="dish_sub_operation">

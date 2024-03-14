@@ -26,7 +26,7 @@ function Loading() {
       console.log("fetching course");
     }, 2500);
 
-    const meals = result.data.data;
+    const meals = await result.data.data;
     let desData = [];
     let vegData = [];
     let seaData = [];

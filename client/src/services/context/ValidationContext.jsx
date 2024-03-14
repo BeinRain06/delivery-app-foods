@@ -1,13 +1,9 @@
-import React, {
-  useReducer,
-  useContext,
-  useCallback,
-  createContext,
-} from "react";
+import React, { useReducer, useCallback, createContext } from "react";
+import moment from "moment";
 
 //process valisation hook
 export const INIT_STATE = {
-  indexWeekDay: 0,
+  indexWeekDay: moment().weekday(0).format("d"),
   dataNewLocation: {},
   openFinalValidation: false,
   isOneMoreStep: false,

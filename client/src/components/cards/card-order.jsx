@@ -39,9 +39,9 @@ function CardOrder({ ...props }) {
     handleClear(id, mySpecsOrder);
   };
 
-  const updateQty = (label) => {
+  const updateQty = () => {
     const newQuantity = orderSpecsCurrent.map((item, i) => {
-      if (item.meal === props.id) {
+      if (item.id === props.id) {
         return item.quantity;
       }
     });

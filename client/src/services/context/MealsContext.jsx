@@ -20,7 +20,7 @@ export const INITIAL_STATE = {
   ordersWeek: {},
   ratings: [],
   openWeek: false,
-  indexDayFormat: moment().weekday(1).format("ddd"),
+  indexDayFormat: moment().weekday(1).format("MMM DD"),
   openTagRatings: false,
   registerForm: {},
   loginForm: {},
@@ -130,6 +130,8 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
   }, []);
 
   const handleIndexDayShift = useCallback((e) => {
+    // select square in FoodsDay.jsx component
+
     const i = e.target.id;
 
     let current = moment().startof("week").add(i, "days");

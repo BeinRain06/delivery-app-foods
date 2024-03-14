@@ -5,55 +5,74 @@ import { ValidationContext } from "../../services/context/ValidationContext";
 import moment from "moment";
 import "./card-week.css";
 
-function CardWeek({ id, className, setUpdateClassName }) {
+// function javascript action in Card Week;
+function CardWeek() {
   const {
-    state: { indexDayFormat },
-    handleIndexDayShift,
-  } = useContext(MealContext);
+    state: { indexWeekDay },
+    handleIndexWeekDay,
+  } = useContext(ValidationContext);
 
-  const [prevActiveDay, setPrevActiveDay] = useState(indexDayFormat);
+  const [tmpIndexWeek, setTmpIndexWeek] = useState([0, 1, 2, 3, 4, 5, 6]);
 
-  const [currentDay, setCurrentDay] = useState(
-    moment().weekday(+id).format("ddd")
-  );
+  const liRef_0 = useRef(null);
+  const liRef_1 = useRef(null);
+  const liRef_2 = useRef(null);
+  const liRef_3 = useRef(null);
+  const liRef_4 = useRef(null);
+  const liRef_5 = useRef(null);
+  const liRef_6 = useRef(null);
 
-  const spanRef = useRef(null);
+  const liArrRef = [
+    liRef_0,
+    liRef_1,
+    liRef_2,
+    liRef_3,
+    liRef_4,
+    liRef_5,
+    liRef_6,
+  ];
 
   const handleWhileShiftingDay = (e) => {
-    setUpdateClassName("day_week"); // all class reset default;
+    const idTriggered = e.target.parentElement.parentElement.id;
+    console.log("e target:", e.target.parentElement.parentElement);
 
-    const dayOnClick = e.target.getAttribute("data-value");
+    liArrRef.map((itemRef, i) => {
+      console.log("itemRef Current:", itemRef);
 
-    if (dayOnClick !== prevActiveDay) {
-      spanRef.current.classList.add("active_day");
+      if (itemRef.current.id === idTriggered) {
+        itemRef.current.classList.add("active_day");
 
-      const newPrevActiveDay = moment().weekday(+id).format("ddd");
+        const newPrevIndexActiveDay = moment().weekday(i).format("d");
 
-      handleIndexDayShift(newPrevActiveDay);
-
-      setPrevActiveDay(newPrevActiveDay);
-    }
+        handleIndexWeekDay(newPrevIndexActiveDay);
+      } else {
+        itemRef.current.classList.remove("active_day");
+      }
+    });
   };
 
-  useEffect(() => {
-    const chooseClassName = +id === 1 ? "active_day day_week" : "day_week";
-    setUpdateClassName(chooseClassName);
-    console.log("current day:", currentDay);
-  }, []);
-
   return (
-    <li
-      key={id}
-      id={id}
-      className="weeks_day_li"
-      data-value={currentDay}
-      onClick={(e) => handleWhileShiftingDay(e)}
-    >
-      <span className={className} ref={spanRef}>
-        {currentDay}
-      </span>
-      <span className="day_count">{moment().weekday(+id).format("DD")} </span>
-    </li>
+    <>
+      {tmpIndexWeek.map((day, i) => {
+        return (
+          <li
+            key={day}
+            id={day}
+            className="weeks_day_li"
+            data-value={moment().weekday(i).format("d")}
+            ref={liArrRef[i]}
+            onClick={(e) => handleWhileShiftingDay(e)}
+          >
+            <div className="spread_week_ct">
+              <span>{moment().weekday(i).format("ddd")}</span>
+              <span className="day_count">
+                {moment().weekday(i).format("DD")}
+              </span>
+            </div>
+          </li>
+        );
+      })}
+    </>
   );
 }
 

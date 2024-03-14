@@ -85,7 +85,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
   const handleIncrease = useCallback(async (mealId, mySpecsOrder) => {
     return await new Promise((resolve) => {
       mySpecsOrder.forEach((item) => {
-        if (item.meal === mealId) {
+        if (item.id === mealId) {
           item.quantity += 1;
         }
       });
@@ -109,16 +109,16 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
 
       dispatch({ type: ACTIONS_TYPES.ORDER_SPECS, payload: newOrderSpecs }); */
 
-      const mealItem = mySpecsOrder.find((item) => item.meal === mealId);
+      const mealItem = mySpecsOrder.find((item) => item.id === mealId);
       const mealItemIndex = mySpecsOrder.findIndex(
-        (item) => item.meal === mealId
+        (item) => item.id === mealId
       );
 
       if (mealItem.quantity === 1) {
         mySpecsOrder.splice(mealItemIndex, 1);
       } else {
         mySpecsOrder.forEach((item) => {
-          if (item.meal === mealId) {
+          if (item.id === mealId) {
             item.quantity -= 1;
           }
         });
@@ -143,7 +143,7 @@ const functionsTemplateContext = (INITIAL_STATE_ONE) => {
       dispatch({ type: ACTIONS_TYPES.ORDER_ITEM, payload: newOrderSpecs }); */
 
       const mealItemIndex = mySpecsOrder.findIndex(
-        (item) => item.meal === mealId
+        (item) => item.id === mealId
       );
       mySpecsOrder.splice(mealItemIndex, 1);
 

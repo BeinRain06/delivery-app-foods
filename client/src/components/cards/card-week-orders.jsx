@@ -1,12 +1,7 @@
-import React, { useState, useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { mealActions } from "../../services/redux/createslice/MealSplice";
-import {
-  openTagRatings_section,
-  user_section,
-} from "../../services/redux/createslice/MealSplice";
+import React, { useState, useRef, useContext } from "react";
 import { postOrUpdateRatings } from "../../callAPI/RatingsApi";
 import { updateRatedMeal, postRatedMeal } from "../../callAPI/RatedMealsApi";
+import { MealContext } from "../../services/context/MealsContext";
 
 import "./card-week-order.css";
 
@@ -81,7 +76,7 @@ const MiniCardWeekOrders = ({ meal }) => {
           </div>
           <div className="brief_overview_meal">
             <img
-              src={meal.picture}
+              src={meal.image}
               className="dish_order_img"
               alt="oops overview"
             />

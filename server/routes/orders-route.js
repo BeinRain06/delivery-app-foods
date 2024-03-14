@@ -70,7 +70,7 @@ router.post("/order", async (req, res) => {
       req.body.ordersSpecs.map(async (orderSpec) => {
         // instance of OrderSpecs Model
         let newOrderSpec = new OrderSpecs({
-          meal: orderSpec.meal,
+          meal: orderSpec.id, // id meal
           quantity: orderSpec.quantity,
         });
         newOrderSpec = await newOrderSpec.save();
@@ -183,7 +183,7 @@ router.post("/order/checkprice", async (req, res) => {
       req.body.ordersSpecs.map(async (orderSpec) => {
         // instance of OrderSpecs Model
         let newOrderSpec = new OrderSpecs({
-          meal: orderSpec.meal,
+          meal: orderSpec.id,
           quantity: orderSpec.quantity,
         });
         newOrderSpec = await newOrderSpec.save();
@@ -268,7 +268,7 @@ router.put("/order/updateprice/:orderId", async (req, res) => {
 
         if (orderSpecId === undefined) {
           let newOrderSpec = new OrderSpecs({
-            meal: item.meal,
+            meal: item.id,
             quantity: item.quantity,
           });
           newOrderSpec = await newOrderSpec.save();
