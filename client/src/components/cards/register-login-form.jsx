@@ -2,9 +2,6 @@ import React, { useContext, useRef, useState, useEffect } from "react";
 import LoadingLogSession from "../loading/loadingLogSession";
 import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
-import { useDispatch, useSelector } from "react-redux";
-import { templateActions } from "../../services/redux/createslice/TemplateSlice";
-import { user_section } from "../../services/redux/createslice/MealSplice";
 import { userLogging, userRegistering } from "../../callAPI/UsersApi";
 import { initiateOrder } from "../../callAPI/OrdersApi";
 import moment from "moment";
@@ -27,9 +24,6 @@ function LogOrRegisterForm({ setShowTotalPrice }) {
   const [errMsgRegister, setErrMsgRegister] = useState(false);
   const [isloggingDataSession, setIsLoggingDataSession] = useState(false);
   const [loginData, setLoginData] = useState({});
-
-  const [ticketNumber, setTicketNumber] = useState("_ _ _ _ _ _");
-  const [hoursPrinted, setHoursPrinted] = useState("time");
 
   // branching your data to Local Storage
 

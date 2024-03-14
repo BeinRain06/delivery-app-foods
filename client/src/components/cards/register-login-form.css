@@ -11,23 +11,28 @@ form {
   width: 100%;
 }
 
-.btn_ratings_login,
-.btn_ratings_register {
-  position: relative;
-  top: 0.5rem;
-  width: 6rem;
-  height: 32px;
-  display: grid;
-  place-items: center;
-}
-
 @media (min-width: 180px) {
+  /*btn */
+  .btn_ratings_login,
+  .btn_ratings_register {
+    position: relative;
+    top: 0.5rem;
+    /* width: 6rem; */
+    width: 5rem;
+    /*  height: 32px; */
+    padding: 0.25rem 0;
+    font-size: clamp(0.5rem, 0.75rem, 1rem);
+    display: grid;
+    place-items: center;
+  }
+
   .registration_wrapper {
     position: relative;
     top: 0;
     left: 0;
-    width: 80vw;
-    height: calc(132vh - 3rem);
+    /*  width: 80vw; */
+    width: 90vw;
+    min-height: 65em;
     margin: auto;
     background: rgba(0, 0, 0, 0.65);
   }
@@ -47,7 +52,8 @@ form {
 
   .title_appeal_log,
   .title_appeal_reg {
-    width: 30%;
+    /* width: 30%; */
+    width: 3.5rem;
     padding: 0.25rem 0.5rem;
     margin-bottom: 0.5rem;
     color: #fff;
@@ -126,22 +132,23 @@ form {
   .registration_wrapper {
     width: 70vw;
   }
+
+  .title_appeal_log,
+  .title_appeal_reg {
+    width: 30%;
+  }
 }
 
 @media (min-width: 960px) {
-  .registration_wrapper {
-    width: 64vw;
-    height: calc(146vh - 3rem);
-  }
-
   .title_appeal_log,
   .title_appeal_reg {
     font-size: clamp(0.9rem, 1.1rem, 1.22rem);
   }
 
-  /* .title_appeal_reg {
-    font-size: clamp(0.9rem, 1rem, 1.12rem);
-  } */
+  .registration_wrapper {
+    width: 70vw;
+    min-height: 60em;
+  }
 
   .login_panel_control li,
   .register_panel_control li {

@@ -712,7 +712,11 @@ function Orders() {
 
                 {firstTimeOrder && (
                   <div className="appealing_registration">
-                    <LogOrRegisterForm setShowTotalPrice={setShowTotalPrice} />
+                    <div className="appeal_reg_wrapper">
+                      <LogOrRegisterForm
+                        setShowTotalPrice={setShowTotalPrice}
+                      />
+                    </div>
                   </div>
                 )}
 
