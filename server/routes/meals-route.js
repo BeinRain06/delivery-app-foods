@@ -3,6 +3,7 @@ const router = express.Router();
 const Meal = require("../models/meal");
 const Category = require("../models/category");
 const RatedMeal = require("../models/rated-meal");
+const Rating = require("../models/rating");
 
 // middleware that is specific to this router
 router.use(express.urlencoded({ extended: false }));
@@ -45,45 +46,6 @@ router.post(
     console.log("body request after next", req.body);
   }
 );
-
-/* router.post(
-  "/meal",
-  middlewareMeal,
-  async (req, res, next) => {
-    console.log("Time: ", Date.now());
-    const newFood = new Meal({
-      name: req.body.name,
-      image: req.body.image,
-      miniDesc: req.body.miniDesc,
-      longDesc: req.body.longDesc,
-      category: req.body.category, // id of one inside collection category
-      ratings: req.body.ratings,
-      price: +req.body.price,
-      origin: req.body.origin,
-      ingredients: req.body.ingredients,
-    });
-    try {
-      const category = Category.findById(newFood.category);
-      if (!category) {
-        throw new Error("error: category not find");
-      } else {
-        const saveMeal = await newFood.save();
-        res.json({ success: true, data: saveMeal });
-      }
-    } catch (err) {
-      res.status(500).json({
-        success: false,
-        error: "Error: something went wrong can't create meal",
-      });
-
-      console.log(err);
-    }
-    next();
-  },
-  (req, res) => {
-    console.log("body request after next", req.body);
-  }
-); */
 
 /*get all Meals*/
 
@@ -183,6 +145,89 @@ router.use("/:mealId", async (req, res) => {
     if (!category) {
       throw new Error("Error: category didn't match");
     }
+    res.json({ success: true, data: mealUpdate });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: "something went wrong in update" });
+    console.log(err);
+  }
+});
+
+// FOR UPDATE (PUT) RATINGS SCORE
+router.use("/newratings:mealId", async (req, res) => {
+  try {
+    const mealId = req.params.mealId;
+    const ratings = await Rating.find({});
+
+    const ratedMealsIds = await Promise.all(
+      ratings.map((ratingsItem, i) => {
+        return ratingsItem.ratedMeals;
+      })
+    );
+
+    const wholeNotesCheck = await Promise.all(
+      ratedMealsIds.map(async (ratedMealsId, i) => {
+        const ratedMeal = await RatedMeal.findById(ratedMealsId);
+
+        const mealConcerned = ratedMeal.meal.reduce((acc, val, indexElt) => {
+          if (val[i] === mealId) {
+            return ratedMeal.rating[indexElt];
+          } else {
+            return acc;
+          }
+        }, undefined);
+
+        return mealConcerned;
+      })
+    );
+
+    //legit rating between 3 and 5
+    const wholeNotesArr = wholeNotesCheck.filter(
+      (item) => item !== undefined && item >= 3
+    );
+
+    // occurenceNote
+
+    const occurenceNoteObj = wholeNotesArr.reduce((acc, val, i) => {
+      const alreadyInside = Object.values(acc);
+
+      const idCheck = alreadyInside.findIndex((item) => item.rating === val);
+
+      if (idCheck !== -1) {
+        const count = alreadyInside[idCheck].count;
+
+        const updateAcc = {
+          ...acc,
+          [idCheck]: { ...acc[idCheck], count: count + 1 },
+        };
+        return updateAcc;
+      } else {
+        const index = Object.keys(acc).length;
+        return { ...acc, [index]: { rating: val, count: 1 } };
+      }
+    }, {});
+
+    console.log("occurence:", occurenceNoteObj);
+
+    // retrieve max occurence
+    const occurenceNoteArr = Object.values(occurence);
+
+    const maxOccurence = occurenceNoteArr.reduce((acc, val, i) => {
+      console.log("acc :", acc);
+      const newMax = val.count <= acc?.count ? acc : val;
+      return newMax;
+    }, {});
+    const newRatingValue = maxOccurence.rating;
+
+    const mealUpdate = await Meal.findByIdAndUpdate(
+      mealId,
+      {
+        ratings: newRatingValue,
+      },
+      { new: true }
+    );
+
     res.json({ success: true, data: mealUpdate });
   } catch (err) {
     res

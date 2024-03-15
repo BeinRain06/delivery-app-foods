@@ -30,6 +30,7 @@ import NewLocationOrder from "../process_validation/styledComponents/NewLocation
 import OneMoreStep from "../process_validation/styledComponents/OneMoreStep";
 import { ButtonApplyTest } from "../process_validation/styledComponents/ButtonApply";
 import ErrorWarning from "../process_validation/styledComponents/MsgError";
+import getCookies from "../cookies/GetCookies";
 import "./Orders.css";
 
 import "slick-carousel/slick/slick.css";
@@ -246,15 +247,6 @@ function Orders() {
     setOurTimer("02:00:00");
     validateRef.current.classList.add("impact_more_step");
   };
-
-  function getCookies() {
-    let cookies = document.cookie.split(";").reduce((cookies, cookie) => {
-      const [name, val] = cookie.split("=").map((c) => c.trim());
-      cookies[name] = val;
-      return cookies;
-    }, {});
-    return cookies;
-  }
 
   const handleControlRadio = async (e) => {
     console.log(e.target);

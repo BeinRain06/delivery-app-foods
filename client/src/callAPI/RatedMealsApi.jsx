@@ -1,53 +1,94 @@
 import axios from "axios";
 
-export async function updateRatedMeal(ratedMealId, meal, note, feedback) {
-  try {
-    let ratedMeal;
-    const api_url = "http://localhost:5000/api/delivery/ratedMeals/ratedmeal";
+axios.defaults.withCredentials = true;
 
-    const res = await axios.put(
-      `${api_url}/${ratedMealId}`,
+export async function postForFirstTimeRatedMeal(mealId, rating, feedback) {
+  try {
+    let api_url = `http://localhost:5000/api/delivery/ratedmeals/`;
+
+    const response = await axios.post(
+      api_url,
       {
-        meal: meal,
-        note: note,
+        meal: mealId,
+        rating: rating,
         feedback: feedback,
       },
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       }
     );
 
-    ratedMeal = res.data.data;
-    console.log("ratedMeal Update:", ratedMeal);
+    console.log("new First Time POST in rateMead collection:", response);
+
+    return response;
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function postRatedMeal(meal, note, feedback) {
+//PUT(new UPDATE) - RATED MEAL Collection
+export async function putNewItemRatedMeal(
+  ratedMealId,
+  mealId,
+  rating,
+  feedback
+) {
   try {
-    let ratedMeal;
-    const api_url =
-      "http://localhost:5000/api/delivery/ratedMeals/newratedmeal";
+    let api_url = `http://localhost:5000/api/delivery/ratedmeals/ratedmeal/${ratedMealId}`;
 
-    const res = await axios.post(
+    const response = await axios.put(
       api_url,
       {
-        meal: meal,
-        note: note,
+        meal: mealId,
+        rating: rating,
         feedback: feedback,
       },
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       }
     );
 
-    ratedMeal = res.data.data;
-    console.log("ratedMeal PosT:", ratedMeal);
+    console.log("response putNewRtedMeals --API:", response);
+
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+//UPDATE(PUT) - Rated MEAL EXISTING
+export async function updateRatedMeal(
+  ratedMealId,
+  mealId,
+  rating,
+  feedback,
+  indArr
+) {
+  try {
+    let api_url = `http://localhost:5000/api/delivery/ratedmeals/ratedmeal/${ratedMealId}`;
+
+    const response = await axios.put(
+      api_url,
+      {
+        meal: mealId,
+        rating: rating,
+        feedback: feedback,
+        indArr: indArr,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    console.log("my API after Updating in Rated Meal :", response);
+
+    return response;
   } catch (err) {
     console.log(err);
   }

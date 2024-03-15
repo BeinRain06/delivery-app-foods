@@ -130,3 +130,10 @@ export async function* getAllTypesFoods() {
     });
   }
 }
+
+export async function updateMealScoreRate() {
+  try {
+  } catch (err) {
+    console.log(err);
+  }
+}

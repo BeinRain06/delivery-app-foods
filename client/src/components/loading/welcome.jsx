@@ -2,19 +2,21 @@ import React, { useState, useContext, useCallback, useEffect } from "react";
 import moment from "moment";
 import { NavLink } from "react-router-dom";
 import { fetchOrdersWeek } from "../../callAPI/OrdersApi";
+import { getThisUserRatings } from "../../callAPI/RatingsApi";
 import { MealContext } from "../../services/context/MealsContext";
 import getCookies from "../cookies/GetCookies";
 
 import "./welcome.css";
 
 function Welcome() {
-  const { handleOrdersWeek, handleOrdersDay } = useContext(MealContext);
+  const { handleOrdersWeek, handleOrdersDay, handleRatedMeals } =
+    useContext(MealContext);
+
+  const cookies = getCookies();
+  const userId = cookies.userId;
 
   const OrdersWeekSet = useCallback(async () => {
     //  Updating Orders List Week!
-
-    const cookies = getCookies();
-    const userId = cookies.userId;
 
     const ordersFetch = await fetchOrdersWeek(userId);
 
@@ -40,6 +42,12 @@ function Welcome() {
       handleOrdersWeek(emptyObj);
       handleOrdersDay(emptyObj);
     }
+  }, []);
+
+  const grabRatedMeals = useCallback(async () => {
+    const wholeRatedMeals = await getThisUserRatings(userId);
+
+    handleRatedMeals(wholeRatedMeals);
   }, []);
 
   const styleNavLink = ({ isActive }) => {
@@ -78,6 +86,7 @@ function Welcome() {
 
   useEffect(() => {
     OrdersWeekSet();
+    grabRatedMeals();
   }, []);
 
   return (

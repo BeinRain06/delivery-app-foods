@@ -1,17 +1,16 @@
 import axios from "axios";
 
+axios.defaults.withCredentials = true;
+
 //ratings : {} , ratedMeals : []  (GET METHOD)
 
-export async function getThisUserRatings(mealId) {
-  const userId = user.id;
-
-  let api_url = "http://localhost:5000/api/delivery/ratings";
+export async function getThisUserRatings(userId) {
+  let api_url = "http://localhost:5000/api/delivery/ratings/rating";
 
   try {
-    let ratings;
+    const res = await axios.get(`${api_url}/${userId}`);
 
-    const res = await axios.get(`${api_url}/${userId}/${mealId}`);
-    ratings = res.data.data; //res.data(axios res) - .data (structured data response in backend)
+    const ratings = await res.data.data; //res.data(axios res) - .data (structured data response in backend)
 
     console.log("ratings:", ratings);
 
@@ -21,79 +20,27 @@ export async function getThisUserRatings(mealId) {
   }
 }
 
-//ratings : {} , ratedMeals : []  (POST/PUT METHOD)
-export async function postOrUpdateRatings(mealIdRef, note, feedback) {
-  handleRatings(newRatings);
-
-  console.log("new post rating:", result);
-
+//POST A RATING FOR THE FIRST TIME
+export async function ratingFirstime(userId, ratedMealId) {
   try {
-    const { user, handleUser } = obtainUser();
-    const { ratings, handleRatings } = ratingsChange();
+    let api_url = `http://localhost:5000/api/delivery/ratings/rating`;
 
-    const userId = user.id;
-
-    api_url = `http://localhost:5000/api/delivery/ratings/${userId}`;
-
-    const mealPresent = getThisUserRatings(mealIdRef);
-
-    if (mealPresent._id) {
-      //put(update) a new rating
-
-      const res = await axios.put(
-        api_url,
-        {
-          meal: mealIdRef,
-          note: note,
-          feedback: feedback,
+    const response = await axios.post(
+      api_url,
+      {
+        user: userId,
+        ratedMeal: ratedMealId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      }
+    );
 
-      const result = res.data.data;
+    console.log("new First Time POST in Rating collection:", response);
 
-      const newRatings = ratings.map((rating, i) => {
-        if (rating._id === result._id) {
-          rating = result;
-        }
-      });
-
-      handleRatings(newRatings);
-
-      console.log("new update rating:", result);
-    } else {
-      //post a new rating
-
-      const res = await axios.post(
-        api_url,
-        {
-          meal: mealIdRef,
-          note: note,
-          feedback: feedback,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const result = res.data.data;
-
-      const newRatings = ratings.map((rating, i) => {
-        if (rating._id === result._id) {
-          rating = result;
-        }
-      });
-
-      handleRatings(newRatings);
-
-      console.log("new post rating:", result);
-    }
+    return response;
   } catch (err) {
     console.log(err);
   }

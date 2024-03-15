@@ -18,7 +18,7 @@ export const INITIAL_STATE = {
   desserts: [],
   ordersDay: {},
   ordersWeek: {},
-  ratings: [],
+  ratedMeals: [],
   openWeek: false,
   indexDayFormat: moment().weekday(1).format("MMM DD"),
   openTagRatings: false,
@@ -36,8 +36,7 @@ export const ACTIONS_TYPES = {
   DESSERTS: "DESSERTS",
   USERS: "USERS",
   USER: "USER",
-  RATINGS: "USER_RATING",
-  NEW_RATING: "NEW_RATING",
+  RATED_MEALS: "USER_RATING",
   ORDERS_DAY: "ORDERS_DAY",
   ORDERS_WEEK: "ORDERS_WEEK",
   INDEX_DAY: "INDEX_DAY",
@@ -64,8 +63,8 @@ export const reducer = (state, action) => {
     case ACTIONS_TYPES.USER:
       return { ...state, UserActivation: action.payload };
 
-    case ACTIONS_TYPES.RATINGS:
-      return { ...state, ratings: action.payload };
+    case ACTIONS_TYPES.RATED_MEALS:
+      return { ...state, ratedMeals: action.payload };
 
     case ACTIONS_TYPES.ORDERS_DAY:
       return { ...state, ordersDay: action.payload };
@@ -146,8 +145,8 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     dispatch({ type: ACTIONS_TYPES.OPEN_TAG_RATING });
   }, []);
 
-  const handleRatings = useCallback((ratings) => {
-    dispatch({ type: ACTIONS_TYPES.RATINGS, payload: ratings });
+  const handleRatedMeals = useCallback((ratedMeals) => {
+    dispatch({ type: ACTIONS_TYPES.RATED_MEALS, payload: ratedMeals });
   }, []);
 
   const handleRegisterForm = useCallback((registerData) => {
@@ -176,7 +175,7 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     handleUser,
     handleIndexDayShift,
     handleOpenTagsRatings,
-    handleRatings,
+    handleRatedMeals,
     handleRegisterForm,
     handleLoginForm,
     handleWelcome,
@@ -195,30 +194,12 @@ const initStateContext = {
   handleUser: () => {},
   handleIndexDayShift: () => {},
   handleOpenTagsRatings: () => {},
-  handleRatings: () => {},
+  handleRatedMeals: () => {},
   handleRegisterForm: () => {},
   handleLoginForm: () => {},
 };
 
 export const MealContext = createContext(initStateContext);
-
-export const obtainUser = () => {
-  const {
-    state: { user },
-    handleUser,
-  } = useContext(MealContext);
-
-  return { user, handleUser };
-};
-
-export const ratingsChange = () => {
-  const {
-    state: { ratings },
-    handleRatings,
-  } = useContext(MealContext);
-
-  return { ratings, handleRatings };
-};
 
 function MealContextProvider({ children, ...INITIAL_STATE }) {
   return (

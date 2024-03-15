@@ -2,66 +2,136 @@ import React, { useRef, useContext, useState } from "react";
 import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
 import handleFirstTimeOrder from "./register-login-form";
-import { getThisUserRatings } from "../../callAPI/RatingsApi";
-
-import LogOrRegisterForm from "./register-login-form";
-import "./card-day-orders.css";
+import {
+  postForFirstTimeRatedMeal,
+  updateRatedMeal,
+  putNewItemRatedMeal,
+} from "../../callAPI/RatedMealsApi";
+import getCookies from "../cookies/GetCookies";
 
 function CardDayOrders({ ordersSpecs }) {
   const {
-    state: user,
-    ratings,
-    openTagRatings,
+    state: { meals, ratedMeals, openTagRatings },
     handleOpenTagsRatings,
+    handleRatedMeals,
   } = useContext(MealContext);
 
   const mealRef = useRef();
 
   const handleNewRatings = async (e) => {
     e.preventDefault();
+    console.log("e target New Ratings:", e.target);
+
     const mealId = mealRef.current.getAttribute("data-meals");
-    const meal = mealId;
 
-    let note = e.target.element.ratings.value;
-    let feedback = e.target.element.feedback.value;
+    let rating = e.target.elements.ratings.value;
+    let feedback = e.target.elements.feedback.value;
 
-    if (user.id === undefined) {
+    const cookies = getCookies();
+    const userId = cookies.userId;
+
+    if (userId === undefined) {
       alert("Can't rate for the moment. Please Try again Later!");
       return;
     }
 
-    await getThisUserRatings();
-
-    let existInratedMeal = ratings.ratedMeals.map((ratedMeal) => {
-      if (ratedMeal.meal === mealId) {
-        return ratedMeal;
-      }
-      return false;
-    });
-
-    if (existInratedMeal !== false) {
-      // update ratedMeal(axios.put)
-      const ratedMealId = existInratedMeal._id;
-
-      let updateRatings;
-
-      updateRatings = { ratedMealId, meal, note, feedback };
-
-      updateRatedMeal(updateRatings);
-    } else {
-      // post ratedMeal(axios.post)
-      let newRatedMeal;
-      newRatedMeal = { meal, note, feedback };
-      postRatedMeal(newRatedMeal);
+    if (rating <= 1 || rating > 5) {
+      alert("can't rate less than 1 or more than 5 ");
+      return;
+    } else if (rating === undefined) {
+      alert("miss rating value! between 1 and 5 ");
     }
 
-    //... post or update ratings ? how to know ?
+    if (ratedMeals.length === 0) {
+      // first time indeed the user submit a rating
+      /* create a new RatedMeal* (POST method)*/
+      const uniquePost = await postForFirstTimeRatedMeal(
+        mealId,
+        rating,
+        feedback
+      );
+
+      console.log("unique first time ratedMeal :", uniquePost);
+
+      const mealSpecs = meals.find((meal) => meal._id === mealId);
+
+      const mealSpecsSelect = {
+        mealId: mealId,
+        origin: mealSpecs.origin,
+        category: mealSpecs.category,
+        ingredients: mealSpecs.ingredients,
+        longDesc: mealSpecs.longDesc,
+      };
+
+      const ratedMealId = uniquePost.id;
+
+      const restItemRating = {
+        rating: uniquePost.rating[0],
+        feedback: uniquePost.feedback[0],
+        dateMention: uniquePost.dateMention[0],
+      };
+
+      const rateAllFeatObj = {
+        id: ratedMealId,
+        ...mealSpecsSelect,
+        ...restItemRating,
+      };
+
+      const rateAllFeatArr = [...rateAllFeatObj];
+
+      handleRatedMeals(rateAllFeatArr);
+
+      /* next create a new Rating* (POST method)*/
+      const uniqueRating = await ratingFirstime(userId, ratedMealId);
+
+      console.log("unique first time rating :", uniqueRating);
+    }
+
+    let existInRatedMeal = ratedMeals.reduce((acc, val, indexArr) => {
+      if (val.mealId === mealId) {
+        return { indexArr, ...acc };
+      } else {
+        const newAcc = { indexArr, ...val };
+        return newAcc;
+      }
+    }, {});
+
+    // id of ratedMeal in collection
+    const ratedMealId = existInRatedMeal.id;
+
+    if (existInRatedMeal.mealId === mealId) {
+      // update ratedMeal(axios.put)
+
+      const indArr = existInRatedMeal.indexArr;
+
+      if (feedback !== "") {
+        const newUpdateRatedMeal = {
+          ...ratedMeals,
+          [indArr]: {
+            ...ratedMeals[indArr],
+            rating: rating,
+            feedback: feedback,
+          },
+        };
+        handleRatedMeals(newUpdateRatedMeal);
+      } else {
+        const newUpdateRatedMeal = {
+          ...ratedMeals,
+          [indArr]: { ...ratedMeals[indArr], rating: rating },
+        };
+        handleRatedMeals(newUpdateRatedMeal);
+      }
+
+      await updateRatedMeal(ratedMealId, mealId, rating, feedback, indArr);
+    } else {
+      // update sending a new item (axios.post)
+      await putNewItemRatedMeal(ratedMealId, mealId, rating, feedback);
+    }
   };
 
   //display DOM
   return (
     <>
-      {" "}
       {Object.keys(ordersSpecs).map((key, i) => {
         console.log("ordersSpecs :", ordersSpecs);
         console.log("ordersSpecs Meal :", ordersSpecs[key]);
@@ -97,6 +167,7 @@ function CardDayOrders({ ordersSpecs }) {
                   </div>
                 </div>
                 <p className="dish_order_rec">Description: {meal.origin}</p>
+
                 {openTagRatings && (
                   <>
                     <div className="wrapping_ratings_form">

@@ -8,7 +8,7 @@ ratedMealSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  note: [
+  rating: [
     {
       type: Number,
       required: true,
@@ -27,5 +27,12 @@ ratedMealSchema = new mongoose.Schema({
     },
   ],
 });
+
+//virtual id
+ratedMealSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+ratedMealSchema.set("toJSON", { virtuals: true });
 
 module.exports = mongoose.model("RatedMeal", ratedMealSchema);
