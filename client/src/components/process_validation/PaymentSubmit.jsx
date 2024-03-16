@@ -382,6 +382,8 @@ function PaymentSubmit({ id, delayPayment, setIsPayment, setIsPaid }) {
 
       console.log("new update payment:", newUpdatedPayment); // something fishy here affecting dataTemplatesOrdersDay
 
+      handlePayment(newUpdatedPayment);
+
       let newData;
 
       newData = {

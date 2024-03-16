@@ -50,16 +50,22 @@ export const reducer = (state, action) => {
   switch (action.type) {
     case ACTIONS_TYPES.OPEN_WEEK:
       return { ...state, openWeek: !state.openWeek };
+
     case ACTIONS_TYPES.MEALS:
       return { ...state, meals: action.payload };
+
     case ACTIONS_TYPES.DESSERTS:
       return { ...state, desserts: action.payload };
+
     case ACTIONS_TYPES.SEAFOODS:
       return { ...state, seaFoods: action.payload };
+
     case ACTIONS_TYPES.VEGETARIANS:
       return { ...state, vegetarians: action.payload };
+
     case ACTIONS_TYPES.MEATS:
       return { ...state, meats: action.payload };
+
     case ACTIONS_TYPES.USER:
       return { ...state, UserActivation: action.payload };
 
@@ -80,6 +86,9 @@ export const reducer = (state, action) => {
 
     case ACTIONS_TYPES.LOGIN_FORM:
       return { ...state, loginForm: action.payload };
+
+    case ACTIONS_TYPES.OPEN_TAG_RATING:
+      return { ...state, openTagRatings: action.payload };
 
     case ACTIONS_TYPES.WELCOME:
       return { ...state, welcome: action.payload };
@@ -141,8 +150,8 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     });
   }, []);
 
-  const handleOpenTagsRatings = useCallback(() => {
-    dispatch({ type: ACTIONS_TYPES.OPEN_TAG_RATING });
+  const handleOpenTagsRatings = useCallback((stateBoolean) => {
+    dispatch({ type: ACTIONS_TYPES.OPEN_TAG_RATING, payload: stateBoolean });
   }, []);
 
   const handleRatedMeals = useCallback((ratedMeals) => {

@@ -1,7 +1,6 @@
-import React, { useRef, useContext, useState } from "react";
+import React, { useRef, useContext, useState, useEffect } from "react";
 import { MealContext } from "../../services/context/MealsContext";
-import { TemplateContext } from "../../services/context/TemplateContext";
-import handleFirstTimeOrder from "./register-login-form";
+
 import {
   postForFirstTimeRatedMeal,
   updateRatedMeal,
@@ -9,14 +8,23 @@ import {
 } from "../../callAPI/RatedMealsApi";
 import getCookies from "../cookies/GetCookies";
 
-function CardDayOrders({ ordersSpecs }) {
+import RatingsForm from "../ratings/RatingsForm";
+import "./card-day-orders.css";
+
+export const CardDayOrder = ({ id, meal }) => {
   const {
-    state: { meals, ratedMeals, openTagRatings },
-    handleOpenTagsRatings,
+    state: { meals, ratedMeals },
     handleRatedMeals,
   } = useContext(MealContext);
 
-  const mealRef = useRef();
+  const [isRatingOPen, setIsRatingOpen] = useState(false);
+
+  const mealRef = useRef(null);
+
+  const manageRatingTask = (e) => {
+    e.preventDefault();
+    setIsRatingOpen(true);
+  };
 
   const handleNewRatings = async (e) => {
     e.preventDefault();
@@ -24,7 +32,7 @@ function CardDayOrders({ ordersSpecs }) {
 
     const mealId = mealRef.current.getAttribute("data-meals");
 
-    let rating = e.target.elements.ratings.value;
+    let rating = e.target.elements.rating.value;
     let feedback = e.target.elements.feedback.value;
 
     const cookies = getCookies();
@@ -35,10 +43,10 @@ function CardDayOrders({ ordersSpecs }) {
       return;
     }
 
-    if (rating <= 1 || rating > 5) {
+    if (+rating <= 1 || +rating > 5) {
       alert("can't rate less than 1 or more than 5 ");
       return;
-    } else if (rating === undefined) {
+    } else if (rating === "" || typeof +rating !== "number") {
       alert("miss rating value! between 1 and 5 ");
     }
 
@@ -129,6 +137,53 @@ function CardDayOrders({ ordersSpecs }) {
     }
   };
 
+  useEffect(() => {
+    console.log("opening Ratings Form in day");
+  }, [isRatingOPen]);
+
+  return (
+    <li key={id} className="day_dish_recall">
+      <p className="title_template_orders">Day Orders</p>
+      <div className="dish_tab_rec">
+        <div className="dish_country">{meal.name}</div>
+        <div className="dish_sub_operation">
+          <div className="dish_topic">
+            <p>
+              <span className="number_order">{meal.quantity}</span>
+              <span>: Orders</span>
+            </p>
+          </div>
+          <div className="brief_overview_meal">
+            <img
+              src={meal.image}
+              className="dish_order_img"
+              alt="oops overview"
+            />
+            <div className="recap_feed" data-meals={id} ref={mealRef}>
+              <button
+                id={id}
+                className="send_ratings btn_ratings"
+                onClick={(e) => manageRatingTask(e)}
+              >
+                Ratings
+              </button>
+            </div>
+          </div>
+          <p className="dish_order_rec">Description: {meal.origin}</p>
+          {isRatingOPen && (
+            <RatingsForm
+              handleNewRatings={handleNewRatings}
+              setIsRatingOpen={setIsRatingOpen}
+              isRatingOPen={isRatingOPen}
+            />
+          )}
+        </div>
+      </div>
+    </li>
+  );
+};
+
+function CardDayOrders({ ordersSpecs }) {
   //display DOM
   return (
     <>
@@ -139,92 +194,7 @@ function CardDayOrders({ ordersSpecs }) {
         const meal = ordersSpecs[key];
         const id = meal.id;
 
-        return (
-          <li key={id} className="day_dish_recall">
-            <p className="title_template_orders">Day Orders</p>
-            <div className="dish_tab_rec">
-              <div className="dish_country">{meal.name}</div>
-              <div className="dish_sub_operation">
-                <div className="dish_topic">
-                  <p>
-                    <span className="number_order">{meal.quantity}</span>
-                    <span>: Orders</span>
-                  </p>
-                </div>
-                <div className="brief_overview_meal">
-                  <img
-                    src={meal.image}
-                    className="dish_order_img"
-                    alt="oops overview"
-                  />
-                  <div className="recap_feed" data-meals={id} ref={mealRef}>
-                    <button
-                      className="send_ratings btn_ratings"
-                      onClick={handleOpenTagsRatings}
-                    >
-                      Ratings
-                    </button>
-                  </div>
-                </div>
-                <p className="dish_order_rec">Description: {meal.origin}</p>
-
-                {openTagRatings && (
-                  <>
-                    <div className="wrapping_ratings_form">
-                      <form
-                        className="ratings_control_form"
-                        onSubmit={handleNewRatings}
-                      >
-                        <ul className="rate_feed">
-                          <li>
-                            <label htmlFor="Ratings">Ratings</label>
-                            <input
-                              type="number"
-                              name="ratings"
-                              id="ratings"
-                              className="ratings_size"
-                              min="1"
-                              max="5"
-                              placeholder="3.0"
-                            />
-                          </li>
-                          <li>
-                            <label htmlFor="Feedback">FeedBack</label>
-                            <textarea
-                              name="feedback"
-                              id="feedback"
-                              className="feedback_size"
-                              cols="30"
-                              rows="10"
-                            >
-                              Feedback
-                            </textarea>
-                          </li>
-                        </ul>
-                        <ul className="wrap_score_ratings">
-                          <li>
-                            <button
-                              type="button"
-                              className="abort_submit"
-                              onClick={handleOpenTagsRatings(false)}
-                            >
-                              Clear
-                            </button>
-                          </li>
-                          <li>
-                            <button type="submit" className="send_new_feed">
-                              Send
-                            </button>
-                          </li>
-                        </ul>
-                      </form>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </li>
-        );
+        return <CardDayOrder id={id} meal={meal} />;
       })}
     </>
   );

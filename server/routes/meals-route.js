@@ -122,7 +122,7 @@ router.get("/vegetarians/:vegetariansId", async (req, res) => {
   }
 });
 
-// FOR PUT
+// FOR PUT (ADMIN)
 router.use("/:mealId", async (req, res) => {
   try {
     const mealUpdate = await Meal.findByIdAndUpdate(
@@ -237,7 +237,7 @@ router.use("/newratings:mealId", async (req, res) => {
   }
 });
 
-//DELETE
+//DELETE (ADMIN)
 router.delete("/:id", async (req, res) => {
   try {
     await Meal.findByIdAndDelete(req.params.id);

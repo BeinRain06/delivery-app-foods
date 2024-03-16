@@ -92,73 +92,6 @@
     transform: skewX(-12deg);
     justify-content: flex-end;
   }
-
-  /*wrapping ratings box*/
-  .wrapping_ratings_form {
-    position: absolute;
-    top: 50%;
-    left: 40%;
-    width: 50%;
-    height: 50%;
-    transform: translate(-45%, -50%);
-  }
-
-  .ratings_control_form {
-    width: 100%;
-    height: 100%;
-    padding: 0.5rem;
-    background-color: #333;
-  }
-
-  .ratings_control_form .rate_feed {
-    list-style: none;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .rate_feed li {
-    width: 100%;
-    height: 28px;
-    border: 2px solid transparent;
-  }
-
-  .rate_feed input {
-    width: 100%;
-    height: 100%;
-    padding: 0.25rem;
-    color: #fff;
-    background-color: rgba(51, 26, 26, 0.37);
-    text-align: left;
-    border: 2px solid rgb(240, 217, 217);
-  }
-
-  .ratings_control_form .wrap_score_ratings {
-    list-style: none;
-    width: 100%;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .abort_submit,
-  .send_new_feed {
-    width: 50px;
-    height: 100%;
-    color: #333;
-    background-color: #b6bda6;
-    border: 2px solid rgb(73, 40, 40);
-  }
-
-  .send_new_feed {
-    background-color: #333;
-    color: #b6bda6;
-    border: 2px solid rgb(31, 68, 26);
-  }
 }
 
 @media (min-width: 320px) {
@@ -318,15 +251,5 @@
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-
-  /*wrapping ratings box*/
-  .wrapping_ratings_form {
-    position: absolute;
-    bottom: 20%;
-    left: 20%;
-    width: 50%;
-    height: 50%;
-    transform: translate(-10%, -10%);
   }
 }

@@ -1,22 +1,28 @@
-import React, { useState, useRef, useContext } from "react";
-import { postOrUpdateRatings } from "../../callAPI/RatingsApi";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { MealContext } from "../../services/context/MealsContext";
+import {
+  postForFirstTimeRatedMeal,
+  updateRatedMeal,
+  putNewItemRatedMeal,
+} from "../../callAPI/RatedMealsApi";
+import RatingsForm from "../ratings/RatingsForm";
 import getCookies from "../cookies/GetCookies";
 
-import "./card-week-order.css";
+import "./card-week-orders.css";
 
 const MiniCardWeekOrders = ({ meal }) => {
   const {
     state: { openTagRatings, user },
   } = useContext(MealContext);
 
-  const [recordUser, setRecordUser] = useState(false);
-
-  /* const [newRatings, setNewRatings] = useState({}); */
+  const [isRatingOPen, setIsRatingOpen] = useState(false);
 
   const mealRef = useRef();
 
-  /* const handleOpenBoxRatings = () => {}; */
+  const manageRatingTask = (e) => {
+    e.preventDefault();
+    setIsRatingOpen(true);
+  };
 
   const handleNewRatings = async (e) => {
     e.preventDefault();
@@ -24,7 +30,7 @@ const MiniCardWeekOrders = ({ meal }) => {
 
     const mealId = mealRef.current.getAttribute("data-meals");
 
-    let rating = e.target.elements.ratings.value;
+    let rating = e.target.elements.rating.value;
     let feedback = e.target.elements.feedback.value;
 
     const cookies = getCookies();
@@ -35,10 +41,10 @@ const MiniCardWeekOrders = ({ meal }) => {
       return;
     }
 
-    if (rating <= 1 || rating > 5) {
+    if (+rating <= 1 || +rating > 5) {
       alert("can't rate less than 1 or more than 5 ");
       return;
-    } else if (rating === undefined) {
+    } else if (rating === "" || typeof +rating !== "number") {
       alert("miss rating value! between 1 and 5 ");
     }
 
@@ -129,6 +135,10 @@ const MiniCardWeekOrders = ({ meal }) => {
     }
   };
 
+  useEffect(() => {
+    console.log("opening Ratings Form week day");
+  }, [isRatingOPen]);
+
   return (
     <li className="day_dish_recall">
       <div className="dish_table">
@@ -156,71 +166,19 @@ const MiniCardWeekOrders = ({ meal }) => {
           </p>
         </div>
         <div className="recap_feedback" data-meal={meal.id} ref={mealRef}>
-          <p
-            className="send_ratings"
-            onClick={() => handleOpenTagsRatings(true)}
-          >
+          <p className="send_ratings" onClick={(e) => manageRatingTask(e)}>
             Ratings
           </p>
-          <p
-            className="send_feedback"
-            onClick={() => handleOpenTagsRatings(true)}
-          >
+          <p className="send_feedback" onClick={(e) => manageRatingTask(e)}>
             Feedback
           </p>
         </div>
-        {openTagRatings && (
-          <>
-            <div className="wrapping_ratings_form">
-              <form
-                className="ratings_control_form"
-                onSubmit={handleNewRatings}
-              >
-                <ul className="rate_feed">
-                  <li>
-                    <label htmlFor="Ratings">Ratings</label>
-                    <input
-                      type="number"
-                      name="ratings"
-                      id="ratings"
-                      className="ratings_size"
-                      min="1"
-                      max="5"
-                      placeholder="3.0"
-                    />
-                  </li>
-                  <li>
-                    <label htmlFor="Feedback">FeedBack</label>
-                    <textarea
-                      name="feedback"
-                      id="feedback"
-                      className="feedback_size"
-                      cols="30"
-                      rows="10"
-                    >
-                      Feedback
-                    </textarea>
-                  </li>
-                </ul>
-                <ul className="wrap_score_ratings">
-                  <li>
-                    <button
-                      type="button"
-                      className="abort_submit"
-                      onClick={() => handleOpenTagsRatings(false)}
-                    >
-                      Clear
-                    </button>
-                  </li>
-                  <li>
-                    <button type="submit" className="send_new_feed">
-                      Send
-                    </button>
-                  </li>
-                </ul>
-              </form>
-            </div>
-          </>
+        {isRatingOPen && (
+          <RatingsForm
+            handleNewRatings={handleNewRatings}
+            setIsRatingOpen={setIsRatingOpen}
+            isRatingOPen={isRatingOPen}
+          />
         )}
       </div>
     </li>

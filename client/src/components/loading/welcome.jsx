@@ -85,8 +85,10 @@ function Welcome() {
   };
 
   useEffect(() => {
-    OrdersWeekSet();
-    grabRatedMeals();
+    if (userId !== undefined) {
+      OrdersWeekSet();
+      grabRatedMeals();
+    }
   }, []);
 
   return (

@@ -11,12 +11,12 @@ import { TemplateContext } from "../../services/context/TemplateContext";
 import { ValidationContext } from "../../services/context/ValidationContext";
 import PaymentSubmit from "../process_validation/PaymentSubmit";
 import { postPayment } from "../../callAPI/PaymentApi";
-import { MTN, ORANGE } from "../../assets/images";
 
 import {
   initiateOrder,
   updateThisTotalPriceOrder,
 } from "../../callAPI/OrdersApi";
+import getCookies from "../cookies/GetCookies";
 
 import ConfirmOrder from "../process_validation/styledComponents/ConfirmOrder";
 import NewLocationOrder from "../process_validation/styledComponents/NewLocationOrder";
@@ -227,15 +227,6 @@ export const TemplateDayFlying = ({
     setOurTimer("02:00:00");
     validateRef.current.classList.add("impact_more_step");
   };
-
-  function getCookies() {
-    let cookies = document.cookie.split(";").reduce((cookies, cookie) => {
-      const [name, val] = cookie.split("=").map((c) => c.trim());
-      cookies[name] = val;
-      return cookies;
-    }, {});
-    return cookies;
-  }
 
   const handleControlRadio = async (e) => {
     console.log(e.target);

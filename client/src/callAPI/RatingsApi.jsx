@@ -2,8 +2,7 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
-//ratings : {} , ratedMeals : []  (GET METHOD)
-
+// called when the app launch (Welcome.jsx)
 export async function getThisUserRatings(userId) {
   let api_url = "http://localhost:5000/api/delivery/ratings/rating";
 

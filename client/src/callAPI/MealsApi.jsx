@@ -1,38 +1,14 @@
-import React, { useContext } from "react";
-import { MealContext } from "../services/context/MealsContext";
 import axios from "axios";
 
 export async function getMeals() {
   const api_url = "http://localhost:5000/api/delivery/meals";
 
-  /*  let desserts = [];
-  let vegetarians = [];
-  let seafoods = [];
-  let meats = []; */
-
   try {
     const res = await axios.get(api_url);
     console.log("responseMeal: ", res);
     let meals = [];
-    /* meals = await res.data.data; //res.data(axios res) - .data (structured data response in backend) */
-    return res;
-
-    /* meals.map((item) => {
-      if (item.category === process.env.ID_DESSERTS) {
-        desserts.push(item);
-      } else if (item.category === process.env.ID_MEATS) {
-        meats.push(item);
-      } else if (item.category === process.env.ID_SEAFOODS) {
-        seafoods.push(item);
-      } else if (item.category === process.env.ID_VEGETARIANS) {
-        vegetarians.push(item);
-      }
-    }); */
-
-    /*  handleDesserts(desserts);
-    handleMeats(meats);
-    handleSeaFoods(seafoods);
-    handleVegetarians(vegetarians); */
+    meals = res.data.data;
+    return meals;
   } catch (err) {
     console.log(err);
   }
