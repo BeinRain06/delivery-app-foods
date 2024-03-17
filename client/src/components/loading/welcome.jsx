@@ -9,7 +9,7 @@ import getCookies from "../cookies/GetCookies";
 import "./welcome.css";
 
 function Welcome() {
-  const { handleOrdersWeek, handleOrdersDay, handleRatedMeals } =
+  const { handleOrdersWeek, handleOrdersDay, handleRatings } =
     useContext(MealContext);
 
   const cookies = getCookies();
@@ -44,10 +44,10 @@ function Welcome() {
     }
   }, []);
 
-  const grabRatedMeals = useCallback(async () => {
+  const grabRatings = useCallback(async () => {
     const wholeRatedMeals = await getThisUserRatings(userId);
 
-    handleRatedMeals(wholeRatedMeals);
+    handleRatings(wholeRatedMeals);
   }, []);
 
   const styleNavLink = ({ isActive }) => {
@@ -87,7 +87,7 @@ function Welcome() {
   useEffect(() => {
     if (userId !== undefined) {
       OrdersWeekSet();
-      grabRatedMeals();
+      grabRatings();
     }
   }, []);
 

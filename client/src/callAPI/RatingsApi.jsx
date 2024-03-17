@@ -2,6 +2,22 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
+export async function getAllRatings() {
+  let api_url = "http://localhost:5000/api/delivery/ratings";
+
+  try {
+    const res = await axios.get(`${api_url}`);
+
+    const allRatings = await res.data.data; //res.data(axios res) - .data (structured data response in backend)
+
+    console.log("ratings:", allRatings);
+
+    return allRatings;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 // called when the app launch (Welcome.jsx)
 export async function getThisUserRatings(userId) {
   let api_url = "http://localhost:5000/api/delivery/ratings/rating";
@@ -9,7 +25,7 @@ export async function getThisUserRatings(userId) {
   try {
     const res = await axios.get(`${api_url}/${userId}`);
 
-    const ratings = await res.data.data; //res.data(axios res) - .data (structured data response in backend)
+    const ratings = res.data.data; //res.data(axios res) - .data (structured data response in backend)
 
     console.log("ratings:", ratings);
 
@@ -19,8 +35,8 @@ export async function getThisUserRatings(userId) {
   }
 }
 
-//POST A RATING FOR THE FIRST TIME
-export async function ratingFirstime(userId, ratedMealId) {
+//POST A RATING IDENTITY  (ONE TIME)
+export async function ratingIdentity(userId, triggeredRatedMealId) {
   try {
     let api_url = `http://localhost:5000/api/delivery/ratings/rating`;
 
@@ -28,7 +44,7 @@ export async function ratingFirstime(userId, ratedMealId) {
       api_url,
       {
         user: userId,
-        ratedMeal: ratedMealId,
+        ratedMeal: triggeredRatedMealId,
       },
       {
         headers: {
@@ -37,9 +53,38 @@ export async function ratingFirstime(userId, ratedMealId) {
       }
     );
 
-    console.log("new First Time POST in Rating collection:", response);
+    const rating = response.data.data;
 
-    return response;
+    console.log("new First Time POST in Rating collection:", rating);
+
+    return rating;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+//UPDATE IN RATING SENDING NEW RATEDMEAL IDS
+export async function ratingUpdation(ratingId, ratedIds) {
+  try {
+    let api_url = `http://localhost:5000/api/delivery/ratings/rating/${ratingId}`;
+
+    const response = await axios.put(
+      api_url,
+      {
+        ratedMeals: ratedIds,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const updateOnfire = response.data.data;
+
+    console.log("new First Time POST in Rating collection:", updateOnfire);
+
+    return updateOnfire;
   } catch (err) {
     console.log(err);
   }

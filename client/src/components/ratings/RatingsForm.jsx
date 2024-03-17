@@ -2,11 +2,7 @@ import React, { useCallback } from "react";
 
 import "./RatingsForm.css";
 
-function RatingsForm({ handleNewRatings, setIsRatingOpen, isRatingOPen }) {
-  const operatingsInNewRatings = useCallback(async (e) => {
-    await handleNewRatings(e);
-  }, []);
-
+function RatingsForm({ operativeTaskRatings, setIsRatingOpen, isRatingOPen }) {
   const removeFormRatingsTag = (e) => {
     e.preventDefault();
     setIsRatingOpen(false);
@@ -18,7 +14,7 @@ function RatingsForm({ handleNewRatings, setIsRatingOpen, isRatingOPen }) {
         <div className="wrapping_ratings_form">
           <form
             className="ratings_control_form"
-            onSubmit={(e) => operatingsInNewRatings(e)}
+            onSubmit={(e) => operativeTaskRatings(e)}
           >
             <ul className="rate_feed">
               <li>

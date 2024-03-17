@@ -6,11 +6,13 @@ const ratingSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  ratedMeals: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "RatedMeal",
-    required: true,
-  },
+  ratedMeals: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RatedMeal",
+      required: true,
+    },
+  ],
 });
 
 module.exports = mongoose.model("Rating", ratingSchema);

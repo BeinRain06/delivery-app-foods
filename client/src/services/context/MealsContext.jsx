@@ -18,10 +18,9 @@ export const INITIAL_STATE = {
   desserts: [],
   ordersDay: {},
   ordersWeek: {},
-  ratedMeals: [],
+  ratings: {},
   openWeek: false,
   indexDayFormat: moment().weekday(1).format("MMM DD"),
-  openTagRatings: false,
   registerForm: {},
   loginForm: {},
   welcome: true,
@@ -40,7 +39,6 @@ export const ACTIONS_TYPES = {
   ORDERS_DAY: "ORDERS_DAY",
   ORDERS_WEEK: "ORDERS_WEEK",
   INDEX_DAY: "INDEX_DAY",
-  OPEN_TAG_RATING: "OPEN_TAG_RATING",
   REGISTER_FORM: "REGISTER_FORM",
   LOGIN_FORM: "LOGIN_FORM",
   WELCOME: "WELCOME",
@@ -70,7 +68,7 @@ export const reducer = (state, action) => {
       return { ...state, UserActivation: action.payload };
 
     case ACTIONS_TYPES.RATED_MEALS:
-      return { ...state, ratedMeals: action.payload };
+      return { ...state, ratings: action.payload };
 
     case ACTIONS_TYPES.ORDERS_DAY:
       return { ...state, ordersDay: action.payload };
@@ -86,9 +84,6 @@ export const reducer = (state, action) => {
 
     case ACTIONS_TYPES.LOGIN_FORM:
       return { ...state, loginForm: action.payload };
-
-    case ACTIONS_TYPES.OPEN_TAG_RATING:
-      return { ...state, openTagRatings: action.payload };
 
     case ACTIONS_TYPES.WELCOME:
       return { ...state, welcome: action.payload };
@@ -150,22 +145,16 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     });
   }, []);
 
-  const handleOpenTagsRatings = useCallback((stateBoolean) => {
-    dispatch({ type: ACTIONS_TYPES.OPEN_TAG_RATING, payload: stateBoolean });
-  }, []);
-
-  const handleRatedMeals = useCallback((ratedMeals) => {
-    dispatch({ type: ACTIONS_TYPES.RATED_MEALS, payload: ratedMeals });
+  const handleRatings = useCallback((ratings) => {
+    dispatch({ type: ACTIONS_TYPES.RATED_MEALS, payload: ratings });
   }, []);
 
   const handleRegisterForm = useCallback((registerData) => {
     dispatch({ type: ACTIONS_TYPES.REGISTER_FORM, payload: registerData });
-    handleOpenTagsRatings();
   }, []);
 
   const handleLoginForm = useCallback((loginData) => {
     dispatch({ type: ACTIONS_TYPES.LOGIN_FORM, payload: loginData });
-    handleOpenTagsRatings();
   }, []);
 
   const handleWelcome = useCallback((isWelcome) => {
@@ -183,8 +172,7 @@ const functionsDeliveryContext = (INITIAL_STATE) => {
     handleOrdersWeek,
     handleUser,
     handleIndexDayShift,
-    handleOpenTagsRatings,
-    handleRatedMeals,
+    handleRatings,
     handleRegisterForm,
     handleLoginForm,
     handleWelcome,
@@ -202,8 +190,7 @@ const initStateContext = {
   handleOrdersWeek: () => {},
   handleUser: () => {},
   handleIndexDayShift: () => {},
-  handleOpenTagsRatings: () => {},
-  handleRatedMeals: () => {},
+  handleRatings: () => {},
   handleRegisterForm: () => {},
   handleLoginForm: () => {},
 };

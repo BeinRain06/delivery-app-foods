@@ -158,38 +158,14 @@ router.use("/:mealId", async (req, res) => {
 router.use("/newratings:mealId", async (req, res) => {
   try {
     const mealId = req.params.mealId;
-    const ratings = await Rating.find({});
-
-    const ratedMealsIds = await Promise.all(
-      ratings.map((ratingsItem, i) => {
-        return ratingsItem.ratedMeals;
-      })
-    );
-
-    const wholeNotesCheck = await Promise.all(
-      ratedMealsIds.map(async (ratedMealsId, i) => {
-        const ratedMeal = await RatedMeal.findById(ratedMealsId);
-
-        const mealConcerned = ratedMeal.meal.reduce((acc, val, indexElt) => {
-          if (val[i] === mealId) {
-            return ratedMeal.rating[indexElt];
-          } else {
-            return acc;
-          }
-        }, undefined);
-
-        return mealConcerned;
-      })
-    );
+    const wholeNotes = req.body.ratingsArr;
 
     //legit rating between 3 and 5
-    const wholeNotesArr = wholeNotesCheck.filter(
-      (item) => item !== undefined && item >= 3
-    );
+    const wholeNotesFilter = wholeNotes.filter((item) => item >= 3);
 
     // occurenceNote
 
-    const occurenceNoteObj = wholeNotesArr.reduce((acc, val, i) => {
+    const occurenceNoteObj = wholeNotesFilter.reduce((acc, val, i) => {
       const alreadyInside = Object.values(acc);
 
       const idCheck = alreadyInside.findIndex((item) => item.rating === val);
@@ -218,6 +194,7 @@ router.use("/newratings:mealId", async (req, res) => {
       const newMax = val.count <= acc?.count ? acc : val;
       return newMax;
     }, {});
+
     const newRatingValue = maxOccurence.rating;
 
     const mealUpdate = await Meal.findByIdAndUpdate(

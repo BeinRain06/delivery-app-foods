@@ -1,10 +1,16 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { MealContext } from "../../services/context/MealsContext";
-import {
-  postForFirstTimeRatedMeal,
-  updateRatedMeal,
-  putNewItemRatedMeal,
-} from "../../callAPI/RatedMealsApi";
+import { postRatedMeal, updateRatedMeal } from "../../callAPI/RatedMealsApi";
+import { ratingIdentity, ratingUpdation } from "../../callAPI/RatingsApi";
+
+import { recallAllRatingAndUpdateMeal } from "../ratings/ratingsFunc/ratingsFinalFunction";
+
 import RatingsForm from "../ratings/RatingsForm";
 import getCookies from "../cookies/GetCookies";
 
@@ -17,11 +23,31 @@ const MiniCardWeekOrders = ({ meal }) => {
 
   const [isRatingOPen, setIsRatingOpen] = useState(false);
 
-  const mealRef = useRef();
+  const mealRef = useRef(null);
+
+  const operativeTaskRatings = useCallback(async (e) => {
+    const mealId = await handleNewRatings(e);
+
+    const updationMeal = await recallAllRatingAndUpdateMeal(mealId);
+  }, []);
 
   const manageRatingTask = (e) => {
     e.preventDefault();
     setIsRatingOpen(true);
+  };
+
+  const validatorRating = (userId, rating) => {
+    if (userId === undefined) {
+      alert("Can't rate for the moment. Please Try again Later!");
+      return;
+    }
+
+    if (+rating <= 1 || +rating > 5) {
+      alert("can't rate less than 1 or more than 5 ");
+      return;
+    } else if (rating === "" || typeof +rating !== "number") {
+      alert("miss rating value! between 1 and 5 ");
+    }
   };
 
   const handleNewRatings = async (e) => {
@@ -36,102 +62,85 @@ const MiniCardWeekOrders = ({ meal }) => {
     const cookies = getCookies();
     const userId = cookies.userId;
 
-    if (userId === undefined) {
-      alert("Can't rate for the moment. Please Try again Later!");
-      return;
-    }
+    validatorRating(userId, rating);
 
-    if (+rating <= 1 || +rating > 5) {
-      alert("can't rate less than 1 or more than 5 ");
-      return;
-    } else if (rating === "" || typeof +rating !== "number") {
-      alert("miss rating value! between 1 and 5 ");
-    }
+    let entireRatedMeals = ratings.ratedMeals;
 
-    if (ratedMeals.length === 0) {
-      // first time indeed the user submit a rating
-      /* create a new RatedMeal* (POST method)*/
-      const uniquePost = await postForFirstTimeRatedMeal(
-        mealId,
-        rating,
-        feedback
+    if (entireRatedMeals === undefined) {
+      //create the identity Rating ith POST in Rating collection
+      const ratingTakePlace = await ratingIdentity(
+        userId,
+        triggeredRatedMealId
       );
 
-      console.log("unique first time ratedMeal :", uniquePost);
-
-      const mealSpecs = meals.find((meal) => meal._id === mealId);
-
-      const mealSpecsSelect = {
-        mealId: mealId,
-        origin: mealSpecs.origin,
-        category: mealSpecs.category,
-        ingredients: mealSpecs.ingredients,
-        longDesc: mealSpecs.longDesc,
-      };
-
-      const ratedMealId = uniquePost.id;
-
-      const restItemRating = {
-        rating: uniquePost.rating[0],
-        feedback: uniquePost.feedback[0],
-        dateMention: uniquePost.dateMention[0],
-      };
-
-      const rateAllFeatObj = {
-        id: ratedMealId,
-        ...mealSpecsSelect,
-        ...restItemRating,
-      };
-
-      const rateAllFeatArr = [...rateAllFeatObj];
-
-      handleRatedMeals(rateAllFeatArr);
-
-      /* next create a new Rating* (POST method)*/
-      const uniqueRating = await ratingFirstime(userId, ratedMealId);
-
-      console.log("unique first time rating :", uniqueRating);
+      handleRatings(ratingTakePlace);
+    } else {
+      await submitRatedMealAndUpdateRatings(
+        mealId,
+        rating,
+        feedback,
+        entireRatedMeals
+      );
     }
 
-    let existInRatedMeal = ratedMeals.reduce((acc, val, indexArr) => {
-      if (val.mealId === mealId) {
-        return { indexArr, ...acc };
-      } else {
-        const newAcc = { indexArr, ...val };
-        return newAcc;
-      }
-    }, {});
+    return mealId;
+  };
 
-    // id of ratedMeal in collection
-    const ratedMealId = existInRatedMeal.id;
+  const submitRatedMealAndUpdateRatings = async (
+    mealId,
+    rating,
+    feedback,
+    entireRatedMeals
+  ) => {
+    const isAlreadyRated = entireRatedMeals.findIndex(
+      (item, i) => item.meal === mealId
+    );
+    if (isAlreadyRated !== -1) {
+      //updateRated Meal
 
-    if (existInRatedMeal.mealId === mealId) {
-      // update ratedMeal(axios.put)
+      const newFeedback =
+        feedback !== "" ? feedback : entireRatedMeals[isAlreadyRated].feedback;
 
-      const indArr = existInRatedMeal.indexArr;
-
-      if (feedback !== "") {
-        const newUpdateRatedMeal = {
+      const considerUpdate = {
+        ...ratings,
+        [ratedMeals]: {
           ...ratedMeals,
-          [indArr]: {
-            ...ratedMeals[indArr],
+          [isAlreadyRated]: {
+            ...ratedMeals[isAlreadyRated],
             rating: rating,
-            feedback: feedback,
+            feedback: newFeedback,
+            dateMention: moment().format("Do MMMM, YYYY"),
           },
-        };
-        handleRatedMeals(newUpdateRatedMeal);
-      } else {
-        const newUpdateRatedMeal = {
-          ...ratedMeals,
-          [indArr]: { ...ratedMeals[indArr], rating: rating },
-        };
-        handleRatedMeals(newUpdateRatedMeal);
-      }
+        },
+      };
 
-      await updateRatedMeal(ratedMealId, mealId, rating, feedback, indArr);
+      handleRatings(considerUpdate);
+
+      const itemRated = entireRatedMeals.find(
+        (item, i) => item.meal === mealId
+      );
+      const ratedId = itemRated._id;
+      const weUpdatingRatedMeal = await updateRatedMeal(
+        ratedId,
+        rating,
+        newFeedback
+      );
+
+      console.log("udated Rated Meal:", weUpdatingRatedMeal);
     } else {
-      // update sending a new item (axios.post)
-      await putNewItemRatedMeal(ratedMealId, mealId, rating, feedback);
+      //postRated Meal
+      const triggeredRatedMeal = await postRatedMeal(mealId, rating, feedback);
+
+      // update Rating
+      const triggeredRatedMealId = triggeredRatedMeal._id;
+
+      let ratedIds = ratings.ratedMeals.map((item) => item._id);
+
+      ratedIds = [...ratedIds, triggeredRatedMealId];
+
+      const myUpdate = await ratingUpdation(ratings._id, ratedIds);
+
+      handleRatings(myUpdate);
     }
   };
 

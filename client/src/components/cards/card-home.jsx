@@ -5,7 +5,7 @@ import "./card-home.css";
 
 function CardHome({ ...props }) {
   return (
-    <li key={props.id} className="dish" onClick={(e) => console.log(e.target)}>
+    <li key={props._id} className="dish" onClick={(e) => console.log(e.target)}>
       <div className="dish_content flex-row">
         <img src={props.image} className="my_dish_img" alt="dish missing" />
 
@@ -16,7 +16,7 @@ function CardHome({ ...props }) {
               <li key={props.name} className="ratings_score">
                 ratings: {props.ratings}
               </li>
-              <li key={props.id} className="ratings">
+              <li key={props._id} className="ratings">
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>
@@ -44,7 +44,7 @@ function CardHome({ ...props }) {
                 <p className="dish_price">${props.price}</p>
               </li>
               <Button
-                mealid={props.id}
+                mealid={props._id}
                 mealname={props.name}
                 mealprice={props.price}
                 mealimg={props.image}

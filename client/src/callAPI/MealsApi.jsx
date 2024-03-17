@@ -107,8 +107,26 @@ export async function* getAllTypesFoods() {
   }
 }
 
-export async function updateMealScoreRate() {
+export async function updateMealScoreRating(mealId, resultArrRating) {
   try {
+    let api_url = `http://localhost:3000/api/meals/newratings/${mealId}`;
+
+    const res = await axios.put(
+      api_url,
+      {
+        ratingsArr: resultArrRating,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const newMealRating = res.data.data;
+
+    console.log("new Meal RATINGS --API:", newMealRating);
+    return newMealRating;
   } catch (err) {
     console.log(err);
   }

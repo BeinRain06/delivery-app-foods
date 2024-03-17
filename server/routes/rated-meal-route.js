@@ -9,21 +9,21 @@ const User = require("../models/user");
 // middleware that is specific to this router
 router.use(express.urlencoded({ extended: false }));
 
-// FOR POSTING QUITE THE FIRST TIME
+// FOR POSTING RATED MEALS
 router.post("/", async (req, res) => {
   try {
-    let setInFeedBack;
+    let newFeedback;
 
     if (req.body.feedback === "") {
-      setInFeedBack = "average";
+      newFeedback = "average";
     } else {
-      setInFeedBack = req.body.feedback;
+      newFeedback = req.body.feedback;
     }
 
     let newRatedMeal = new RatedMeal({
-      meal: [...req.body.meal],
-      rating: [...req.body.rating],
-      feedback: [...setInFeedBack],
+      meal: req.body.meal,
+      rating: req.body.rating,
+      feedback: newFeedback,
       dateMention: [moment().format("Do MMMM, YYYY")],
     });
 
@@ -58,126 +58,22 @@ router.get("/", async (req, res) => {
   }
 });
 
-// FOR PUT (UPDATE SENDING A NEW ITEM)
-router.put("/ratedmeal:ratedMealId", async (req, res) => {
+//UPDATE(PUT) - Rated MEAL EXISTING
+router.put("/ratedmeal:ratedId", async (req, res) => {
   try {
     console.log("rating on updation process");
 
-    const ratedMealId = req.params.ratedMealId;
-    const mealId = req.body.meal;
+    const ratedId = req.params.ratedId;
 
-    const ratedInstance = await RatedMeal.findById(ratedMealId);
-
-    const indArr = ratedInstance.meal.length;
-
-    const newMeal = [
-      ...ratedInstance.meal,
-      (ratedInstance.meal[indArr] = mealId),
-    ];
-
-    const newRating = [
-      ...ratedInstance.rating,
-      (ratedInstance.rating[indArr] = req.body.rating),
-    ];
-
-    const newFeedback = [
-      ...ratedInstance.feedback,
-      (ratedInstance.feedback[indArr] = req.body.feedback),
-    ];
-
-    const newDateMention = [
-      ...ratedInstance.dateMention,
-      (ratedInstance.dateMention[indArr] = moment().format("Do MMMM, YYYY")),
-    ];
-
-    let updateInstance;
-
-    if (req.body.feedback !== "") {
-      updateInstance = await RatedMeal.findByIdAndUpdate(
-        ratedMealId,
-        {
-          meal: newMeal,
-          rating: newRating,
-          feedback: newFeedback,
-          dateMention: newDateMention,
-        },
-        { new: true }
-      ).populate("meal", ["name", "origin", "ratings"]);
-    } else {
-      updateInstance = await RatedMeal.findByIdAndUpdate(
-        ratedMealId,
-        {
-          meal: newMeal,
-          rating: newRating,
-          dateMention: newDateMention,
-        },
-        { new: true }
-      ).populate("meal", ["name", "origin", "ratings"]);
-    }
-
-    res.json({
-      success: true,
-      data: updateInstance,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: "Error: something went wrong can't update rating",
-    });
-
-    console.log(err);
-  }
-});
-
-// FOR PUT (UPDATE ITEM ALREADY EXISTING)
-router.put("/ratedmeal:ratedMealId", async (req, res) => {
-  try {
-    console.log("rating on updation process");
-
-    const ratedMealId = req.params.ratedMealId;
-
-    const mealId = req.body.meal;
-    const indArr = req.body.indArr;
-
-    const ratedInstance = await RatedMeal.findById(ratedMealId);
-
-    const newRating = [
-      ...ratedInstance.rating,
-      (ratedInstance.rating[indArr] = req.body.rating),
-    ];
-
-    const newFeedback = [
-      ...ratedInstance.feedback,
-      (ratedInstance.feedback[indArr] = req.body.feedback),
-    ];
-
-    const newDateMention = [
-      ...ratedInstance.dateMention,
-      (ratedInstance.dateMention[indArr] = moment().format("Do MMMM, YYYY")),
-    ];
-
-    let updateInstance;
-
-    if (req.body.feedback !== "") {
-      updateInstance = await RatedMeal.findByIdAndUpdate(
-        ratedMealId,
-        {
-          rating: newRating,
-          feedback: newFeedback,
-          dateMention: newDateMention,
-        },
-        { new: true }
-      ).populate("meal", ["name", "origin", "ratings"]);
-    } else {
-      updateInstance = await RatedMeal.findByIdAndUpdate(
-        ratedMealId,
-        {
-          rating: newRating,
-          dateMention: newDateMention,
-        },
-        { new: true }
-      ).populate("meal", ["name", "origin", "ratings"]);
-    }
+    const updateInstance = await RatedMeal.findByIdAndUpdate(
+      ratedId,
+      {
+        rating: req.body.rating,
+        feedback: req.body.feedback,
+        dateMention: moment().format("Do MMMM, YYYY"),
+      },
+      { new: true }
+    ).populate("meal", ["name", "origin", "ratings"]);
 
     res.json({
       success: true,
