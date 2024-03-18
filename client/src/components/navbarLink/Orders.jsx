@@ -634,7 +634,7 @@ function Orders() {
                       return (
                         <>
                           <tbody key={i}>
-                            <tr>
+                            <tr key={mealId}>
                               <td>{meal.name}</td>
                               <td>{qty}</td>
                               <td>${meal.price}</td>

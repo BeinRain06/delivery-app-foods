@@ -230,7 +230,7 @@ function Button({ mealid, mealname, mealprice, mealimg, originmeal }) {
   return (
     <>
       {!isClicked ? (
-        <li className="btn_wrap_order">
+        <div className="btn_wrap_order">
           <button
             type="button"
             className=" btn btn_order"
@@ -238,7 +238,7 @@ function Button({ mealid, mealname, mealprice, mealimg, originmeal }) {
           >
             Order
           </button>
-        </li>
+        </div>
       ) : (
         <Ordered
           mealid={mealid}

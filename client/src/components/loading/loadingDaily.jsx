@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
+import { MealContext } from "../../services/context/MealsContext";
 import { DailyContext } from "../../services/context/DailyContext";
 
 import { dailyActions } from "../../services/redux/createslice/DailySplice";
@@ -15,11 +16,7 @@ import moment from "moment";
 import "./loading.css";
 
 function LoadingDaily() {
-  /*  const dispatch = useDispatch();
-
-  const lastActiveDay = useSelector(lastActiveDay_section);
-  const mondayMenu = useSelector(mondayMenu_section);
-  const arrayDayWeeK = useSelector(arrayDayWeeK_section); */
+  const { handleMeals } = useContext(MealContext);
 
   const {
     state: { lastActiveDay, mondayMenu, arrayDayWeeK },
@@ -35,8 +32,12 @@ function LoadingDaily() {
   const [hasError, setHasError] = useState(false);
 
   const fetchData = async (indexChange) => {
-    const result = await getMeals();
-    const meals = result.data.data;
+    const meals = await getMeals();
+
+    handleMeals(meals);
+
+    console.log("show me meals:", meals);
+
     let desData = [];
     let vegData = [];
     let seaData = [];
@@ -62,7 +63,7 @@ function LoadingDaily() {
     handleMeats(meatsData);
     handleVegetarians(vegData); */
 
-    console.log("result:", result);
+    /*    console.log("result:", result); */
 
     return { meatsData, seaData, vegData, desData, indexChange };
   };
@@ -144,24 +145,7 @@ function LoadingDaily() {
             return { ...prev, vegetarians: tmpArr };
           });
 
-        /* item === "Meats" &&
-          (await dispatch(dailyActions.handleSelectedMeats(tmpArr)));
-
-        item === "Meats" &&
-          (await dispatch(dailyActions.handleSelectedSeafoods(tmpArr)));
-
-        item === "Meats" &&
-          (await dispatch(dailyActions.handleSelectedVegetarians(tmpArr)));
-
-        item === "Meats" &&
-          indexChange === 3 &&
-          dispatch(
-            dailyActions.handleMondayMenu((prev) => {
-              return { ...prev, meats: tmpArr };
-            })
-          );
-
-        */ item === "Seafoods" &&
+        item === "Seafoods" &&
           indexChange === 3 &&
           dispatch(
             dailyActions.handleMondayMenu((prev) => {

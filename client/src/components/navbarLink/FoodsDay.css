@@ -414,6 +414,7 @@ div {
   .dish_frame .dish_name {
     width: 80%;
     margin: 0 auto;
+    color: inherit;
     font-size: 0.8rem;
     font-weight: bold;
     text-align: center;
@@ -421,20 +422,20 @@ div {
 
   .centralize_info_dish {
     position: relative;
-    /*   top: calc(clamp(-1.5rem, -0.65rem, 1rem)); */
     width: 100%;
     /* height: calc(100% - 100px); */
+    color: inherit;
     display: flex;
     flex-direction: column;
     flex-grow: 2;
     justify-content: space-around;
     align-items: center;
     gap: 0.5rem;
-    background-color: red;
   }
 
   .show_content_dish .dish_desc {
     width: 100%;
+    color: inherit;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -491,7 +492,7 @@ div {
 
   .dish_order .dish_ingredients {
     width: 100%;
-    /* text-align: center; */
+    color: inherit;
   }
 
   .dish_order .title_ingredients {
@@ -520,11 +521,26 @@ div {
     width: 100%;
     height: 360px;
     font-size: 1rem;
-    background-color: blue;
+    background-color: rgb(59, 59, 58);
+  }
+
+  .dish_frame .dish_name {
+    color: #ddd;
+  }
+
+  .centralize_info_dish {
+    top: calc(1vw);
+    color: #eee;
+    gap: 0.25rem;
   }
 
   .show_content_dish p {
     font-size: clamp(0.79rem, 0.8rem, 1.15rem);
+  }
+
+  .show_content_dish .dish_desc {
+    width: 100%;
+    color: #eee;
   }
 
   .dish_frame .dish_name {
@@ -535,9 +551,9 @@ div {
     font-size: clamp(0.85rem, 0.9rem, 1.25rem);
   }
 
-  .centralize_info_dish {
-    top: calc(1vw);
-    gap: 0.25rem;
+  .dish_order .dish_ingredients {
+    width: 100%;
+    color: navy;
   }
 }
 
@@ -587,7 +603,6 @@ div {
     width: 100%;
     height: 340px;
     font-size: 1rem;
-    background-color: blue;
   }
 
   .showcase_content_desktop .each_day_dish {

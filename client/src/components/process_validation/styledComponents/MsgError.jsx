@@ -5,11 +5,10 @@ function ErrorWarning() {
   const {
     state: { messageError, componentSectionName, forseen },
     handleMessageError,
+    handleForSeen,
   } = useContext(ValidationContext);
 
-  const newMessage = forseen
-    ? "soon, this feature will be implented."
-    : messageError;
+  const newMessage = forseen ? "will be implented soon, ..." : messageError;
 
   const applyMsgError = () => {
     handleMessageError(newMessage);
@@ -51,12 +50,13 @@ function ErrorWarning() {
   const styleDivThree = {
     position: "absolute",
     top: "5.5rem",
-    width: "90%",
-    color: "#1c7e4d",
-    backgroundColor: "#653b7e",
+    width: "80%",
+    color: "#fff",
+    backgroundColor: "#693f3f",
     padding: "0.25rem 1rem",
     fontSize: "clamp(0.65rem, 0.75rem, 0.8rem)",
     border: "2px solid #fff",
+    borderRadius: "5px",
     display: "flex",
     justifyContent: "center",
     textAlign: "center",
@@ -75,7 +75,8 @@ function ErrorWarning() {
     ) {
       return styleDivTwo;
     } else if (
-      componentSectionName === "fourthMealButton" &&
+      (componentSectionName === "fourthMealButton" ||
+        componentSectionName === "searchMealsButton") &&
       forseen === true
     ) {
       return styleDivThree;

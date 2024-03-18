@@ -12,6 +12,10 @@ import {
 import "./SearchMeals.css";
 
 function SearchMeals() {
+  /* response obtained from  searching Meals in navbar:
+  NOT YET FULLY READY,
+   to BE IMPLEMENT ==> FURTHER */
+
   return (
     <div className="welcome_search_meals">
       <p className="title_results">Results</p>

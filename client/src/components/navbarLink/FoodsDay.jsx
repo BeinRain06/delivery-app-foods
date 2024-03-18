@@ -1,24 +1,8 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import moment from "moment";
 import Loading from "../loading/loading";
-import { useDispatch, useSelector } from "react-redux";
-
-import {
-  recordAllDailySliceState,
-  dailyActions,
-} from "../../services/redux/createslice/DailySplice";
 
 import { DailyContext } from "../../services/context/DailyContext";
-
-import {
-  selectMeats_section,
-  selectSeafoods_section,
-  selectVegetarians_section,
-  selectDesserts_section,
-  endThisVar_section,
-} from "../../services/redux/createslice/DailySplice";
-
-import { mealActions } from "../../services/redux/createslice/MealSplice";
 
 import { MealContext } from "../../services/context/MealsContext";
 
@@ -27,11 +11,7 @@ import Button from "../button/button-shape";
 import "./FoodsDay.css";
 
 function FoodsDay() {
-  const {
-    state: { meals, meats, seaFoods, vegetarians, desserts, welcome },
-    handleUpstreamOrder,
-    handleWelcome,
-  } = useContext(MealContext);
+  const { handleWelcome } = useContext(MealContext);
 
   const {
     state: {
@@ -44,15 +24,9 @@ function FoodsDay() {
     handleEndThisVar,
   } = useContext(DailyContext);
 
-  /* const dispatch = useDispatch();
-
-  const selectMeats = useSelector(selectMeats_section);
-  const selectSeafoods = useSelector(selectSeafoods_section);
-  const selectVegetarians = useSelector(selectVegetarians_section);
-  const selectDesserts = useSelector(selectDesserts_section);
-  const endThisVar = useSelector(endThisVar_section); */
-
   const [loading, setLoading] = useState(true);
+
+  const [choosingMeals, setChoosingMeals] = useState(selectMeats);
 
   const mobMealRef = useRef(null);
 
@@ -70,8 +44,8 @@ function FoodsDay() {
     /* setLoading(true); */
     let mealCategory;
 
-    if (e.target.parentElement.getAttribute("data-meal") === "Meals") {
-      mealCategory = "Meals";
+    if (e.target.parentElement.getAttribute("data-meal") === "Meats") {
+      mealCategory = "Meats";
 
       /* setTimeout(async () => {
         await handleEndThisVar("Meals");
@@ -105,7 +79,8 @@ function FoodsDay() {
 
     console.log("meal meal cate", mealCategory);
 
-    suitRenderMeals(mealCategory);
+    const myChoiceRender = suitRenderMeals(mealCategory);
+    setChoosingMeals(myChoiceRender);
   };
 
   const removeLoading = (timer) => {
@@ -209,29 +184,21 @@ function FoodsDay() {
   };
 
   useEffect(() => {
-    try {
-      /* setTimeout(() => {
-        console.log("For Real Waiting Data Coming...");
-      }, 4000); */
+    setTimeout(async () => {
+      setLoading(false);
+      handleWelcome(false);
+    }, 3000);
 
-      setTimeout(async () => {
-        setLoading(false);
-        handleWelcome(false);
-        /* dispatch(mealActions.handleWelcome(false)); */
-      }, 3000);
-      console.log("selectMeats:", selectMeats);
-    } catch (err) {
-      console.log(err);
-    }
+    console.log("selectMeats:", selectMeats);
   }, []);
 
   useEffect(() => {
-    try {
-      console.log("1--2--3 update under e.target square");
-    } catch (err) {
-      console.log(err);
-    }
-  }, [endThisVar]);
+    console.log(`choose to see new Meals`);
+  }, [choosingMeals]);
+
+  /* useEffect(() => {
+    console.log("1--2--3 update under e.target square");
+  }, [endThisVar]); */
 
   return (
     <main className="welcome_day">
@@ -281,9 +248,9 @@ function FoodsDay() {
                     ? selectMeats.map((item, i) => {
                         return (
                           <li
-                            key={item.id}
+                            key={item._id}
                             className="min_showcase"
-                            data-mealindex={item.id}
+                            data-mealindex={item._id}
                             onClick={(e) => focusMeal(e)}
                           >
                             <div className="mini_meal_img">
@@ -299,12 +266,13 @@ function FoodsDay() {
                           </li>
                         );
                       })
-                    : suitRenderMeals(endThisVar).map((item, i) => {
+                    : choosingMeals.map((item, i) => {
                         return (
                           <li
-                            key={item.id}
+                            key={item._id}
                             className="min_showcase"
-                            data-mealindex={item.id}
+                            data-mealindex={item._id}
+                            onClick={(e) => focusMeal(e)}
                           >
                             <div className="mini_meal_img">
                               <div className="box_mini_img">
@@ -329,9 +297,9 @@ function FoodsDay() {
                       ? selectMeats.map((meal, i) => {
                           return (
                             <li
-                              key={meal.id}
+                              key={meal._id}
                               className="each_day_dish"
-                              data-mealindex={meal.id}
+                              data-mealindex={meal._id}
                             >
                               <div className="show_ray_wrapper">
                                 <div>
@@ -370,7 +338,7 @@ function FoodsDay() {
                                           </p>
                                         </div>
                                         <Button
-                                          mealid={meal.id}
+                                          mealid={meal._id}
                                           mealname={meal.name}
                                           mealprice={meal.price}
                                         />
@@ -382,12 +350,12 @@ function FoodsDay() {
                             </li>
                           );
                         })
-                      : suitRenderMeals(endThisVar).map((meal, i) => {
+                      : choosingMeals.map((meal, i) => {
                           return (
                             <li
-                              key={meal.id}
+                              key={meal._id}
                               className="each_day_dish"
-                              data-mealindex={meal.id}
+                              data-mealindex={meal._id}
                             >
                               <div className="show_ray_wrapper">
                                 <div>
@@ -426,7 +394,7 @@ function FoodsDay() {
                                           </p>
                                         </div>
                                         <Button
-                                          mealid={meal.id}
+                                          mealid={meal._id}
                                           mealname={meal.name}
                                           mealprice={meal.price}
                                         />
@@ -440,6 +408,7 @@ function FoodsDay() {
                         })}
                   </ul>
                 </div>
+
                 <div className="showcase_wrapper_desktop">
                   <div
                     className="showcase_center_wrap flex-row"
@@ -463,9 +432,9 @@ function FoodsDay() {
                         ? selectMeats.map((meal, i) => {
                             return (
                               <li
-                                key={meal.id}
+                                key={meal._id}
                                 className="each_day_dish flex-row"
-                                data-mealindex={meal.id}
+                                data-mealindex={meal._id}
                               >
                                 <div className="showcase_dish">
                                   <div className="show_ray_wrapper">
@@ -507,7 +476,7 @@ function FoodsDay() {
                                               </p>
                                             </div>
                                             <Button
-                                              mealid={meal.id}
+                                              mealid={meal._id}
                                               mealname={meal.name}
                                               mealprice={meal.price}
                                             />
@@ -520,12 +489,12 @@ function FoodsDay() {
                               </li>
                             );
                           })
-                        : suitRenderMeals(endThisVar).map((meal, i) => {
+                        : choosingMeals.map((meal, i) => {
                             return (
                               <li
-                                key={meal.id}
+                                key={meal._id}
                                 className="each_day_dish flex-row"
-                                data-mealindex={meal.id}
+                                data-mealindex={meal._id}
                               >
                                 <div className="showcase_dish">
                                   <div className="show_ray_wrapper">
@@ -567,7 +536,7 @@ function FoodsDay() {
                                               </p>
                                             </div>
                                             <Button
-                                              mealid={meal.id}
+                                              mealid={meal._id}
                                               mealname={meal.name}
                                               mealprice={meal.price}
                                             />
