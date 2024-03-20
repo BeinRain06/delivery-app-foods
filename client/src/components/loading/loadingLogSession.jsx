@@ -102,8 +102,7 @@ function LoadingLogSession({
 
   const setDataEndLoading = async (myOrder) => {
     return await new Promise((resolve) => {
-      setIsLoggingDataSession(false); //--> Here Comment this line First to implement full css of loadingLogSession
-
+      setIsLoggingDataSession(false);
       handleFirstTimeOrder(false);
 
       setTimeout(() => {

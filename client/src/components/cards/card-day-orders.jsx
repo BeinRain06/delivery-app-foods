@@ -33,6 +33,8 @@ export const CardDayOrder = ({ id, meal }) => {
     const mealId = await handleNewRatings(e);
 
     const updationMeal = await recallAllRatingAndUpdateMeal(mealId);
+
+    setIsRatingOpen(false);
   }, []);
 
   const manageRatingTask = (e) => {
@@ -71,20 +73,27 @@ export const CardDayOrder = ({ id, meal }) => {
     let entireRatedMeals = ratings.ratedMeals;
 
     if (entireRatedMeals === undefined) {
-      //create the identity Rating ith POST in Rating collection
-      const ratingTakePlace = await ratingIdentity(
-        userId,
-        triggeredRatedMealId
-      );
+      //create the identity
+      //POST in RatedMeal collection
+      // POST in Rating collection
+      const newRatedMeal = await postRatedMeal(mealId, rating, feedback);
+
+      console.log("newRatedMeal:", newRatedMeal);
+
+      const ratingTakePlace = await ratingIdentity(userId, newRatedMeal.id);
+
+      console.log("ratings take place:", ratingTakePlace);
 
       handleRatings(ratingTakePlace);
     } else {
-      await submitRatedMealAndUpdateRatings(
+      const submitUpdate = await submitRatedMealAndUpdateRatings(
         mealId,
         rating,
         feedback,
         entireRatedMeals
       );
+
+      console.log("submit update:", submitUpdate);
     }
 
     return mealId;

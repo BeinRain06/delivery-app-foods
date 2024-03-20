@@ -184,7 +184,7 @@ const MiniCardWeekOrders = ({ meal }) => {
         </div>
         {isRatingOPen && (
           <RatingsForm
-            handleNewRatings={handleNewRatings}
+            operativeTaskRatings={operativeTaskRatings}
             setIsRatingOpen={setIsRatingOpen}
             isRatingOPen={isRatingOPen}
           />

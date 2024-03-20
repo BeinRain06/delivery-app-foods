@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const cors = require("cors");
 const Meal = require("../models/meal");
 const Category = require("../models/category");
 const RatedMeal = require("../models/rated-meal");
@@ -7,6 +8,17 @@ const Rating = require("../models/rating");
 
 // middleware that is specific to this router
 router.use(express.urlencoded({ extended: false }));
+
+router.use(
+  cors({
+    origin: [
+      "http://localhost:5000",
+      "http://localhost:3000",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 
 // FOR POST
 router.post(
@@ -145,66 +157,6 @@ router.use("/:mealId", async (req, res) => {
     if (!category) {
       throw new Error("Error: category didn't match");
     }
-    res.json({ success: true, data: mealUpdate });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, error: "something went wrong in update" });
-    console.log(err);
-  }
-});
-
-// FOR UPDATE (PUT) RATINGS SCORE
-router.use("/newratings:mealId", async (req, res) => {
-  try {
-    const mealId = req.params.mealId;
-    const wholeNotes = req.body.ratingsArr;
-
-    //legit rating between 3 and 5
-    const wholeNotesFilter = wholeNotes.filter((item) => item >= 3);
-
-    // occurenceNote
-
-    const occurenceNoteObj = wholeNotesFilter.reduce((acc, val, i) => {
-      const alreadyInside = Object.values(acc);
-
-      const idCheck = alreadyInside.findIndex((item) => item.rating === val);
-
-      if (idCheck !== -1) {
-        const count = alreadyInside[idCheck].count;
-
-        const updateAcc = {
-          ...acc,
-          [idCheck]: { ...acc[idCheck], count: count + 1 },
-        };
-        return updateAcc;
-      } else {
-        const index = Object.keys(acc).length;
-        return { ...acc, [index]: { rating: val, count: 1 } };
-      }
-    }, {});
-
-    console.log("occurence:", occurenceNoteObj);
-
-    // retrieve max occurence
-    const occurenceNoteArr = Object.values(occurence);
-
-    const maxOccurence = occurenceNoteArr.reduce((acc, val, i) => {
-      console.log("acc :", acc);
-      const newMax = val.count <= acc?.count ? acc : val;
-      return newMax;
-    }, {});
-
-    const newRatingValue = maxOccurence.rating;
-
-    const mealUpdate = await Meal.findByIdAndUpdate(
-      mealId,
-      {
-        ratings: newRatingValue,
-      },
-      { new: true }
-    );
-
     res.json({ success: true, data: mealUpdate });
   } catch (err) {
     res

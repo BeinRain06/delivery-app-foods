@@ -10,7 +10,7 @@ export async function getAllRatings() {
 
     const allRatings = await res.data.data; //res.data(axios res) - .data (structured data response in backend)
 
-    console.log("ratings:", allRatings);
+    console.log("ratings allRatings:", allRatings);
 
     return allRatings;
   } catch (err) {
@@ -85,6 +85,35 @@ export async function ratingUpdation(ratingId, ratedIds) {
     console.log("new First Time POST in Rating collection:", updateOnfire);
 
     return updateOnfire;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+//UPDATE MEAL SCORE RATINGS
+export async function updateMealScoreRating(mealId, resultArrRating) {
+  try {
+    let api_url = `http://localhost:3000/api/delivery/ratings/newratings/meal/${mealId}`;
+
+    console.log("meal aHi ID:", mealId);
+    console.log("result AAiH Ratings:", resultArrRating);
+
+    const res = await axios.put(
+      api_url,
+      {
+        ratingsArr: resultArrRating,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
+    const newMealRating = res.data.data;
+
+    console.log("new Meal RATINGS --API:", newMealRating);
+    return newMealRating;
   } catch (err) {
     console.log(err);
   }

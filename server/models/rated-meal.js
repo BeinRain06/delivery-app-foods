@@ -15,7 +15,7 @@ ratedMealSchema = new mongoose.Schema({
     default: "",
   },
   dateMention: {
-    type: Date,
+    type: String,
     default: moment().format("Do MMMM, YYYY"),
   },
 });

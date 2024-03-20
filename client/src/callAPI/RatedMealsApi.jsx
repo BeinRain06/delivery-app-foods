@@ -4,9 +4,9 @@ axios.defaults.withCredentials = true;
 
 export async function postRatedMeal(mealId, rating, feedback) {
   try {
-    let api_url = `http://localhost:5000/api/delivery/ratedmeals/`;
+    let api_url = `http://localhost:5000/api/delivery/ratedmeals`;
 
-    const response = await axios.post(
+    const res = await axios.post(
       api_url,
       {
         meal: mealId,
@@ -20,7 +20,9 @@ export async function postRatedMeal(mealId, rating, feedback) {
       }
     );
 
-    console.log("new First Time POST in rateMead collection:", response);
+    const response = res.data.data;
+
+    console.log("new First Time POST in rateMead collection:", res.data.data);
 
     return response;
   } catch (err) {

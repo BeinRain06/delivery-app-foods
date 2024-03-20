@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const cors = require("cors");
 const moment = require("moment");
 
 const RatedMeal = require("../models/rated-meal");
@@ -8,6 +9,19 @@ const User = require("../models/user");
 
 // middleware that is specific to this router
 router.use(express.urlencoded({ extended: false }));
+
+router.use(express.json());
+
+router.use(
+  cors({
+    origin: [
+      "http://localhost:5000",
+      "http://localhost:3000",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 
 // FOR POSTING RATED MEALS
 router.post("/", async (req, res) => {
@@ -24,7 +38,7 @@ router.post("/", async (req, res) => {
       meal: req.body.meal,
       rating: req.body.rating,
       feedback: newFeedback,
-      dateMention: [moment().format("Do MMMM, YYYY")],
+      dateMention: moment().format("Do MMMM, YYYY"),
     });
 
     newRatedMeal = await newRatedMeal.save(); //mongoDB save
