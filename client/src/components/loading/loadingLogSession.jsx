@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { MealContext } from "../../services/context/MealsContext";
 import { TemplateContext } from "../../services/context/TemplateContext";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  templateActions,
-  ticketNumber_section,
-} from "../../services/redux/createslice/TemplateSlice";
-import { mealActions } from "../../services/redux/createslice/MealSplice";
 import { userLogging } from "../../callAPI/UsersApi";
 import { initiateOrder } from "../../callAPI/OrdersApi";
 import moment from "moment";
@@ -17,17 +11,6 @@ function LoadingLogSession({
   setIsLoggingDataSession,
   setShowTotalPrice,
 }) {
-  // const dispatch = useDispatch();
-
-  // branching your data to Local Storage
-  // const appState = JSON.parse(localStorage.getItem("appState"));
-
-  /* const user = appState.mealPrime.user;
-  const orderSpecsCurrent = appState.orderPrime.orderSpecsCurrent;
-  const thisOrder = appState.orderPrime.thisOrder;
-  const totalPrice = appState.orderPrime.totalPrice;
-  const ticketNumberSplice = useSelector(ticketNumber_section); */
-
   const {
     state: { user },
     handleUser,
@@ -119,10 +102,7 @@ function LoadingLogSession({
 
   const setDataEndLoading = async (myOrder) => {
     return await new Promise((resolve) => {
-      /*  let codePayment = (myOrder.totalPrice - 3).toString(16);
-      handleTicketNumber(codePayment); */
-
-      setIsLoggingDataSession(false);
+      setIsLoggingDataSession(false); //--> Here Comment this line First to implement full css of loadingLogSession
 
       handleFirstTimeOrder(false);
 
@@ -153,7 +133,8 @@ function LoadingLogSession({
   return (
     <div className="load_log_wrapper">
       <ul className="load_log_content">
-        <li>
+        <div className="live_anim_1"></div>
+        <li className="live_anim_2">
           <span className="load_log_text">Loading</span>
         </li>
       </ul>

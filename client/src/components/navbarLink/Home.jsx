@@ -4,17 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 /* import { getMeals } from "../../callAPI/MealsApi.jsx"; */
 
-import {
-  meals_section,
-  seaFoods_section,
-  meats_section,
-  desserts_section,
-  vegetarians_section,
-  welcome_section,
-} from "../../services/redux/createslice/MealSplice.jsx";
 import { MealContext } from "../../services/context/MealsContext.jsx";
-
-import { orderSpecsCurrent_section } from "../../services/redux/createslice/TemplateSlice.jsx";
 import { TemplateContext } from "../../services/context/TemplateContext.jsx";
 
 import CardHome from "../cards/card-home.jsx";

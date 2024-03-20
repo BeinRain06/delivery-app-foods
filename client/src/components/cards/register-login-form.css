@@ -120,10 +120,23 @@ form {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 50%;
-    height: 50%;
+    width: 64%;
+    height: 14%;
     transform: translate(-50%, -50%);
-    background-color: #c9c2c2;
+    background-color: #00000086;
+    z-index: 10;
+  }
+}
+
+@media (min-width: 380px) {
+  .loading_login_wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 14%;
+    transform: translate(-50%, -50%);
+    background-color: #00000086;
     z-index: 10;
   }
 }
@@ -170,5 +183,9 @@ form {
     display: flex;
     align-items: center;
     border: 2px solid #ebe0e0;
+  }
+
+  .loading_login_wrapper {
+    height: 12%;
   }
 }

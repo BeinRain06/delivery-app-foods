@@ -8,7 +8,6 @@ import moment from "moment";
 import "./register-login-form.css";
 
 function LogOrRegisterForm({ setShowTotalPrice }) {
-  /*  const dispatch = useDispatch(); */
 
   const {
     state: { user },

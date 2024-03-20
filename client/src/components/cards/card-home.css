@@ -6,7 +6,7 @@
   padding: 0;
 }
 
-.flex-column {
+/* .flex-column {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -24,7 +24,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
+} */
 
 @media (min-with: 180px) {
   .dishGiven {
@@ -32,6 +32,15 @@
     height: 290px;
     background-color: #24a163;
   }
+
+  .dish {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-row: span 3;
+    grid-template-columns: subgrid;
+  }
+  /* grid auto rows:160px auto auto (3 elements) */
 
   .dish_content {
     width: 100%;
@@ -104,19 +113,20 @@
     text-align: center;
   }
 
+  .spec_ingredients_h {
+    width: 100vw;
+    padding: 0.5rem;
+    margin: 1rem 0 0.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
   .spec_ingredients {
     width: 100vw;
     padding: 0.5rem;
     margin: 1rem 0 0.5rem;
     display: flex;
     justify-content: space-between;
-  }
-
-  .title_ing {
-    width: 90px;
-    padding: 0.25rem 0;
-    font-size: 0.975em;
-    border-bottom: 1px solid black;
   }
 
   .side_ing {
@@ -130,6 +140,13 @@
     gap: 0.25rem;
   }
 
+  .title_ing {
+    width: 90px;
+    padding: 0.25rem 0;
+    font-size: 0.975em;
+    border-bottom: 1px solid black;
+  }
+
   .side_order {
     width: 100%;
   }
@@ -138,6 +155,8 @@
     width: 100%;
     height: 66px;
     gap: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
   }
 
   .side_ct_order li {
@@ -192,13 +211,6 @@
     font-size: 17px;
   }
 
-  .meal_content {
-    padding: 0.25rem 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    grid-gap: 1em;
-  }
-
   .my_dish_img {
     width: 100%;
     height: 250px;
@@ -243,12 +255,6 @@
 }
 
 @media (min-width: 430px) {
-  .meal_content {
-    padding: 0.5rem 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-gap: 0.5rem;
-  }
-
   .my_dish_img {
     height: 200px;
   }
@@ -257,7 +263,7 @@
     padding: 0.5rem 0 0.5rem;
   }
 
-  .spec_ingredients {
+  .spec_ingredients_h {
     padding: 0.5rem;
     margin: 0.25rem 0 0.5rem;
   }
@@ -279,9 +285,13 @@
     font-size: 0.9em;
   }
 
-  .spec_ingredients {
+  .spec_meal .rate_content .ratings_score {
+    padding-right: 0.58rem;
+  }
+
+  .spec_ingredients_h {
     padding: 0.25rem 0.5rem;
-    margin: 0 0 0.5rem;
+    margin: 0.5rem 0;
   }
 
   .title_ing {

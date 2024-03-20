@@ -1,11 +1,11 @@
 import React from "react";
 
 import Button from "../button/button-shape";
-import "./card-home.css";
+/* import "./card-home.css"; */
 
 function CardHome({ ...props }) {
   return (
-    <li key={props._id} className="dish" onClick={(e) => console.log(e.target)}>
+    <li key={props.id} className="dish" onClick={(e) => console.log(e.target)}>
       <div className="dish_content flex-row">
         <img src={props.image} className="my_dish_img" alt="dish missing" />
 
@@ -16,7 +16,7 @@ function CardHome({ ...props }) {
               <li key={props.name} className="ratings_score">
                 ratings: {props.ratings}
               </li>
-              <li key={props._id} className="ratings">
+              <li key={props.id} className="ratings">
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>
                 <i className="fa-solid fa-star"></i>
@@ -38,13 +38,13 @@ function CardHome({ ...props }) {
               })}
             </ul>
           </div>
-          <div className="side_order flex-column">
-            <ul className="side_ct_order flex-column">
+          <div className="side_order ">
+            <ul className="side_ct_order ">
               <li>
                 <p className="dish_price">${props.price}</p>
               </li>
               <Button
-                mealid={props._id}
+                mealid={props.id}
                 mealname={props.name}
                 mealprice={props.price}
                 mealimg={props.image}

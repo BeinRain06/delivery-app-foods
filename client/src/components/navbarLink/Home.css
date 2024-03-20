@@ -43,6 +43,7 @@
     color: #757474;
     font-size: 14px;
   }
+
   /*here*/
   .home_container {
     width: 100vw;
@@ -113,11 +114,13 @@
     grid-gap: 0.5em;
   }
 
+  /* grid auto rows:160px auto auto (3 elements) */
+
   .dish {
     width: 100%;
     height: 100%;
     display: grid;
-    grid-row: span 3; /* grid auto rows:160px auto auto (3 elements)*/
+    grid-row: span 3;
     grid-template-columns: subgrid;
   }
 
@@ -127,12 +130,13 @@
     padding: 0.5rem 0.5rem 0;
     border-radius: 10px;
     flex-wrap: wrap;
-    gap: 0.5rem;
   }
 
   .my_dish_img {
     width: 100%;
     height: 170px;
+    padding: 0 0.5rem;
+    margin: 0 auto;
     border-radius: 10px;
     object-fit: cover;
   }
@@ -192,7 +196,7 @@
   .spec_ingredients {
     width: 100vw;
     padding: 0.5rem;
-    margin: 1rem 0 0.5rem;
+    margin: 0.5rem 0;
     display: flex;
     justify-content: space-between;
   }
@@ -315,9 +319,23 @@
     font-size: 1.25em;
   }
 
+  .spec_ingredients {
+    align-items: center;
+  }
+
   .ingredients_used {
     width: 6.5rem;
     font-size: 1rem;
+  }
+
+  .side_ct_order .dish_price,
+  .side_ct_order .btn_order {
+    width: 90%;
+    padding: 0.25rem 0;
+    color: #fff;
+    background-color: #213547;
+    display: flex;
+    justify-content: center;
   }
 
   .btn_order {
@@ -326,7 +344,7 @@
   }
 }
 
-@media (min-width: 430px) {
+@media (min-width: 536px) {
   .meal_content {
     padding: 0.5rem 1rem;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -344,6 +362,22 @@
   .spec_ingredients {
     padding: 0.5rem;
     margin: 0.25rem 0 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .side_ing {
+    position: relative;
+    top: -0.75rem;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    gap: 0.25rem;
+  }
+
+  .side_order {
+    width: 100%;
   }
 }
 
